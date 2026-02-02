@@ -1,386 +1,1694 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<title>P2P Chat with Admin & Private E2EE</title>
-
-<!-- PeerJS -->
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-
-<!-- CryptoJS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-
-<style>
-body {
-    font-family: sans-serif;
-    margin: 0;
-    background: #f4f4f4;
-}
-
-#topBar {
-    background: #222;
-    color: #fff;
-    padding: 10px;
-}
-
-#container {
-    display: flex;
-    height: calc(100vh - 50px);
-}
-
-#users {
-    width: 200px;
-    background: #fff;
-    border-right: 1px solid #ccc;
-    overflow-y: auto;
-}
-
-#users div {
-    padding: 8px;
-    cursor: pointer;
-}
-
-#users div:hover {
-    background: #eee;
-}
-
-#chat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-#messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-}
-
-.message {
-    margin-bottom: 8px;
-}
-
-.message img {
-    max-width: 250px;
-    border-radius: 8px;
-}
-
-#inputBar {
-    display: flex;
-    padding: 10px;
-    background: #ddd;
-}
-
-#inputBar input {
-    flex: 1;
-    padding: 6px;
-}
-
-#floatingPrivateChat {
-    position: fixed;
-    bottom: 90px;
-    left: 20px;
-    width: 320px;
-    height: 420px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0,0,0,.3);
-    display: none;
-    flex-direction: column;
-    z-index: 9999;
-}
-
-#floatingPrivateChat header {
-    padding: 10px;
-    background: #222;
-    color: #fff;
-    border-radius: 16px 16px 0 0;
-}
-
-#floatingMessages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-}
-
-#floatingInput {
-    border: none;
-    border-top: 1px solid #ccc;
-    padding: 8px;
-    resize: none;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت آرانا</title>
+    
+    <!-- کتابخانه رمزنگاری -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazir', sans-serif; }
+        body { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.4); height: 90vh; display: flex; flex-direction: column; }
+        
+        .login-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 90%; text-align: center; }
+        .login-input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; text-align: center; outline: none; transition: border 0.3s; }
+        .login-btn { width: 100%; padding: 15px; margin: 20px 0; background: #3b82f6; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; transition: background 0.3s; }
+        
+        .chat-header { background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 300px; background: #f8fafc; border-left: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
+        .users-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding: 15px; }
+        .user-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 12px; border: 2px solid transparent; transition: all 0.3s; cursor: pointer; }
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: #f8fafc; }
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .input-area { padding: 15px 20px; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; }
+        .message-input { flex: 1; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 25px; font-size: 14px; resize: none; outline: none; transition: border 0.3s; max-height: 150px; }
+        .send-btn { padding: 12px 25px; background: #3b82f6; color: white; border: none; border-radius: 25px; cursor: pointer; transition: all 0.3s; }
+        
+        .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 1001; animation: notificationIn 0.3s ease; border-right: 4px solid #3b82f6; }
+        @keyframes notificationIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .message-status { font-size: 10px; margin-right: 5px; }
+        .status-delivered { color: #3b82f6; }
+        .status-read { color: #10b981; }
+        
+        .file-upload-btn { padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 12px; }
+        
+        .image-message { max-width: 300px; border-radius: 12px; margin-top: 5px; cursor: pointer; }
+        .image-message.fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; max-width: 100%; display: flex; align-items: center; justify-content: center; }
+        .image-message.fullscreen img { max-width: 90%; max-height: 90%; }
+        
+        .private-chat-active { border-color: #8b5cf6 !important; background: #f5f3ff !important; }
+        .unread-badge { background: #ef4444; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        
+        .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
+        
+        /* پنجره شناور چت خصوصی */
+        .floating-chat {
+            position: absolute;
+            bottom: 100px;
+            left: 20px;
+            width: 320px;
+            height: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,.3);
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .floating-header {
+            background: #8b5cf6;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .floating-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f9fafb;
+        }
+        
+        .floating-input-area {
+            padding: 10px 15px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .floating-input-area textarea {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            resize: none;
+            font-size: 14px;
+            min-height: 40px;
+            max-height: 100px;
+        }
+        
+        .floating-input-area button {
+            padding: 8px 16px;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 </head>
-
 <body>
-
-<div id="topBar">
-    <span id="adminText"></span>
-</div>
-
-<div id="container">
-    <div id="users"></div>
-
-    <div id="chat">
-        <div id="messages"></div>
-        <div id="inputBar">
-            <input id="messageInput" placeholder="پیام عمومی..." />
-            <input type="file" id="imageInput" />
+    <!-- Login Page -->
+    <div class="login-page" id="loginPage">
+        <div class="login-card">
+            <div style="font-size: 48px; margin-bottom: 20px; color: #3b82f6;">💬</div>
+            <h1 style="color: #1e293b; margin-bottom: 10px;">چت هوشمند جهانی</h1>
+            <p style="color: #64748b; margin-bottom: 30px; font-size: 14px;">اتصال مستقیم Peer-to-Peer • چت خصوصی امن</p>
+            
+            <input type="text" 
+                   class="login-input" 
+                   id="usernameInput" 
+                   placeholder="نام قابل نمایش خود را وارد کنید"
+                   maxlength="20"
+                   autocomplete="off">
+            
+            <div style="margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 10px; text-align: right;">
+                <h4 style="color: #1e293b; margin-bottom: 10px; font-size: 14px;">🔒 ویژگی‌های امنیتی:</h4>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
+                    • چت خصوصی Peer-to-Peer رمزنگاری‌شده<br>
+                    • مدیریت شبکه هوشمند<br>
+                    • ارسال تصویر ایمن<br>
+                    • اتصال مستقیم کاربران
+                </p>
+            </div>
+            
+            <button class="login-btn" id="loginBtn" onclick="login()">
+                <span id="loginBtnText">ورود به چت جهانی</span>
+            </button>
         </div>
     </div>
-</div>
+    
+    <!-- Main Chat -->
+    <div class="container" id="chatContainer" style="display: none;">
+        <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: bold;">
+                <i class="fas fa-globe"></i>
+                <span>چت هوشمند جهانی</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;" id="statusIndicator"></div>
+                    <span id="connectionStatus">در حال اتصال...</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-user-shield"></i>
+                    <span id="adminText">مدیریت: ...</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-users"></i>
+                    <span id="userCount">0</span> کاربر
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div style="display: flex; background: white; border-bottom: 1px solid #e2e8f0;">
+                    <button id="publicChatBtn" style="flex: 1; padding: 15px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; position: relative; color: #3b82f6; border-bottom: 3px solid #3b82f6;">
+                        <i class="fas fa-users"></i> چت عمومی
+                    </button>
+                    <button id="privateChatBtn" style="flex: 1; padding: 15px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; position: relative; color: #64748b;">
+                        <i class="fas fa-lock"></i> چت خصوصی
+                    </button>
+                </div>
+                
+                <div id="publicUsersSection">
+                    <div style="padding: 15px; border-bottom: 1px solid #e2e8f0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="color: #1e293b; font-size: 16px;">👥 کاربران آنلاین</h3>
+                            <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;" id="onlineCount">0</span>
+                        </div>
+                        <div class="users-list" id="publicUsersList">
+                            <!-- کاربران عمومی اینجا نمایش داده می‌شوند -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="privateUsersSection" style="display: none;">
+                    <div style="padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="color: #1e293b; font-size: 16px;">🔒 چت‌های خصوصی</h3>
+                            <span class="unread-badge" id="totalUnreadBadge" style="display: none;">0</span>
+                        </div>
+                        <div class="users-list" id="privateUsersList">
+                            <!-- چت‌های خصوصی اینجا نمایش داده می‌شوند -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="padding: 15px; margin-top: auto; border-top: 1px solid #e2e8f0;">
+                    <button onclick="refreshNetwork()" style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px;">
+                        <i class="fas fa-sync-alt"></i> بروزرسانی شبکه
+                    </button>
+                    <button onclick="leaveChat()" style="width: 100%; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 10px; cursor: pointer;">
+                        <i class="fas fa-sign-out-alt"></i> خروج از چت
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div style="padding: 15px 20px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 18px; color: #1e293b;" id="chatTitle">💬 چت عمومی جهانی</div>
+                        <div style="font-size: 12px; color: #64748b;" id="chatInfo">همه پیام‌های عمومی در اینجا نمایش داده می‌شوند</div>
+                    </div>
+                    <div id="chatActions" style="display: none;">
+                        <button onclick="clearChat()" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                            <i class="fas fa-trash"></i> پاک کردن چت
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="messages-container" id="messagesContainer">
+                    <!-- پیام‌ها اینجا نمایش داده می‌شوند -->
+                    <div style="text-align: center; padding: 40px 20px; color: #64748b;" id="emptyState">
+                        <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">💬</div>
+                        <p>هنوز پیامی در این چت ارسال نشده است</p>
+                        <p style="font-size: 12px; margin-top: 10px;">اولین پیام را شما ارسال کنید!</p>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div style="display: flex; flex-direction: column; flex: 1;">
+                        <div class="action-buttons" id="actionButtons">
+                            <button onclick="toggleEmojiPicker()" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                😀 ایموجی
+                            </button>
+                            <label for="fileInput" style="padding: 6px 12px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                <i class="fas fa-image"></i> تصویر
+                                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                            </label>
+                        </div>
+                        <textarea id="messageInput" 
+                                  class="message-input" 
+                                  placeholder="پیام خود را بنویسید..." 
+                                  rows="1"
+                                  onkeydown="handleKeyPress(event)"
+                                  oninput="autoResize(this)"></textarea>
+                    </div>
+                    <button onclick="sendMessage()" id="sendBtn" class="send-btn">ارسال</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div id="floatingPrivateChat">
-    <header id="floatingHeader"></header>
-    <div id="floatingMessages"></div>
-    <textarea id="floatingInput" placeholder="پیام خصوصی..."></textarea>
-</div>
+    <!-- پنجره شناور چت خصوصی -->
+    <div id="floatingPrivateChat" class="floating-chat" style="display: none;">
+        <div class="floating-header">
+            <span id="floatingChatTitle">چت خصوصی</span>
+            <button onclick="closeFloatingChat()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
+        </div>
+        <div class="floating-messages" id="floatingMessages"></div>
+        <div class="floating-input-area">
+            <textarea id="floatingMessageInput" placeholder="پیام خصوصی..." onkeydown="handleFloatingKeyPress(event)"></textarea>
+            <button onclick="sendFloatingMessage()">ارسال</button>
+        </div>
+    </div>
 
-<script>
-/* ===================== CONFIG ===================== */
-const GLOBAL_ROOM = "global_room";
-const ADMIN_NAME = "admin";
-const ADMIN_PEER_ID = GLOBAL_ROOM + "_" + ADMIN_NAME;
+    <!-- Emoji Picker (hidden by default) -->
+    <div id="emojiPicker" style="display: none; position: fixed; bottom: 100px; right: 20px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 15px; z-index: 1002; width: 300px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div style="font-weight: bold;">ایموجی‌ها</div>
+            <button onclick="toggleEmojiPicker()" style="background: none; border: none; cursor: pointer; font-size: 18px;">×</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 200px; overflow-y: auto;">
+            <!-- Emojis will be inserted here -->
+        </div>
+    </div>
 
-/* ===================== STATE ===================== */
-let peer;
-let myPeerId;
-let myVisibleName = prompt("نام شما؟") || "کاربر";
-let isAdmin = false;
-
-let connections = new Map();
-let privateChats = new Map();
-let incomingImages = new Map();
-
-let currentPrivateChatWith = null;
-
-/* ===================== INIT ===================== */
-peer = new Peer();
-
-peer.on("open", id => {
-    myPeerId = id;
-    isAdmin = myVisibleName === ADMIN_NAME;
-
-    document.getElementById("adminText").textContent =
-        isAdmin ? "شما مدیریت هستید" : "مدیریت: " + ADMIN_NAME;
-
-    if (!isAdmin) connectToAdmin();
-});
-
-peer.on("connection", conn => {
-    if (conn.metadata?.type === "private_p2p") {
-        setupPrivateConnection(conn);
-    } else {
-        setupPublicConnection(conn);
-    }
-});
-
-/* ===================== PUBLIC CHAT ===================== */
-function connectToAdmin() {
-    const conn = peer.connect(ADMIN_PEER_ID, {
-        metadata: { name: myVisibleName }
-    });
-    setupPublicConnection(conn);
-}
-
-function setupPublicConnection(conn) {
-    conn.on("open", () => {
-        connections.set(conn.peer, conn);
-        updateUsers();
-    });
-
-    conn.on("data", data => handlePublicData(data));
-
-    conn.on("close", () => {
-        connections.delete(conn.peer);
-        updateUsers();
-    });
-}
-
-function handlePublicData(data) {
-    if (data.type === "message") {
-        displayMessage(data);
-    }
-    if (data.type === "image_chunk") {
-        handleImageChunk(data);
-    }
-}
-
-function sendPublicMessage(text) {
-    const msg = {
-        type: "message",
-        senderName: myVisibleName,
-        content: text,
-        timestamp: Date.now()
-    };
-
-    displayMessage(msg);
-
-    connections.forEach(c => c.send(msg));
-}
-
-/* ===================== IMAGE TRANSFER ===================== */
-function sendImage(file, sendFn) {
-    const reader = new FileReader();
-    reader.onload = () => {
-        const base64 = reader.result.split(",")[1];
-        const chunkSize = 16000;
-        const total = Math.ceil(base64.length / chunkSize);
-        const messageId = crypto.randomUUID();
-
-        for (let i = 0; i < total; i++) {
-            sendFn({
-                type: "image_chunk",
-                messageId,
-                chunkIndex: i,
-                totalChunks: total,
-                data: base64.slice(i * chunkSize, (i + 1) * chunkSize),
-                senderName: myVisibleName
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script>
+        // ==================== متغیرهای اصلی ====================
+        let peer = null;
+        let myVisibleName = '';
+        let myPeerId = '';
+        let currentAdminId = '';
+        let amIAdmin = false;
+        let adminElectionInProgress = false;
+        let currentChatType = 'public'; // 'public' or 'private'
+        let currentPrivateChatWith = null;
+        let currentFloatingChatWith = null;
+        
+        let connections = new Map();
+        let users = new Map();
+        let privateChats = new Map(); // key: peerId, value: {messages: [], unread: 0, connection: null}
+        let pendingMessages = new Map();
+        let incomingImages = new Map(); // برای دریافت تصاویر
+        
+        const GLOBAL_ROOM = 'GLOBAL_CHAT_ROOM_V4';
+        const ADMIN_NAME = 'global_admin';
+        const ADMIN_PEER_ID = `${GLOBAL_ROOM}_${ADMIN_NAME}`;
+        
+        let heartbeatInterval = null;
+        let electionTimeout = null;
+        let reconnectInterval = null;
+        
+        // ==================== توابع رمزنگاری چت خصوصی ====================
+        function getSharedSecret(peerId) {
+            return CryptoJS.SHA256(
+                [myPeerId, peerId].sort().join('|')
+            ).toString();
+        }
+        
+        // ==================== توابع کمکی ====================
+        function generatePeerId() {
+            const randomStr = Math.random().toString(36).substr(2, 8);
+            return `${GLOBAL_ROOM}_${Date.now()}_${randomStr}`;
+        }
+        
+        function generateMessageId() {
+            return `${myPeerId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
+            notification.innerHTML = `
+                <span>${icon}</span>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        function formatTime(timestamp) {
+            return new Date(timestamp).toLocaleTimeString('fa-IR', {
+                hour: '2-digit',
+                minute: '2-digit'
             });
         }
-    };
-    reader.readAsDataURL(file);
-}
-
-function handleImageChunk(data) {
-    if (!incomingImages.has(data.messageId)) {
-        incomingImages.set(data.messageId, {
-            chunks: [],
-            total: data.totalChunks,
-            senderName: data.senderName
-        });
-    }
-
-    const img = incomingImages.get(data.messageId);
-    img.chunks[data.chunkIndex] = data.data;
-
-    if (img.chunks.filter(Boolean).length === img.total) {
-        displayMessage({
-            type: "image",
-            senderName: img.senderName,
-            content: img.chunks.join("")
-        });
-        incomingImages.delete(data.messageId);
-    }
-}
-
-/* ===================== PRIVATE CHAT (E2EE) ===================== */
-function getSharedSecret(peerId) {
-    return CryptoJS.SHA256([myPeerId, peerId].sort().join("|")).toString();
-}
-
-function openPrivate(peerId, name) {
-    currentPrivateChatWith = peerId;
-
-    document.getElementById("floatingPrivateChat").style.display = "flex";
-    document.getElementById("floatingHeader").textContent =
-        "چت خصوصی با " + name;
-
-    if (!privateChats.has(peerId)) {
-        const conn = peer.connect(peerId, {
-            metadata: { type: "private_p2p" }
-        });
-        setupPrivateConnection(conn);
-    }
-}
-
-function setupPrivateConnection(conn) {
-    const peerId = conn.peer;
-
-    if (!privateChats.has(peerId)) {
-        privateChats.set(peerId, { conn, messages: [] });
-    }
-
-    conn.on("data", data => {
-        if (data.type === "private_message") {
-            const secret = getSharedSecret(peerId);
-            const text = CryptoJS.AES.decrypt(
-                data.payload, secret
-            ).toString(CryptoJS.enc.Utf8);
-
-            addPrivateMessage(peerId, data.senderName, text);
+        
+        // ==================== سیستم لاگین ====================
+        async function login() {
+            const usernameInput = document.getElementById('usernameInput');
+            myVisibleName = usernameInput.value.trim();
+            
+            if (!myVisibleName || myVisibleName.length < 2) {
+                showNotification('لطفاً نام معتبر وارد کنید (حداقل ۲ کاراکتر)', 'error');
+                return;
+            }
+            
+            localStorage.setItem('chat_username', myVisibleName);
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<div class="loading"></div> در حال اتصال...';
+            
+            showNotification('🔍 در حال اتصال به شبکه جهانی...', 'info');
+            
+            // شروع فرآیند انتخاب مدیریت
+            await startAdminElection();
         }
-    });
-}
-
-function sendPrivateMessage(text) {
-    const chat = privateChats.get(currentPrivateChatWith);
-    if (!chat) return;
-
-    const secret = getSharedSecret(currentPrivateChatWith);
-    const encrypted = CryptoJS.AES.encrypt(text, secret).toString();
-
-    chat.conn.send({
-        type: "private_message",
-        payload: encrypted,
-        senderName: myVisibleName
-    });
-
-    addPrivateMessage(currentPrivateChatWith, myVisibleName, text);
-}
-
-function addPrivateMessage(peerId, sender, text) {
-    const box = document.getElementById("floatingMessages");
-    const div = document.createElement("div");
-    div.textContent = sender + ": " + text;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-}
-
-/* ===================== UI ===================== */
-function displayMessage(msg) {
-    const box = document.getElementById("messages");
-    const div = document.createElement("div");
-    div.className = "message";
-
-    if (msg.type === "image") {
-        const img = document.createElement("img");
-        img.src = "data:image/*;base64," + msg.content;
-        div.appendChild(img);
-    } else {
-        div.textContent = msg.senderName + ": " + msg.content;
-    }
-
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-}
-
-function updateUsers() {
-    const box = document.getElementById("users");
-    box.innerHTML = "";
-
-    connections.forEach((conn, id) => {
-        const div = document.createElement("div");
-        div.textContent = id;
-        div.onclick = () => openPrivate(id, id);
-        box.appendChild(div);
-    });
-}
-
-/* ===================== EVENTS ===================== */
-document.getElementById("messageInput").addEventListener("keydown", e => {
-    if (e.key === "Enter") {
-        sendPublicMessage(e.target.value);
-        e.target.value = "";
-    }
-});
-
-document.getElementById("floatingInput").addEventListener("keydown", e => {
-    if (e.key === "Enter") {
-        sendPrivateMessage(e.target.value);
-        e.target.value = "";
-    }
-});
-
-document.getElementById("imageInput").addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    sendImage(file, data => {
-        connections.forEach(c => c.send(data));
-    });
-});
-</script>
-
+        
+        // ==================== سیستم انتخاب مدیریت بهبود یافته ====================
+        async function startAdminElection() {
+            showNotification('👑 شروع فرآیند انتخاب مدیریت...', 'info');
+            adminElectionInProgress = true;
+            
+            // مرحله ۱: بررسی وجود مدیریت فعال
+            const adminExists = await checkAdminExists();
+            
+            if (adminExists) {
+                showNotification('✅ مدیریت فعال پیدا شد', 'success');
+                amIAdmin = false;
+                await joinAsMember();
+            } else {
+                showNotification('⚡ در حال رقابت برای مدیریت...', 'warning');
+                await competeForAdmin();
+            }
+        }
+        
+        async function checkAdminExists() {
+            showNotification('🔍 بررسی وجود مدیریت فعال...', 'info');
+            
+            // روش ۱: تست اتصال مستقیم به مدیریت
+            if (await testConnectionToAdmin()) {
+                return true;
+            }
+            
+            // روش ۲: صبر و بررسی مجدد
+            await new Promise(resolve => setTimeout(resolve, getRandomDelay(1000, 3000)));
+            
+            if (await testConnectionToAdmin()) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        function getRandomDelay(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        async function testConnectionToAdmin() {
+            return new Promise((resolve) => {
+                const testPeer = new Peer(`test_${Date.now()}`, {
+                    host: '0.peerjs.com',
+                    port: 443,
+                    path: '/',
+                    debug: 0,
+                    config: {'iceServers': [{urls: 'stun:stun.l.google.com:19302'}]}
+                });
+                
+                testPeer.on('open', () => {
+                    const conn = testPeer.connect(ADMIN_PEER_ID, {
+                        reliable: true,
+                        metadata: { type: 'admin_test' }
+                    });
+                    
+                    const timeout = setTimeout(() => {
+                        conn.close();
+                        testPeer.destroy();
+                        resolve(false);
+                    }, 3000);
+                    
+                    conn.on('open', () => {
+                        clearTimeout(timeout);
+                        conn.close();
+                        testPeer.destroy();
+                        resolve(true);
+                    });
+                    
+                    conn.on('error', () => {
+                        clearTimeout(timeout);
+                        conn.close();
+                        testPeer.destroy();
+                        resolve(false);
+                    });
+                });
+                
+                testPeer.on('error', () => {
+                    testPeer.destroy();
+                    resolve(false);
+                });
+            });
+        }
+        
+        async function competeForAdmin() {
+            const delay = getRandomDelay(2000, 5000);
+            showNotification(`⏳ تأخیر تصادفی: ${delay/1000} ثانیه...`, 'info');
+            
+            await new Promise(resolve => setTimeout(resolve, delay));
+            
+            const adminExists = await checkAdminExists();
+            
+            if (adminExists) {
+                showNotification('✅ مدیریت جدیدی پیدا شد - تبدیل به عضو', 'success');
+                amIAdmin = false;
+                await joinAsMember();
+                return;
+            }
+            
+            showNotification('👑 ادعای مدیریت شبکه...', 'warning');
+            await claimAdmin();
+        }
+        
+        async function claimAdmin() {
+            myPeerId = ADMIN_PEER_ID;
+            
+            try {
+                peer = new Peer(myPeerId, {
+                    host: '0.peerjs.com',
+                    port: 443,
+                    path: '/',
+                    debug: 0,
+                    config: {
+                        'iceServers': [
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' }
+                        ]
+                    }
+                });
+                
+                peer.on('open', (id) => {
+                    console.log('✅ مدیریت ایجاد شد:', id);
+                    amIAdmin = true;
+                    currentAdminId = myPeerId;
+                    adminElectionInProgress = false;
+                    
+                    setupAsAdmin();
+                });
+                
+                peer.on('error', (err) => {
+                    console.error('خطا در ایجاد مدیریت:', err);
+                    
+                    if (err.type === 'unavailable-id') {
+                        showNotification('⚡ مدیریت دیگری وجود دارد - تبدیل به عضو', 'info');
+                        amIAdmin = false;
+                        joinAsMember();
+                    } else {
+                        showNotification('خطا در ایجاد مدیریت، تلاش مجدد...', 'error');
+                        setTimeout(() => retryAdmin(), 3000);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('خطا در claimAdmin:', error);
+                retryAdmin();
+            }
+        }
+        
+        function retryAdmin() {
+            showNotification('🔄 تلاش مجدد برای اتصال...', 'info');
+            setTimeout(() => startAdminElection(), 3000);
+        }
+        
+        async function joinAsMember() {
+            myPeerId = generatePeerId();
+            
+            try {
+                peer = new Peer(myPeerId, {
+                    host: '0.peerjs.com',
+                    port: 443,
+                    path: '/',
+                    debug: 0,
+                    config: {
+                        'iceServers': [
+                            { urls: 'stun:stun.l.google.com:19302' }
+                        ]
+                    }
+                });
+                
+                peer.on('open', (id) => {
+                    console.log('✅ عضو ایجاد شد:', id);
+                    adminElectionInProgress = false;
+                    setupAsMember();
+                });
+                
+                peer.on('error', (err) => {
+                    console.error('خطا در ایجاد عضو:', err);
+                    showNotification('خطا در اتصال، تلاش مجدد...', 'error');
+                    setTimeout(() => joinAsMember(), 2000);
+                });
+                
+            } catch (error) {
+                console.error('خطا در joinAsMember:', error);
+                setTimeout(() => joinAsMember(), 2000);
+            }
+        }
+        
+        // ==================== راه‌اندازی نقش‌ها ====================
+        function setupAsAdmin() {
+            console.log('👑 تنظیم به عنوان مدیریت');
+            
+            users.set(myPeerId, {
+                peerId: myPeerId,
+                visibleName: myVisibleName,
+                isAdmin: true,
+                isOnline: true,
+                lastSeen: Date.now(),
+                isMe: true
+            });
+            
+            showChatPage();
+            listenForIncomingConnections();
+            startHeartbeatSystem();
+            startReconnectMonitor();
+            
+            showNotification(`شما مدیریت شبکه شدید!`, 'success');
+            updateUI();
+        }
+        
+        function setupAsMember() {
+            console.log('👤 تنظیم به عنوان عضو');
+            
+            users.set(myPeerId, {
+                peerId: myPeerId,
+                visibleName: myVisibleName,
+                isAdmin: false,
+                isOnline: true,
+                lastSeen: Date.now(),
+                isMe: true
+            });
+            
+            showChatPage();
+            listenForIncomingConnections();
+            connectToAdmin();
+            startReconnectMonitor();
+            
+            showNotification(`به شبکه جهانی متصل شدید`, 'success');
+            updateUI();
+        }
+        
+        function showChatPage() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'flex';
+            initEmojiPicker();
+        }
+        
+        // ==================== مدیریت اتصالات بهبود یافته ====================
+        function listenForIncomingConnections() {
+            peer.on('connection', (conn) => {
+                console.log('🔗 درخواست اتصال از:', conn.peer);
+                
+                const peerId = conn.peer;
+                const metadata = conn.metadata || {};
+                
+                if (metadata.type === 'private_p2p') {
+                    handleIncomingPrivateConnection(conn, peerId, metadata);
+                } else if (metadata.type === 'private_chat') {
+                    setupPrivateConnection(conn, peerId, metadata);
+                } else {
+                    connections.set(peerId, conn);
+                    setupConnectionListeners(conn, peerId);
+                    
+                    if (amIAdmin) {
+                        conn.on('open', () => {
+                            conn.send({
+                                type: 'request_registration',
+                                timestamp: Date.now()
+                            });
+                        });
+                    }
+                }
+            });
+        }
+        
+        function connectToAdmin() {
+            showNotification(`در حال اتصال به مدیریت...`, 'info');
+            
+            const conn = peer.connect(ADMIN_PEER_ID, {
+                reliable: true,
+                metadata: {
+                    type: 'member_join',
+                    visibleName: myVisibleName,
+                    peerId: myPeerId
+                }
+            });
+            
+            conn.on('open', () => {
+                console.log('✅ به مدیریت متصل شدیم');
+                connections.set(ADMIN_PEER_ID, conn);
+                setupConnectionListeners(conn, ADMIN_PEER_ID);
+                
+                // ثبت نام در مدیریت
+                conn.send({
+                    type: 'register',
+                    peerId: myPeerId,
+                    visibleName: myVisibleName,
+                    timestamp: Date.now()
+                });
+                
+                showNotification('به مدیریت متصل شدید', 'success');
+                updateConnectionStatus(true);
+            });
+            
+            conn.on('error', (err) => {
+                console.error('خطا در اتصال به مدیریت:', err);
+                updateConnectionStatus(false);
+                
+                setTimeout(() => {
+                    if (!amIAdmin) {
+                        connectToAdmin();
+                    }
+                }, 3000);
+            });
+        }
+        
+        function setupConnectionListeners(conn, peerId) {
+            conn.on('data', (data) => {
+                handleIncomingData(data, peerId);
+            });
+            
+            conn.on('close', () => {
+                console.log('❌ اتصال بسته شد با:', peerId);
+                connections.delete(peerId);
+                updateUsersList();
+                updateConnectionStatus(connections.size > 0);
+            });
+            
+            conn.on('error', (err) => {
+                console.error('خطا در اتصال:', peerId, err);
+                connections.delete(peerId);
+                updateUsersList();
+                updateConnectionStatus(connections.size > 0);
+            });
+        }
+        
+        // ==================== چت خصوصی REAL P2P ====================
+        function handleIncomingPrivateConnection(conn, peerId, metadata) {
+            if (!privateChats.has(peerId)) {
+                privateChats.set(peerId, {
+                    peerId: peerId,
+                    visibleName: metadata.visibleName || 'کاربر',
+                    messages: [],
+                    unread: 0,
+                    connection: conn
+                });
+            }
+            
+            const chat = privateChats.get(peerId);
+            chat.connection = conn;
+            
+            conn.on('data', (data) => {
+                handlePrivateMessage(data, peerId);
+            });
+            
+            conn.on('close', () => {
+                console.log('❌ اتصال خصوصی بسته شد:', peerId);
+                chat.connection = null;
+            });
+            
+            conn.on('error', (err) => {
+                console.error('خطا در اتصال خصوصی:', peerId, err);
+                chat.connection = null;
+            });
+            
+            updatePrivateUsersList();
+        }
+        
+        function startPrivateChat(targetPeerId) {
+            const targetUser = users.get(targetPeerId);
+            if (!targetUser) {
+                showNotification('کاربر یافت نشد', 'error');
+                return;
+            }
+            
+            currentChatType = 'private';
+            currentPrivateChatWith = targetPeerId;
+            
+            // آپدیت UI
+            document.getElementById('chatTitle').textContent = `🔒 چت خصوصی با ${targetUser.visibleName}`;
+            document.getElementById('chatInfo').textContent = 'پیام‌های خصوصی بین شما و این کاربر';
+            document.getElementById('chatActions').style.display = 'block';
+            
+            // نمایش پیام‌های قبلی
+            displayPrivateChatMessages(targetPeerId);
+            
+            // اگر اتصال نداریم، ایجاد کن
+            if (!privateChats.has(targetPeerId)) {
+                privateChats.set(targetPeerId, {
+                    peerId: targetPeerId,
+                    visibleName: targetUser.visibleName,
+                    messages: [],
+                    unread: 0,
+                    connection: null
+                });
+                
+                // اتصال P2P مستقیم
+                const conn = peer.connect(targetPeerId, {
+                    reliable: true,
+                    metadata: {
+                        type: 'private_p2p',
+                        visibleName: myVisibleName,
+                        peerId: myPeerId
+                    }
+                });
+                
+                handleIncomingPrivateConnection(conn, targetPeerId, {visibleName: myVisibleName});
+            } else {
+                // خوانده شدن پیام‌ها
+                const chat = privateChats.get(targetPeerId);
+                chat.unread = 0;
+                updateUnreadBadge();
+            }
+            
+            updatePrivateUsersList();
+        }
+        
+        function openFloatingPrivate(peerId) {
+            const targetUser = users.get(peerId);
+            if (!targetUser) return;
+            
+            currentFloatingChatWith = peerId;
+            const chat = privateChats.get(peerId);
+            
+            document.getElementById('floatingChatTitle').textContent = `🔒 ${targetUser.visibleName}`;
+            document.getElementById('floatingPrivateChat').style.display = 'flex';
+            
+            // باز کردن چت خصوصی
+            startPrivateChat(peerId);
+            
+            // رندر پیام‌ها در پنجره شناور
+            renderFloatingMessages();
+            
+            // فوکوس روی input
+            setTimeout(() => {
+                document.getElementById('floatingMessageInput').focus();
+            }, 100);
+        }
+        
+        function closeFloatingChat() {
+            document.getElementById('floatingPrivateChat').style.display = 'none';
+            currentFloatingChatWith = null;
+        }
+        
+        function sendFloatingMessage() {
+            const input = document.getElementById('floatingMessageInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            
+            if (currentFloatingChatWith) {
+                sendPrivateMessage(currentFloatingChatWith, content);
+                input.value = '';
+                autoResize(input);
+            }
+        }
+        
+        function handleFloatingKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendFloatingMessage();
+            }
+        }
+        
+        function renderFloatingMessages() {
+            if (!currentFloatingChatWith) return;
+            
+            const container = document.getElementById('floatingMessages');
+            const chat = privateChats.get(currentFloatingChatWith);
+            
+            container.innerHTML = '';
+            
+            if (!chat || chat.messages.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 20px;">هنوز پیامی ارسال نشده</div>';
+                return;
+            }
+            
+            chat.messages.forEach(msg => {
+                const msgEl = document.createElement('div');
+                const isOutgoing = msg.senderId === myPeerId;
+                
+                msgEl.style.cssText = `
+                    max-width: 80%;
+                    padding: 8px 12px;
+                    border-radius: 12px;
+                    margin-bottom: 8px;
+                    word-break: break-word;
+                    font-size: 14px;
+                    ${isOutgoing ? 
+                        'background: #8b5cf6; color: white; align-self: flex-end; margin-left: auto;' : 
+                        'background: #e5e7eb; color: #374151; align-self: flex-start;'}
+                `;
+                
+                msgEl.innerHTML = `
+                    <div style="font-size: 11px; opacity: 0.8; margin-bottom: 4px;">
+                        ${isOutgoing ? 'شما' : chat.visibleName}
+                    </div>
+                    <div>${msg.content}</div>
+                    <div style="font-size: 10px; text-align: left; margin-top: 4px; opacity: 0.7;">
+                        ${formatTime(msg.timestamp)}
+                    </div>
+                `;
+                
+                container.appendChild(msgEl);
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function sendPrivateMessage(peerId, text) {
+            const chat = privateChats.get(peerId);
+            if (!chat) return;
+            
+            const messageData = {
+                type: 'private_message',
+                content: text,
+                senderId: myPeerId,
+                senderName: myVisibleName,
+                timestamp: Date.now(),
+                messageId: generateMessageId(),
+                status: 'sending'
+            };
+            
+            // ذخیره پیام در تاریخچه
+            chat.messages.push(messageData);
+            
+            // نمایش در UI اصلی
+            if (currentChatType === 'private' && currentPrivateChatWith === peerId) {
+                displayMessage(messageData, true, 'private');
+            }
+            
+            // نمایش در پنجره شناور
+            if (currentFloatingChatWith === peerId) {
+                renderFloatingMessages();
+            }
+            
+            // ارسال به کاربر مقابل
+            if (chat.connection && chat.connection.open) {
+                chat.connection.send(messageData);
+                messageData.status = 'delivered';
+                updateMessageStatus(messageData.messageId, 'delivered');
+            } else {
+                showNotification('اتصال خصوصی قطع است', 'error');
+                messageData.status = 'failed';
+                updateMessageStatus(messageData.messageId, 'failed');
+            }
+        }
+        
+        function handlePrivateMessage(data, fromPeerId) {
+            const chat = privateChats.get(fromPeerId);
+            if (!chat) return;
+            
+            const message = {
+                ...data,
+                timestamp: data.timestamp || Date.now(),
+                status: 'delivered'
+            };
+            
+            chat.messages.push(message);
+            
+            if (currentChatType === 'private' && currentPrivateChatWith === fromPeerId) {
+                displayMessage(message, false, 'private');
+            }
+            
+            if (currentFloatingChatWith === fromPeerId) {
+                renderFloatingMessages();
+            } else {
+                chat.unread = (chat.unread || 0) + 1;
+                showNotification(`پیام خصوصی از ${chat.visibleName}`, 'info');
+            }
+            
+            updatePrivateUsersList();
+            updateUnreadBadge();
+        }
+        
+        function displayPrivateChatMessages(peerId) {
+            const container = document.getElementById('messagesContainer');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
+            
+            const chat = privateChats.get(peerId);
+            if (!chat || chat.messages.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            chat.messages.forEach(msg => {
+                displayMessage(msg, msg.senderId === myPeerId, 'private');
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // ==================== پردازش داده‌های ورودی ====================
+        function handleIncomingData(data, fromPeerId) {
+            switch(data.type) {
+                case 'request_registration':
+                    handleRegistrationRequest(data, fromPeerId);
+                    break;
+                case 'register':
+                    handleUserRegistration(data, fromPeerId);
+                    break;
+                case 'public_message':
+                    handlePublicMessage(data, fromPeerId);
+                    break;
+                case 'user_list':
+                    handleUserList(data, fromPeerId);
+                    break;
+                case 'heartbeat':
+                    handleHeartbeat(data, fromPeerId);
+                    break;
+                case 'message_status':
+                    handleMessageStatus(data, fromPeerId);
+                    break;
+                case 'image_chunk':
+                    handleImageChunk(data, fromPeerId);
+                    break;
+            }
+        }
+        
+        function handleRegistrationRequest(data, fromPeerId) {
+            if (!amIAdmin) return;
+            
+            const conn = connections.get(fromPeerId);
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'please_register',
+                    adminId: myPeerId,
+                    timestamp: Date.now()
+                });
+            }
+        }
+        
+        function handleUserRegistration(data, fromPeerId) {
+            if (!amIAdmin) return;
+            
+            const userInfo = {
+                peerId: data.peerId,
+                visibleName: data.visibleName,
+                isAdmin: false,
+                isOnline: true,
+                lastSeen: Date.now(),
+                isMe: false
+            };
+            
+            users.set(data.peerId, userInfo);
+            
+            // ارسال لیست کاربران به کاربر جدید
+            const conn = connections.get(fromPeerId);
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'user_list',
+                    users: Array.from(users.values()).filter(u => u.isOnline),
+                    timestamp: Date.now()
+                });
+            }
+            
+            // اعلام کاربر جدید به همه
+            broadcastToAll({
+                type: 'user_joined',
+                user: userInfo,
+                timestamp: Date.now()
+            }, [fromPeerId]);
+            
+            showNotification(`کاربر جدید: ${data.visibleName}`, 'success');
+            updateUsersList();
+        }
+        
+        function handlePublicMessage(data, fromPeerId) {
+            if (amIAdmin) {
+                // تایید دریافت پیام
+                const conn = connections.get(fromPeerId);
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'message_status',
+                        messageId: data.messageId,
+                        status: 'delivered',
+                        timestamp: Date.now()
+                    });
+                }
+                
+                // پخش پیام به همه
+                broadcastToAll({
+                    ...data,
+                    status: 'delivered'
+                }, [fromPeerId]);
+            }
+            
+            // نمایش پیام
+            if (currentChatType === 'public') {
+                displayMessage(data, data.senderId === myPeerId, 'public');
+            }
+        }
+        
+        function handleUserList(data, fromPeerId) {
+            data.users.forEach(user => {
+                if (user.peerId !== myPeerId && !users.has(user.peerId)) {
+                    users.set(user.peerId, user);
+                }
+            });
+            
+            updateUsersList();
+            updatePrivateUsersList();
+        }
+        
+        function handleHeartbeat(data, fromPeerId) {
+            const user = users.get(fromPeerId);
+            if (user) {
+                user.lastSeen = Date.now();
+                user.isOnline = true;
+                updateUsersList();
+            }
+        }
+        
+        function handleMessageStatus(data, fromPeerId) {
+            const messageId = data.messageId;
+            const status = data.status;
+            
+            updateMessageStatus(messageId, status);
+        }
+        
+        // ==================== مدیریت شبکه ====================
+        function broadcastToAll(data, excludePeers = []) {
+            connections.forEach((conn, peerId) => {
+                if (conn.open && !excludePeers.includes(peerId)) {
+                    try {
+                        conn.send(data);
+                    } catch (error) {
+                        console.error('خطا در ارسال به:', peerId, error);
+                    }
+                }
+            });
+        }
+        
+        function startHeartbeatSystem() {
+            if (amIAdmin) {
+                heartbeatInterval = setInterval(() => {
+                    broadcastToAll({
+                        type: 'heartbeat',
+                        adminId: myPeerId,
+                        timestamp: Date.now()
+                    });
+                    
+                    checkOfflineUsers();
+                }, 10000);
+            }
+        }
+        
+        function startReconnectMonitor() {
+            reconnectInterval = setInterval(() => {
+                if (!amIAdmin && (!connections.has(ADMIN_PEER_ID) || !connections.get(ADMIN_PEER_ID).open)) {
+                    showNotification('اتصال قطع شد، در حال تلاش مجدد...', 'warning');
+                    connectToAdmin();
+                }
+            }, 15000);
+        }
+        
+        function checkOfflineUsers() {
+            const now = Date.now();
+            users.forEach((user, peerId) => {
+                if (peerId !== myPeerId && now - user.lastSeen > 30000) {
+                    user.isOnline = false;
+                    updateUsersList();
+                }
+            });
+        }
+        
+        // ==================== ارسال پیام‌ها ====================
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            
+            if (currentChatType === 'public') {
+                sendPublicMessage(content);
+            } else if (currentChatType === 'private' && currentPrivateChatWith) {
+                sendPrivateMessage(currentPrivateChatWith, content);
+            }
+            
+            input.value = '';
+            autoResize(input);
+        }
+        
+        function sendPublicMessage(content) {
+            const messageData = {
+                type: 'public_message',
+                content: content,
+                senderId: myPeerId,
+                senderName: myVisibleName,
+                timestamp: Date.now(),
+                messageId: generateMessageId(),
+                status: 'sending'
+            };
+            
+            displayMessage(messageData, true, 'public');
+            
+            if (amIAdmin) {
+                broadcastToAll(messageData);
+                updateMessageStatus(messageData.messageId, 'delivered');
+            } else {
+                const adminConn = connections.get(ADMIN_PEER_ID);
+                if (adminConn && adminConn.open) {
+                    adminConn.send(messageData);
+                } else {
+                    showNotification('اتصال به مدیریت قطع است', 'error');
+                    updateMessageStatus(messageData.messageId, 'failed');
+                }
+            }
+        }
+        
+        // ==================== ارسال تصویر کامل ====================
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('حجم فایل باید کمتر از ۱۰ مگابایت باشد', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                sendImage(base64Image, file.type);
+            };
+            reader.readAsDataURL(file);
+            
+            event.target.value = '';
+        }
+        
+        function sendImage(base64Data, mimeType) {
+            const MAX_CHUNK_SIZE = 16000;
+            const messageId = generateMessageId();
+            const totalChunks = Math.ceil(base64Data.length / MAX_CHUNK_SIZE);
+            
+            showNotification(`در حال ارسال تصویر (${totalChunks} قطعه)...`, 'info');
+            
+            const loadingMessage = {
+                type: 'image',
+                senderId: myPeerId,
+                senderName: myVisibleName,
+                timestamp: Date.now(),
+                messageId: messageId,
+                status: 'sending',
+                content: '📸 در حال بارگذاری تصویر...',
+                totalChunks: totalChunks
+            };
+            
+            displayMessage(loadingMessage, true, currentChatType);
+            
+            // ارسال تکه‌ها
+            for (let i = 0; i < totalChunks; i++) {
+                const chunk = base64Data.slice(i * MAX_CHUNK_SIZE, (i + 1) * MAX_CHUNK_SIZE);
+                const chunkData = {
+                    type: 'image_chunk',
+                    messageId: messageId,
+                    chunkIndex: i,
+                    totalChunks: totalChunks,
+                    data: chunk,
+                    mimeType: mimeType,
+                    senderId: myPeerId,
+                    senderName: myVisibleName,
+                    timestamp: Date.now()
+                };
+                
+                setTimeout(() => sendImageChunk(chunkData), i * 50);
+            }
+        }
+        
+        function sendImageChunk(chunkData) {
+            if (currentChatType === 'public') {
+                if (amIAdmin) {
+                    broadcastToAll(chunkData);
+                } else {
+                    const adminConn = connections.get(ADMIN_PEER_ID);
+                    if (adminConn && adminConn.open) {
+                        adminConn.send(chunkData);
+                    }
+                }
+            } else if (currentChatType === 'private' && currentPrivateChatWith) {
+                const chat = privateChats.get(currentPrivateChatWith);
+                if (chat && chat.connection && chat.connection.open) {
+                    chat.connection.send(chunkData);
+                }
+            }
+        }
+        
+        function handleImageChunk(data, fromPeerId) {
+            if (!incomingImages.has(data.messageId)) {
+                incomingImages.set(data.messageId, {
+                    chunks: [],
+                    total: data.totalChunks,
+                    mimeType: data.mimeType,
+                    senderName: data.senderName,
+                    senderId: data.senderId
+                });
+            }
+            
+            const img = incomingImages.get(data.messageId);
+            img.chunks[data.chunkIndex] = data.data;
+            
+            const receivedChunks = img.chunks.filter(Boolean).length;
+            
+            if (receivedChunks === img.total) {
+                const base64 = img.chunks.join('');
+                const imageData = {
+                    type: 'image',
+                    content: base64,
+                    senderId: img.senderId,
+                    senderName: img.senderName,
+                    timestamp: Date.now(),
+                    messageId: data.messageId,
+                    status: 'delivered'
+                };
+                
+                if (currentChatType === 'public') {
+                    displayMessage(imageData, imageData.senderId === myPeerId, 'public');
+                } else if (currentChatType === 'private' && currentPrivateChatWith === fromPeerId) {
+                    displayMessage(imageData, imageData.senderId === myPeerId, 'private');
+                }
+                
+                incomingImages.delete(data.messageId);
+                
+                showNotification('تصویر دریافت شد', 'success');
+            } else {
+                console.log(`دریافت chunk ${receivedChunks}/${img.total} برای تصویر ${data.messageId}`);
+            }
+        }
+        
+        // ==================== UI Functions ====================
+        function updateUI() {
+            document.getElementById('connectionStatus').textContent = 
+                amIAdmin ? '👑 مدیریت شبکه' : '👤 عضو شبکه';
+            
+            document.getElementById('statusIndicator').style.background = 
+                connections.size > 0 ? '#10b981' : '#ef4444';
+            
+            document.getElementById('adminText').textContent = 
+                amIAdmin ? 'شما مدیریت هستید' : `مدیریت: ${users.get(ADMIN_PEER_ID)?.visibleName || '...'}`;
+            
+            const onlineCount = Array.from(users.values()).filter(u => u.isOnline).length;
+            document.getElementById('onlineCount').textContent = onlineCount;
+            document.getElementById('userCount').textContent = onlineCount;
+            
+            updateUsersList();
+            updatePrivateUsersList();
+        }
+        
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('connectionStatus');
+            
+            if (connected) {
+                indicator.style.background = '#10b981';
+                statusText.textContent = amIAdmin ? '👑 مدیریت شبکه' : '✅ متصل';
+            } else {
+                indicator.style.background = '#ef4444';
+                statusText.textContent = '🔴 قطع';
+            }
+        }
+        
+        function updateUsersList() {
+            const container = document.getElementById('publicUsersList');
+            container.innerHTML = '';
+            
+            let hasUsers = false;
+            
+            users.forEach((user, peerId) => {
+                if (user.isOnline && !user.isMe) {
+                    hasUsers = true;
+                    
+                    const userEl = document.createElement('div');
+                    userEl.className = 'user-item';
+                    userEl.onclick = () => openFloatingPrivate(peerId);
+                    
+                    userEl.innerHTML = `
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: ${user.isAdmin ? 'linear-gradient(135deg, #f59e0b, #f97316)' : 'linear-gradient(135deg, #10b981, #34d399)'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">
+                            ${user.visibleName.charAt(0)}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 14px; font-weight: 500; color: #1e293b; margin-bottom: 2px;">
+                                ${user.visibleName}
+                                ${user.isAdmin ? '<span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-right: 5px;">مدیریت</span>' : ''}
+                            </div>
+                            <div style="font-size: 11px; color: #64748b;">
+                                ${user.isAdmin ? 'مدیر شبکه' : 'کاربر'}
+                            </div>
+                        </div>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
+                    `;
+                    
+                    container.appendChild(userEl);
+                }
+            });
+            
+            // نمایش خود کاربر در ابتدای لیست
+            const me = users.get(myPeerId);
+            if (me) {
+                const userEl = document.createElement('div');
+                userEl.className = 'user-item';
+                userEl.style.background = '#f0f9ff';
+                userEl.style.borderColor = '#3b82f6';
+                
+                userEl.innerHTML = `
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">
+                        ${me.visibleName.charAt(0)}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 500; color: #1e293b; margin-bottom: 2px;">
+                            ${me.visibleName}
+                            <span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-right: 5px;">شما</span>
+                            ${me.isAdmin ? '<span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-right: 5px;">مدیریت</span>' : ''}
+                        </div>
+                        <div style="font-size: 11px; color: #64748b;">
+                            ${me.isAdmin ? 'مدیر شبکه' : 'کاربر'}
+                        </div>
+                    </div>
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
+                `;
+                
+                container.insertBefore(userEl, container.firstChild);
+                hasUsers = true;
+            }
+            
+            if (!hasUsers) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px 0; color: #64748b;">
+                        <div style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;">👤</div>
+                        <p>کاربر آنلاین دیگری وجود ندارد</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function updatePrivateUsersList() {
+            const container = document.getElementById('privateUsersList');
+            container.innerHTML = '';
+            
+            let hasChats = false;
+            
+            privateChats.forEach((chat, peerId) => {
+                hasChats = true;
+                
+                const targetUser = users.get(peerId);
+                if (!targetUser) return;
+                
+                const userEl = document.createElement('div');
+                userEl.className = `user-item ${currentPrivateChatWith === peerId ? 'private-chat-active' : ''}`;
+                userEl.onclick = () => startPrivateChat(peerId);
+                
+                const lastMessage = chat.messages.length > 0 ? 
+                    (chat.messages[chat.messages.length - 1].content.length > 20 ? 
+                     chat.messages[chat.messages.length - 1].content.substring(0, 20) + '...' : 
+                     chat.messages[chat.messages.length - 1].content) : 
+                    'هنوز پیامی ارسال نشده';
+                
+                userEl.innerHTML = `
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">
+                        ${targetUser.visibleName.charAt(0)}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 500; color: #1e293b; margin-bottom: 2px; display: flex; align-items: center; gap: 5px;">
+                            ${targetUser.visibleName}
+                            ${chat.unread > 0 ? `<span class="unread-badge">${chat.unread}</span>` : ''}
+                        </div>
+                        <div style="font-size: 11px; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${lastMessage}
+                        </div>
+                    </div>
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: ${chat.connection && chat.connection.open ? '#10b981' : '#ef4444'};"></div>
+                `;
+                
+                container.appendChild(userEl);
+            });
+            
+            if (!hasChats) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px 0; color: #64748b;">
+                        <div style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;">🔒</div>
+                        <p>چت خصوصی فعالی وجود ندارد</p>
+                        <p style="font-size: 12px; margin-top: 10px;">برای شروع چت خصوصی روی کاربری کلیک کنید</p>
+                    </div>
+                `;
+            }
+            
+            updateUnreadBadge();
+        }
+        
+        function updateUnreadBadge() {
+            let totalUnread = 0;
+            privateChats.forEach(chat => {
+                totalUnread += chat.unread || 0;
+            });
+            
+            const badge = document.getElementById('totalUnreadBadge');
+            if (totalUnread > 0) {
+                badge.textContent = totalUnread;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        function displayMessage(data, isOutgoing, chatType) {
+            const container = document.getElementById('messagesContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+            
+            const messageEl = document.createElement('div');
+            messageEl.id = `msg_${data.messageId}`;
+            messageEl.style.cssText = `
+                max-width: 65%;
+                padding: 12px 16px;
+                border-radius: 18px;
+                position: relative;
+                animation: slideIn 0.3s ease;
+                word-break: break-word;
+                ${isOutgoing ? 
+                    'background: #3b82f6; color: white; align-self: flex-end; border-bottom-left-radius: 5px;' : 
+                    'background: white; align-self: flex-start; border-bottom-right-radius: 5px;'
+                }
+            `;
+            
+            let statusIcon = '';
+            if (isOutgoing) {
+                if (data.status === 'sending') statusIcon = '🕐';
+                else if (data.status === 'delivered') statusIcon = '✓✓';
+                else if (data.status === 'read') statusIcon = '👁️✓';
+                else if (data.status === 'failed') statusIcon = '❌';
+            }
+            
+            let contentHtml = '';
+            if (data.type === 'image') {
+                contentHtml = `<img src="${data.content}" style="max-width: 100%; border-radius: 8px; cursor: pointer;" onclick="viewImageFullscreen(this)">`;
+            } else {
+                contentHtml = data.content;
+            }
+            
+            messageEl.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <div style="font-size: 12px; font-weight: 500;">${data.senderName || (isOutgoing ? myVisibleName : 'کاربر')}</div>
+                    <div style="font-size: 11px; opacity: 0.8;">
+                        ${formatTime(data.timestamp)}
+                        ${isOutgoing ? `<span class="message-status ${data.status}">${statusIcon}</span>` : ''}
+                    </div>
+                </div>
+                <div style="line-height: 1.5; font-size: 14px;">${contentHtml}</div>
+            `;
+            
+            container.appendChild(messageEl);
+            
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+        
+        function updateMessageStatus(messageId, status) {
+            const messageEl = document.getElementById(`msg_${messageId}`);
+            if (messageEl) {
+                const statusSpan = messageEl.querySelector('.message-status');
+                if (statusSpan) {
+                    let statusIcon = '';
+                    if (status === 'sending') statusIcon = '🕐';
+                    else if (status === 'delivered') statusIcon = '✓✓';
+                    else if (status === 'read') statusIcon = '👁️✓';
+                    else if (status === 'failed') statusIcon = '❌';
+                    
+                    statusSpan.textContent = statusIcon;
+                    statusSpan.className = `message-status status-${status}`;
+                }
+            }
+        }
+        
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function viewImageFullscreen(imgElement) {
+            const fullscreenDiv = document.createElement('div');
+            fullscreenDiv.className = 'image-message fullscreen';
+            fullscreenDiv.onclick = () => fullscreenDiv.remove();
+            
+            const imgClone = imgElement.cloneNode();
+            imgClone.style.maxWidth = '90%';
+            imgClone.style.maxHeight = '90%';
+            
+            fullscreenDiv.appendChild(imgClone);
+            document.body.appendChild(fullscreenDiv);
+        }
+        
+        function initEmojiPicker() {
+            const emojis = ['😀', '😂', '😍', '😎', '😭', '😡', '👍', '👎', '❤️', '🔥', '🎉', '💯', '🤔', '👏', '🙏', '😴', '🥳', '😷', '🤯', '🥰'];
+            const picker = document.getElementById('emojiPicker');
+            const container = picker.querySelector('div:nth-child(2)');
+            
+            emojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.textContent = emoji;
+                span.style.cursor = 'pointer';
+                span.style.fontSize = '24px';
+                span.onclick = () => {
+                    const input = document.getElementById('messageInput');
+                    input.value += emoji;
+                    input.focus();
+                    autoResize(input);
+                };
+                container.appendChild(span);
+            });
+        }
+        
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function refreshNetwork() {
+            showNotification('🔄 در حال بروزرسانی شبکه...', 'info');
+            
+            if (!amIAdmin) {
+                connectToAdmin();
+            }
+            
+            updateUsersList();
+            updatePrivateUsersList();
+            
+            setTimeout(() => {
+                showNotification('✅ شبکه بروزرسانی شد', 'success');
+            }, 1000);
+        }
+        
+        function clearChat() {
+            if (confirm('آیا می‌خواهید تاریخچه این چت پاک شود؟')) {
+                const container = document.getElementById('messagesContainer');
+                container.innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
+            }
+        }
+        
+        function leaveChat() {
+            if (confirm('آیا می‌خواهید از چت خارج شوید؟')) {
+                connections.forEach(conn => conn.close());
+                connections.clear();
+                
+                if (heartbeatInterval) clearInterval(heartbeatInterval);
+                if (reconnectInterval) clearInterval(reconnectInterval);
+                if (electionTimeout) clearTimeout(electionTimeout);
+                
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('chatContainer').style.display = 'none';
+                
+                showNotification('از چت خارج شدید', 'info');
+            }
+        }
+        
+        // ==================== راه‌اندازی اولیه ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUsername = localStorage.getItem('chat_username');
+            if (savedUsername) {
+                document.getElementById('usernameInput').value = savedUsername;
+            }
+            
+            // تنظیم دکمه‌های چت عمومی/خصوصی
+            document.getElementById('publicChatBtn').onclick = function() {
+                currentChatType = 'public';
+                currentPrivateChatWith = null;
+                
+                document.getElementById('publicChatBtn').style.color = '#3b82f6';
+                document.getElementById('publicChatBtn').style.borderBottom = '3px solid #3b82f6';
+                document.getElementById('privateChatBtn').style.color = '#64748b';
+                document.getElementById('privateChatBtn').style.borderBottom = 'none';
+                document.getElementById('publicUsersSection').style.display = 'block';
+                document.getElementById('privateUsersSection').style.display = 'none';
+                document.getElementById('chatTitle').textContent = '💬 چت عمومی جهانی';
+                document.getElementById('chatInfo').textContent = 'همه پیام‌های عمومی در اینجا نمایش داده می‌شوند';
+                document.getElementById('chatActions').style.display = 'none';
+                
+                // نمایش پیام‌های عمومی
+                const container = document.getElementById('messagesContainer');
+                container.innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
+            };
+            
+            document.getElementById('privateChatBtn').onclick = function() {
+                document.getElementById('privateChatBtn').style.color = '#8b5cf6';
+                document.getElementById('privateChatBtn').style.borderBottom = '3px solid #8b5cf6';
+                document.getElementById('publicChatBtn').style.color = '#64748b';
+                document.getElementById('publicChatBtn').style.borderBottom = 'none';
+                document.getElementById('publicUsersSection').style.display = 'none';
+                document.getElementById('privateUsersSection').style.display = 'block';
+                
+                updatePrivateUsersList();
+            };
+            
+            // بستن ایموجی پیکر با کلیک بیرون
+            document.addEventListener('click', function(event) {
+                const emojiPicker = document.getElementById('emojiPicker');
+                if (emojiPicker.style.display === 'block' && 
+                    !emojiPicker.contains(event.target) && 
+                    event.target.id !== 'emojiPicker') {
+                    emojiPicker.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
