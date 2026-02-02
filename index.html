@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>چت هوشمند جهانی</title>
     <style>
-        /* استایل‌ها مشابه کد قبلی - برای صرفه‌جویی در فضا کوتاه شده */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazir', sans-serif; }
         body { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.4); height: 90vh; display: flex; flex-direction: column; }
@@ -22,8 +21,8 @@
         .user-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 12px; border: 2px solid transparent; transition: all 0.3s; cursor: pointer; }
         .chat-area { flex: 1; display: flex; flex-direction: column; background: #f8fafc; }
         .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .input-area { padding: 15px 20px; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
-        .message-input { flex: 1; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 25px; font-size: 14px; resize: none; outline: none; transition: border 0.3s; }
+        .input-area { padding: 15px 20px; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; }
+        .message-input { flex: 1; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 25px; font-size: 14px; resize: none; outline: none; transition: border 0.3s; max-height: 150px; }
         .send-btn { padding: 12px 25px; background: #3b82f6; color: white; border: none; border-radius: 25px; cursor: pointer; transition: all 0.3s; }
         
         .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 1001; animation: notificationIn 0.3s ease; border-right: 4px solid #3b82f6; }
@@ -31,6 +30,21 @@
         
         .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .message-status { font-size: 10px; margin-right: 5px; }
+        .status-delivered { color: #3b82f6; }
+        .status-read { color: #10b981; }
+        
+        .file-upload-btn { padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 12px; }
+        
+        .image-message { max-width: 300px; border-radius: 12px; margin-top: 5px; cursor: pointer; }
+        .image-message.fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; max-width: 100%; display: flex; align-items: center; justify-content: center; }
+        .image-message.fullscreen img { max-width: 90%; max-height: 90%; }
+        
+        .private-chat-active { border-color: #8b5cf6 !important; background: #f5f3ff !important; }
+        .unread-badge { background: #ef4444; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        
+        .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
     </style>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 </head>
@@ -75,7 +89,7 @@
             
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;" id="statusIndicator"></div>
                     <span id="connectionStatus">در حال اتصال...</span>
                 </div>
                 <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
@@ -117,6 +131,7 @@
                     <div style="padding: 15px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <h3 style="color: #1e293b; font-size: 16px;">🔒 چت‌های خصوصی</h3>
+                            <span class="unread-badge" id="totalUnreadBadge" style="display: none;">0</span>
                         </div>
                         <div class="users-list" id="privateUsersList">
                             <!-- چت‌های خصوصی اینجا نمایش داده می‌شوند -->
@@ -141,6 +156,11 @@
                         <div style="font-size: 18px; color: #1e293b;" id="chatTitle">💬 چت عمومی جهانی</div>
                         <div style="font-size: 12px; color: #64748b;" id="chatInfo">همه پیام‌های عمومی در اینجا نمایش داده می‌شوند</div>
                     </div>
+                    <div id="chatActions" style="display: none;">
+                        <button onclick="clearChat()" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                            <i class="fas fa-trash"></i> پاک کردن چت
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="messages-container" id="messagesContainer">
@@ -153,15 +173,37 @@
                 </div>
                 
                 <div class="input-area">
-                    <textarea id="messageInput" 
-                              class="message-input" 
-                              placeholder="پیام خود را بنویسید..." 
-                              rows="1"
-                              onkeydown="handleKeyPress(event)"
-                              oninput="autoResize(this)"></textarea>
+                    <div style="display: flex; flex-direction: column; flex: 1;">
+                        <div class="action-buttons" id="actionButtons">
+                            <button onclick="toggleEmojiPicker()" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                😀 ایموجی
+                            </button>
+                            <label for="fileInput" style="padding: 6px 12px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                <i class="fas fa-image"></i> تصویر
+                                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                            </label>
+                        </div>
+                        <textarea id="messageInput" 
+                                  class="message-input" 
+                                  placeholder="پیام خود را بنویسید..." 
+                                  rows="1"
+                                  onkeydown="handleKeyPress(event)"
+                                  oninput="autoResize(this)"></textarea>
+                    </div>
                     <button onclick="sendMessage()" id="sendBtn" class="send-btn">ارسال</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Emoji Picker (hidden by default) -->
+    <div id="emojiPicker" style="display: none; position: fixed; bottom: 100px; right: 20px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 15px; z-index: 1002; width: 300px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div style="font-weight: bold;">ایموجی‌ها</div>
+            <button onclick="toggleEmojiPicker()" style="background: none; border: none; cursor: pointer; font-size: 18px;">×</button>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 200px; overflow-y: auto;">
+            <!-- Emojis will be inserted here -->
         </div>
     </div>
 
@@ -174,22 +216,30 @@
         let currentLeaderId = '';
         let amILeader = false;
         let leaderElectionInProgress = false;
+        let currentChatType = 'public'; // 'public' or 'private'
+        let currentPrivateChatWith = null;
         
         let connections = new Map();
         let users = new Map();
-        let privateChats = new Map();
+        let privateChats = new Map(); // key: peerId, value: {messages: [], unread: 0}
+        let pendingMessages = new Map(); // برای پیام‌های در حال ارسال
         
-        const GLOBAL_ROOM = 'GLOBAL_CHAT_ROOM_V2';
+        const GLOBAL_ROOM = 'GLOBAL_CHAT_ROOM_V3';
         const LEADER_NAME = 'global_leader';
         const LEADER_PEER_ID = `${GLOBAL_ROOM}_${LEADER_NAME}`;
         
         let heartbeatInterval = null;
         let electionTimeout = null;
+        let reconnectInterval = null;
         
         // ==================== توابع کمکی ====================
         function generatePeerId() {
             const randomStr = Math.random().toString(36).substr(2, 8);
             return `${GLOBAL_ROOM}_${Date.now()}_${randomStr}`;
+        }
+        
+        function generateMessageId() {
+            return `${myPeerId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         }
         
         function showNotification(message, type = 'info') {
@@ -243,7 +293,7 @@
             await startLeaderElection();
         }
         
-        // ==================== سیستم انتخاب رهبر هوشمند ====================
+        // ==================== سیستم انتخاب رهبر بهبود یافته ====================
         async function startLeaderElection() {
             showNotification('👑 شروع فرآیند انتخاب رهبر...', 'info');
             leaderElectionInProgress = true;
@@ -252,12 +302,10 @@
             const leaderExists = await checkLeaderExists();
             
             if (leaderExists) {
-                // رهبر وجود دارد - عضو شو
                 showNotification('✅ رهبر فعال پیدا شد', 'success');
                 amILeader = false;
                 await joinAsMember();
             } else {
-                // رهبر وجود ندارد - رقابت برای رهبری
                 showNotification('⚡ در حال رقابت برای رهبری...', 'warning');
                 await competeForLeadership();
             }
@@ -271,16 +319,10 @@
                 return true;
             }
             
-            // روش ۲: صبر و بررسی مجدد (برای جلوگیری از رقابت همزمان)
+            // روش ۲: صبر و بررسی مجدد
             await new Promise(resolve => setTimeout(resolve, getRandomDelay(1000, 3000)));
             
             if (await testConnectionToLeader()) {
-                return true;
-            }
-            
-            // روش ۳: ارسال پیام broadcast برای یافتن رهبر
-            const leaderFound = await broadcastLeaderDiscovery();
-            if (leaderFound) {
                 return true;
             }
             
@@ -297,7 +339,8 @@
                     host: '0.peerjs.com',
                     port: 443,
                     path: '/',
-                    debug: 0
+                    debug: 0,
+                    config: {'iceServers': [{urls: 'stun:stun.l.google.com:19302'}]}
                 });
                 
                 testPeer.on('open', () => {
@@ -306,23 +349,25 @@
                         metadata: { type: 'leader_test' }
                     });
                     
+                    const timeout = setTimeout(() => {
+                        conn.close();
+                        testPeer.destroy();
+                        resolve(false);
+                    }, 3000);
+                    
                     conn.on('open', () => {
+                        clearTimeout(timeout);
                         conn.close();
                         testPeer.destroy();
                         resolve(true);
                     });
                     
                     conn.on('error', () => {
+                        clearTimeout(timeout);
                         conn.close();
                         testPeer.destroy();
                         resolve(false);
                     });
-                    
-                    setTimeout(() => {
-                        conn.close();
-                        testPeer.destroy();
-                        resolve(false);
-                    }, 2000);
                 });
                 
                 testPeer.on('error', () => {
@@ -332,62 +377,12 @@
             });
         }
         
-        async function broadcastLeaderDiscovery() {
-            return new Promise((resolve) => {
-                // ایجاد یک Peer موقت برای broadcast
-                const discoveryPeer = new Peer(`discovery_${Date.now()}`, {
-                    host: '0.peerjs.com',
-                    port: 443,
-                    path: '/',
-                    debug: 0
-                });
-                
-                discoveryPeer.on('open', () => {
-                    let leaderFound = false;
-                    
-                    // ارسال درخواست به چند Peer تصادفی
-                    for (let i = 0; i < 3; i++) {
-                        const randomId = `${GLOBAL_ROOM}_user_${i}`;
-                        try {
-                            const conn = discoveryPeer.connect(randomId, {
-                                reliable: true,
-                                metadata: { type: 'discovery' }
-                            });
-                            
-                            conn.on('open', () => {
-                                conn.send({
-                                    type: 'find_leader',
-                                    timestamp: Date.now()
-                                });
-                                
-                                conn.on('data', (data) => {
-                                    if (data.type === 'leader_info') {
-                                        leaderFound = true;
-                                        currentLeaderId = data.leaderId;
-                                    }
-                                });
-                            });
-                        } catch (error) {
-                            // ignore
-                        }
-                    }
-                    
-                    setTimeout(() => {
-                        discoveryPeer.destroy();
-                        resolve(leaderFound);
-                    }, 3000);
-                });
-            });
-        }
-        
         async function competeForLeadership() {
-            // تأخیر تصادفی برای جلوگیری از رقابت همزمان
             const delay = getRandomDelay(2000, 5000);
             showNotification(`⏳ تأخیر تصادفی: ${delay/1000} ثانیه...`, 'info');
             
             await new Promise(resolve => setTimeout(resolve, delay));
             
-            // قبل از ادعای رهبری، دوباره بررسی کن
             const leaderExists = await checkLeaderExists();
             
             if (leaderExists) {
@@ -397,7 +392,6 @@
                 return;
             }
             
-            // ادعای رهبری
             showNotification('👑 ادعای رهبری شبکه...', 'warning');
             await claimLeadership();
         }
@@ -413,7 +407,9 @@
                     debug: 0,
                     config: {
                         'iceServers': [
-                            { urls: 'stun:stun.l.google.com:19302' }
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' }
                         ]
                     }
                 });
@@ -431,13 +427,12 @@
                     console.error('خطا در ایجاد رهبر:', err);
                     
                     if (err.type === 'unavailable-id') {
-                        // رهبر دیگری قبلاً این ID را گرفته
                         showNotification('⚡ رهبر دیگری وجود دارد - تبدیل به عضو', 'info');
                         amILeader = false;
                         joinAsMember();
                     } else {
-                        showNotification('خطا در ایجاد رهبر', 'error');
-                        retryLeadership();
+                        showNotification('خطا در ایجاد رهبر، تلاش مجدد...', 'error');
+                        setTimeout(() => retryLeadership(), 3000);
                     }
                 });
                 
@@ -460,7 +455,12 @@
                     host: '0.peerjs.com',
                     port: 443,
                     path: '/',
-                    debug: 0
+                    debug: 0,
+                    config: {
+                        'iceServers': [
+                            { urls: 'stun:stun.l.google.com:19302' }
+                        ]
+                    }
                 });
                 
                 peer.on('open', (id) => {
@@ -471,7 +471,7 @@
                 
                 peer.on('error', (err) => {
                     console.error('خطا در ایجاد عضو:', err);
-                    showNotification('خطا در اتصال', 'error');
+                    showNotification('خطا در اتصال، تلاش مجدد...', 'error');
                     setTimeout(() => joinAsMember(), 2000);
                 });
                 
@@ -485,7 +485,6 @@
         function setupAsLeader() {
             console.log('👑 تنظیم به عنوان رهبر');
             
-            // ذخیره اطلاعات خودمان
             users.set(myPeerId, {
                 peerId: myPeerId,
                 visibleName: myVisibleName,
@@ -495,14 +494,10 @@
                 isMe: true
             });
             
-            // نمایش صفحه اصلی
             showChatPage();
-            
-            // گوش دادن به اتصالات ورودی
             listenForIncomingConnections();
-            
-            // شروع سیستم heartbeat
             startHeartbeatSystem();
+            startReconnectMonitor();
             
             showNotification(`شما رهبر شبکه شدید!`, 'success');
             updateUI();
@@ -511,7 +506,6 @@
         function setupAsMember() {
             console.log('👤 تنظیم به عنوان عضو');
             
-            // ذخیره اطلاعات خودمان
             users.set(myPeerId, {
                 peerId: myPeerId,
                 visibleName: myVisibleName,
@@ -521,14 +515,10 @@
                 isMe: true
             });
             
-            // نمایش صفحه اصلی
             showChatPage();
-            
-            // اتصال به رهبر
-            connectToLeader();
-            
-            // گوش دادن به اتصالات ورودی
             listenForIncomingConnections();
+            connectToLeader();
+            startReconnectMonitor();
             
             showNotification(`به شبکه جهانی متصل شدید`, 'success');
             updateUI();
@@ -537,26 +527,31 @@
         function showChatPage() {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'flex';
+            initEmojiPicker();
         }
         
-        // ==================== مدیریت اتصالات ====================
+        // ==================== مدیریت اتصالات بهبود یافته ====================
         function listenForIncomingConnections() {
             peer.on('connection', (conn) => {
                 console.log('🔗 درخواست اتصال از:', conn.peer);
                 
                 const peerId = conn.peer;
-                connections.set(peerId, conn);
-                setupConnectionListeners(conn, peerId);
+                const metadata = conn.metadata || {};
                 
-                // اگر رهبر هستیم، کاربر جدید را ثبت کن
-                if (amILeader) {
-                    conn.on('open', () => {
-                        // درخواست ثبت نام از کاربر
-                        conn.send({
-                            type: 'request_registration',
-                            timestamp: Date.now()
+                if (metadata.type === 'private_chat') {
+                    setupPrivateConnection(conn, peerId, metadata);
+                } else {
+                    connections.set(peerId, conn);
+                    setupConnectionListeners(conn, peerId);
+                    
+                    if (amILeader) {
+                        conn.on('open', () => {
+                            conn.send({
+                                type: 'request_registration',
+                                timestamp: Date.now()
+                            });
                         });
-                    });
+                    }
                 }
             });
         }
@@ -578,19 +573,27 @@
                 connections.set(LEADER_PEER_ID, conn);
                 setupConnectionListeners(conn, LEADER_PEER_ID);
                 
+                // ثبت نام در رهبر
+                conn.send({
+                    type: 'register',
+                    peerId: myPeerId,
+                    visibleName: myVisibleName,
+                    timestamp: Date.now()
+                });
+                
                 showNotification('به رهبر متصل شدید', 'success');
+                updateConnectionStatus(true);
             });
             
             conn.on('error', (err) => {
                 console.error('خطا در اتصال به رهبر:', err);
+                updateConnectionStatus(false);
                 
-                // رهبر ممکن است آفلاین باشد
                 setTimeout(() => {
                     if (!amILeader) {
-                        showNotification('رهبر آفلاین است - تلاش مجدد...', 'warning');
                         connectToLeader();
                     }
-                }, 5000);
+                }, 3000);
             });
         }
         
@@ -603,13 +606,137 @@
                 console.log('❌ اتصال بسته شد با:', peerId);
                 connections.delete(peerId);
                 updateUsersList();
+                updateConnectionStatus(connections.size > 0);
             });
             
             conn.on('error', (err) => {
                 console.error('خطا در اتصال:', peerId, err);
                 connections.delete(peerId);
                 updateUsersList();
+                updateConnectionStatus(connections.size > 0);
             });
+        }
+        
+        // ==================== چت خصوصی ====================
+        function setupPrivateConnection(conn, peerId, metadata) {
+            if (!privateChats.has(peerId)) {
+                privateChats.set(peerId, {
+                    peerId: peerId,
+                    visibleName: metadata.visibleName || 'کاربر',
+                    messages: [],
+                    unread: 0,
+                    connection: conn
+                });
+            }
+            
+            const chat = privateChats.get(peerId);
+            chat.connection = conn;
+            
+            conn.on('data', (data) => {
+                handlePrivateMessage(data, peerId);
+            });
+            
+            conn.on('close', () => {
+                console.log('❌ اتصال خصوصی بسته شد:', peerId);
+                chat.connection = null;
+            });
+            
+            conn.on('error', (err) => {
+                console.error('خطا در اتصال خصوصی:', peerId, err);
+                chat.connection = null;
+            });
+            
+            updatePrivateUsersList();
+        }
+        
+        function startPrivateChat(targetPeerId) {
+            const targetUser = users.get(targetPeerId);
+            if (!targetUser) {
+                showNotification('کاربر یافت نشد', 'error');
+                return;
+            }
+            
+            currentChatType = 'private';
+            currentPrivateChatWith = targetPeerId;
+            
+            // آپدیت UI
+            document.getElementById('chatTitle').textContent = `🔒 چت خصوصی با ${targetUser.visibleName}`;
+            document.getElementById('chatInfo').textContent = 'پیام‌های خصوصی بین شما و این کاربر';
+            document.getElementById('chatActions').style.display = 'block';
+            
+            // نمایش پیام‌های قبلی
+            displayPrivateChatMessages(targetPeerId);
+            
+            // اگر اتصال نداریم، ایجاد کن
+            if (!privateChats.has(targetPeerId)) {
+                privateChats.set(targetPeerId, {
+                    peerId: targetPeerId,
+                    visibleName: targetUser.visibleName,
+                    messages: [],
+                    unread: 0,
+                    connection: null
+                });
+                
+                const conn = peer.connect(targetPeerId, {
+                    reliable: true,
+                    metadata: {
+                        type: 'private_chat',
+                        visibleName: myVisibleName,
+                        peerId: myPeerId
+                    }
+                });
+                
+                setupPrivateConnection(conn, targetPeerId, {visibleName: myVisibleName});
+            } else {
+                // خوانده شدن پیام‌ها
+                const chat = privateChats.get(targetPeerId);
+                chat.unread = 0;
+                updateUnreadBadge();
+            }
+            
+            updatePrivateUsersList();
+        }
+        
+        function handlePrivateMessage(data, fromPeerId) {
+            const chat = privateChats.get(fromPeerId);
+            if (!chat) return;
+            
+            const message = {
+                ...data,
+                timestamp: data.timestamp || Date.now(),
+                status: 'delivered'
+            };
+            
+            chat.messages.push(message);
+            
+            if (currentChatType === 'private' && currentPrivateChatWith === fromPeerId) {
+                displayMessage(message, false, 'private');
+            } else {
+                chat.unread = (chat.unread || 0) + 1;
+                showNotification(`پیام خصوصی از ${chat.visibleName}`, 'info');
+            }
+            
+            updatePrivateUsersList();
+            updateUnreadBadge();
+        }
+        
+        function displayPrivateChatMessages(peerId) {
+            const container = document.getElementById('messagesContainer');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
+            
+            const chat = privateChats.get(peerId);
+            if (!chat || chat.messages.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            chat.messages.forEach(msg => {
+                displayMessage(msg, msg.senderId === myPeerId, 'private');
+            });
+            
+            container.scrollTop = container.scrollHeight;
         }
         
         // ==================== پردازش داده‌های ورودی ====================
@@ -630,17 +757,15 @@
                 case 'heartbeat':
                     handleHeartbeat(data, fromPeerId);
                     break;
-                case 'find_leader':
-                    handleFindLeader(data, fromPeerId);
+                case 'message_status':
+                    handleMessageStatus(data, fromPeerId);
                     break;
             }
         }
         
         function handleRegistrationRequest(data, fromPeerId) {
-            // فقط اعضا این درخواست را دریافت می‌کنند
             if (!amILeader) return;
             
-            // ارسال درخواست ثبت نام به کاربر
             const conn = connections.get(fromPeerId);
             if (conn && conn.open) {
                 conn.send({
@@ -652,7 +777,6 @@
         }
         
         function handleUserRegistration(data, fromPeerId) {
-            // فقط رهبر می‌تواند کاربران را ثبت کند
             if (!amILeader) return;
             
             const userInfo = {
@@ -689,27 +813,39 @@
         
         function handlePublicMessage(data, fromPeerId) {
             if (amILeader) {
-                // رهبر پیام را به همه می‌فرستد
+                // تایید دریافت پیام
+                const conn = connections.get(fromPeerId);
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'message_status',
+                        messageId: data.messageId,
+                        status: 'delivered',
+                        timestamp: Date.now()
+                    });
+                }
+                
+                // پخش پیام به همه
                 broadcastToAll({
-                    type: 'public_message',
-                    ...data
+                    ...data,
+                    status: 'delivered'
                 }, [fromPeerId]);
             }
             
             // نمایش پیام
-            if (document.getElementById('publicChatBtn').style.color === '#3b82f6') {
-                displayMessage(data, false);
+            if (currentChatType === 'public') {
+                displayMessage(data, data.senderId === myPeerId, 'public');
             }
         }
         
         function handleUserList(data, fromPeerId) {
             data.users.forEach(user => {
-                if (user.peerId !== myPeerId) {
+                if (user.peerId !== myPeerId && !users.has(user.peerId)) {
                     users.set(user.peerId, user);
                 }
             });
             
             updateUsersList();
+            updatePrivateUsersList();
         }
         
         function handleHeartbeat(data, fromPeerId) {
@@ -717,22 +853,16 @@
             if (user) {
                 user.lastSeen = Date.now();
                 user.isOnline = true;
+                updateUsersList();
             }
         }
         
-        function handleFindLeader(data, fromPeerId) {
-            // اگر رهبر هستیم، اطلاعات خود را ارسال کن
-            if (amILeader) {
-                const conn = connections.get(fromPeerId);
-                if (conn && conn.open) {
-                    conn.send({
-                        type: 'leader_info',
-                        leaderId: myPeerId,
-                        leaderName: myVisibleName,
-                        timestamp: Date.now()
-                    });
-                }
-            }
+        function handleMessageStatus(data, fromPeerId) {
+            const messageId = data.messageId;
+            const status = data.status;
+            
+            // آپدیت وضعیت پیام در UI
+            updateMessageStatus(messageId, status);
         }
         
         // ==================== مدیریت شبکه ====================
@@ -757,10 +887,18 @@
                         timestamp: Date.now()
                     });
                     
-                    // بررسی کاربران آفلاین
                     checkOfflineUsers();
                 }, 10000);
             }
+        }
+        
+        function startReconnectMonitor() {
+            reconnectInterval = setInterval(() => {
+                if (!amILeader && (!connections.has(LEADER_PEER_ID) || !connections.get(LEADER_PEER_ID).open)) {
+                    showNotification('اتصال قطع شد، در حال تلاش مجدد...', 'warning');
+                    connectToLeader();
+                }
+            }, 15000);
         }
         
         function checkOfflineUsers() {
@@ -773,10 +911,142 @@
             });
         }
         
+        // ==================== ارسال پیام‌ها ====================
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            
+            const messageData = {
+                type: currentChatType === 'public' ? 'public_message' : 'private_message',
+                content: content,
+                senderId: myPeerId,
+                senderName: myVisibleName,
+                timestamp: Date.now(),
+                messageId: generateMessageId(),
+                status: 'sending'
+            };
+            
+            // نمایش پیام
+            displayMessage(messageData, true, currentChatType);
+            
+            // ارسال پیام
+            if (currentChatType === 'public') {
+                if (amILeader) {
+                    broadcastToAll(messageData);
+                    updateMessageStatus(messageData.messageId, 'delivered');
+                } else {
+                    const leaderConn = connections.get(LEADER_PEER_ID);
+                    if (leaderConn && leaderConn.open) {
+                        leaderConn.send(messageData);
+                    } else {
+                        showNotification('اتصال به رهبر قطع است', 'error');
+                        updateMessageStatus(messageData.messageId, 'failed');
+                    }
+                }
+            } else if (currentChatType === 'private' && currentPrivateChatWith) {
+                const chat = privateChats.get(currentPrivateChatWith);
+                if (chat && chat.connection && chat.connection.open) {
+                    chat.connection.send(messageData);
+                    updateMessageStatus(messageData.messageId, 'delivered');
+                } else {
+                    showNotification('اتصال خصوصی قطع است', 'error');
+                    updateMessageStatus(messageData.messageId, 'failed');
+                }
+            }
+            
+            input.value = '';
+            autoResize(input);
+        }
+        
+        // ==================== ارسال تصویر ====================
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                showNotification('حجم فایل باید کمتر از ۱۰ مگابایت باشد', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                sendImage(base64Image, file.type);
+            };
+            reader.readAsDataURL(file);
+            
+            // Reset input
+            event.target.value = '';
+        }
+        
+        function sendImage(base64Data, mimeType) {
+            const MAX_CHUNK_SIZE = 16000; // 16KB chunks
+            const messageId = generateMessageId();
+            const totalChunks = Math.ceil(base64Data.length / MAX_CHUNK_SIZE);
+            
+            showNotification(`در حال ارسال تصویر (${totalChunks} قطعه)...`, 'info');
+            
+            // نمایش پیام در حال بارگذاری
+            const loadingMessage = {
+                type: 'image',
+                senderId: myPeerId,
+                senderName: myVisibleName,
+                timestamp: Date.now(),
+                messageId: messageId,
+                status: 'sending',
+                content: '📸 در حال بارگذاری تصویر...',
+                chunksReceived: 0,
+                totalChunks: totalChunks
+            };
+            
+            displayMessage(loadingMessage, true, currentChatType);
+            
+            // ارسال تکه‌ها
+            for (let i = 0; i < totalChunks; i++) {
+                const chunk = base64Data.slice(i * MAX_CHUNK_SIZE, (i + 1) * MAX_CHUNK_SIZE);
+                const chunkData = {
+                    type: 'image_chunk',
+                    messageId: messageId,
+                    chunkIndex: i,
+                    totalChunks: totalChunks,
+                    data: chunk,
+                    mimeType: mimeType,
+                    senderId: myPeerId,
+                    senderName: myVisibleName,
+                    timestamp: Date.now()
+                };
+                
+                setTimeout(() => sendChunk(chunkData), i * 100); // تأخیر برای جلوگیری از overload
+            }
+        }
+        
+        function sendChunk(chunkData) {
+            if (currentChatType === 'public') {
+                if (amILeader) {
+                    broadcastToAll(chunkData);
+                } else {
+                    const leaderConn = connections.get(LEADER_PEER_ID);
+                    if (leaderConn && leaderConn.open) {
+                        leaderConn.send(chunkData);
+                    }
+                }
+            } else if (currentChatType === 'private' && currentPrivateChatWith) {
+                const chat = privateChats.get(currentPrivateChatWith);
+                if (chat && chat.connection && chat.connection.open) {
+                    chat.connection.send(chunkData);
+                }
+            }
+        }
+        
         // ==================== UI Functions ====================
         function updateUI() {
             document.getElementById('connectionStatus').textContent = 
                 amILeader ? '👑 رهبر شبکه' : '👤 عضو شبکه';
+            
+            document.getElementById('statusIndicator').style.background = 
+                connections.size > 0 ? '#10b981' : '#ef4444';
             
             document.getElementById('leaderText').textContent = 
                 amILeader ? 'شما رهبر هستید' : `رهبر: ${users.get(LEADER_PEER_ID)?.visibleName || '...'}`;
@@ -786,6 +1056,20 @@
             document.getElementById('userCount').textContent = onlineCount;
             
             updateUsersList();
+            updatePrivateUsersList();
+        }
+        
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('connectionStatus');
+            
+            if (connected) {
+                indicator.style.background = '#10b981';
+                statusText.textContent = amILeader ? '👑 رهبر شبکه' : '✅ متصل';
+            } else {
+                indicator.style.background = '#ef4444';
+                statusText.textContent = '🔴 قطع';
+            }
         }
         
         function updateUsersList() {
@@ -801,8 +1085,8 @@
                     const userEl = document.createElement('div');
                     userEl.className = 'user-item';
                     userEl.onclick = () => {
-                        if (!user.isLeader && !user.isMe) {
-                            showNotification(`برای چت خصوصی با ${user.visibleName}، روی دکمه قفل کلیک کنید`, 'info');
+                        if (!user.isMe) {
+                            showNotification(`برای چت خصوصی با ${user.visibleName}، به تب چت خصوصی بروید`, 'info');
                         }
                     };
                     
@@ -837,7 +1121,71 @@
             }
         }
         
-        function displayMessage(data, isOutgoing) {
+        function updatePrivateUsersList() {
+            const container = document.getElementById('privateUsersList');
+            container.innerHTML = '';
+            
+            let hasChats = false;
+            
+            privateChats.forEach((chat, peerId) => {
+                hasChats = true;
+                
+                const userEl = document.createElement('div');
+                userEl.className = `user-item ${currentPrivateChatWith === peerId ? 'private-chat-active' : ''}`;
+                userEl.onclick = () => startPrivateChat(peerId);
+                
+                const lastMessage = chat.messages.length > 0 ? 
+                    chat.messages[chat.messages.length - 1].content.substring(0, 20) + '...' : 
+                    'هنوز پیامی ارسال نشده';
+                
+                userEl.innerHTML = `
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">
+                        ${chat.visibleName.charAt(0)}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 500; color: #1e293b; margin-bottom: 2px;">
+                            ${chat.visibleName}
+                            ${chat.unread > 0 ? `<span class="unread-badge">${chat.unread}</span>` : ''}
+                        </div>
+                        <div style="font-size: 11px; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${lastMessage}
+                        </div>
+                    </div>
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: ${chat.connection && chat.connection.open ? '#10b981' : '#ef4444'};"></div>
+                `;
+                
+                container.appendChild(userEl);
+            });
+            
+            if (!hasChats) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px 0; color: #64748b;">
+                        <div style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;">🔒</div>
+                        <p>چت خصوصی فعالی وجود ندارد</p>
+                        <p style="font-size: 12px; margin-top: 10px;">برای شروع چت خصوصی با کاربری در لیست عمومی</p>
+                    </div>
+                `;
+            }
+            
+            updateUnreadBadge();
+        }
+        
+        function updateUnreadBadge() {
+            let totalUnread = 0;
+            privateChats.forEach(chat => {
+                totalUnread += chat.unread || 0;
+            });
+            
+            const badge = document.getElementById('totalUnreadBadge');
+            if (totalUnread > 0) {
+                badge.textContent = totalUnread;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        function displayMessage(data, isOutgoing, chatType) {
             const container = document.getElementById('messagesContainer');
             const emptyState = document.getElementById('emptyState');
             
@@ -846,6 +1194,7 @@
             }
             
             const messageEl = document.createElement('div');
+            messageEl.id = `msg_${data.messageId}`;
             messageEl.style.cssText = `
                 max-width: 65%;
                 padding: 12px 16px;
@@ -859,12 +1208,34 @@
                 }
             `;
             
+            let statusIcon = '';
+            if (isOutgoing) {
+                if (data.status === 'sending') statusIcon = '🕐';
+                else if (data.status === 'delivered') statusIcon = '✓✓';
+                else if (data.status === 'read') statusIcon = '👁️✓';
+                else if (data.status === 'failed') statusIcon = '❌';
+            }
+            
+            let contentHtml = '';
+            if (data.type === 'image' || data.type === 'image_chunk') {
+                if (data.chunksReceived >= data.totalChunks) {
+                    contentHtml = `<img src="${data.content}" style="max-width: 100%; border-radius: 8px; cursor: pointer;" onclick="viewImageFullscreen(this)">`;
+                } else {
+                    contentHtml = `<div>📸 در حال دریافت تصویر (${data.chunksReceived}/${data.totalChunks})...</div>`;
+                }
+            } else {
+                contentHtml = data.content;
+            }
+            
             messageEl.innerHTML = `
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <div style="font-size: 12px; font-weight: 500;">${data.senderName || (isOutgoing ? myVisibleName : 'کاربر')}</div>
-                    <div style="font-size: 11px; opacity: 0.8;">${formatTime(data.timestamp)}</div>
+                    <div style="font-size: 11px; opacity: 0.8;">
+                        ${formatTime(data.timestamp)}
+                        ${isOutgoing ? `<span class="message-status ${data.status}">${statusIcon}</span>` : ''}
+                    </div>
                 </div>
-                <div style="line-height: 1.5; font-size: 14px;">${data.content}</div>
+                <div style="line-height: 1.5; font-size: 14px;">${contentHtml}</div>
             `;
             
             container.appendChild(messageEl);
@@ -874,37 +1245,21 @@
             }, 100);
         }
         
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const content = input.value.trim();
-            
-            if (!content) return;
-            
-            const messageData = {
-                type: 'public_message',
-                content: content,
-                senderId: myPeerId,
-                senderName: myVisibleName,
-                timestamp: Date.now()
-            };
-            
-            // نمایش پیام خودمان
-            displayMessage(messageData, true);
-            
-            // ارسال پیام
-            if (amILeader) {
-                // رهبر به همه می‌فرستد
-                broadcastToAll(messageData);
-            } else {
-                // عضو به رهبر می‌فرستد
-                const leaderConn = connections.get(LEADER_PEER_ID);
-                if (leaderConn && leaderConn.open) {
-                    leaderConn.send(messageData);
+        function updateMessageStatus(messageId, status) {
+            const messageEl = document.getElementById(`msg_${messageId}`);
+            if (messageEl) {
+                const statusSpan = messageEl.querySelector('.message-status');
+                if (statusSpan) {
+                    let statusIcon = '';
+                    if (status === 'sending') statusIcon = '🕐';
+                    else if (status === 'delivered') statusIcon = '✓✓';
+                    else if (status === 'read') statusIcon = '👁️✓';
+                    else if (status === 'failed') statusIcon = '❌';
+                    
+                    statusSpan.textContent = statusIcon;
+                    statusSpan.className = `message-status status-${status}`;
                 }
             }
-            
-            input.value = '';
-            autoResize(input);
         }
         
         function autoResize(textarea) {
@@ -919,6 +1274,44 @@
             }
         }
         
+        function viewImageFullscreen(imgElement) {
+            const fullscreenDiv = document.createElement('div');
+            fullscreenDiv.className = 'image-message fullscreen';
+            fullscreenDiv.onclick = () => fullscreenDiv.remove();
+            
+            const imgClone = imgElement.cloneNode();
+            imgClone.style.maxWidth = '90%';
+            imgClone.style.maxHeight = '90%';
+            
+            fullscreenDiv.appendChild(imgClone);
+            document.body.appendChild(fullscreenDiv);
+        }
+        
+        function initEmojiPicker() {
+            const emojis = ['😀', '😂', '😍', '😎', '😭', '😡', '👍', '👎', '❤️', '🔥', '🎉', '💯', '🤔', '👏', '🙏', '😴', '🥳', '😷', '🤯', '🥰'];
+            const picker = document.getElementById('emojiPicker');
+            const container = picker.querySelector('div:nth-child(2)');
+            
+            emojis.forEach(emoji => {
+                const span = document.createElement('span');
+                span.textContent = emoji;
+                span.style.cursor = 'pointer';
+                span.style.fontSize = '24px';
+                span.onclick = () => {
+                    const input = document.getElementById('messageInput');
+                    input.value += emoji;
+                    input.focus();
+                    autoResize(input);
+                };
+                container.appendChild(span);
+            });
+        }
+        
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        }
+        
         function refreshNetwork() {
             showNotification('🔄 در حال بروزرسانی شبکه...', 'info');
             
@@ -927,10 +1320,19 @@
             }
             
             updateUsersList();
+            updatePrivateUsersList();
             
             setTimeout(() => {
                 showNotification('✅ شبکه بروزرسانی شد', 'success');
             }, 1000);
+        }
+        
+        function clearChat() {
+            if (confirm('آیا می‌خواهید تاریخچه این چت پاک شود؟')) {
+                const container = document.getElementById('messagesContainer');
+                container.innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
+            }
         }
         
         function leaveChat() {
@@ -939,6 +1341,7 @@
                 connections.clear();
                 
                 if (heartbeatInterval) clearInterval(heartbeatInterval);
+                if (reconnectInterval) clearInterval(reconnectInterval);
                 if (electionTimeout) clearTimeout(electionTimeout);
                 
                 document.getElementById('loginPage').style.display = 'flex';
@@ -957,6 +1360,9 @@
             
             // تنظیم دکمه‌های چت عمومی/خصوصی
             document.getElementById('publicChatBtn').onclick = function() {
+                currentChatType = 'public';
+                currentPrivateChatWith = null;
+                
                 document.getElementById('publicChatBtn').style.color = '#3b82f6';
                 document.getElementById('publicChatBtn').style.borderBottom = '3px solid #3b82f6';
                 document.getElementById('privateChatBtn').style.color = '#64748b';
@@ -965,6 +1371,12 @@
                 document.getElementById('privateUsersSection').style.display = 'none';
                 document.getElementById('chatTitle').textContent = '💬 چت عمومی جهانی';
                 document.getElementById('chatInfo').textContent = 'همه پیام‌های عمومی در اینجا نمایش داده می‌شوند';
+                document.getElementById('chatActions').style.display = 'none';
+                
+                // نمایش پیام‌های عمومی
+                const container = document.getElementById('messagesContainer');
+                container.innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
             };
             
             document.getElementById('privateChatBtn').onclick = function() {
@@ -974,9 +1386,19 @@
                 document.getElementById('publicChatBtn').style.borderBottom = 'none';
                 document.getElementById('publicUsersSection').style.display = 'none';
                 document.getElementById('privateUsersSection').style.display = 'block';
-                document.getElementById('chatTitle').textContent = '🔒 چت خصوصی';
-                document.getElementById('chatInfo').textContent = 'برای شروع چت خصوصی، روی یک کاربر کلیک کنید';
+                
+                updatePrivateUsersList();
             };
+            
+            // بستن ایموجی پیکر با کلیک بیرون
+            document.addEventListener('click', function(event) {
+                const emojiPicker = document.getElementById('emojiPicker');
+                if (emojiPicker.style.display === 'block' && 
+                    !emojiPicker.contains(event.target) && 
+                    event.target.id !== 'emojiPicker') {
+                    emojiPicker.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
