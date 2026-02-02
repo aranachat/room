@@ -3,251 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>چت آرانا - نسخه امن P2P</title>
+    <title>چت آرانا - نسخه امن</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazir', sans-serif; }
-        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; overflow: hidden; }
+        body { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); min-height: 100vh; padding: 20px; overflow: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.4); height: 90vh; display: flex; flex-direction: column; }
         
-        /* استایل اصلی */
-        .main-container { display: flex; height: 100vh; padding: 20px; gap: 20px; }
-        .sidebar { width: 300px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); color: white; display: flex; flex-direction: column; }
-        .chat-main { flex: 1; background: white; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; }
+        /* بخش لاگین */
+        .login-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 90%; text-align: center; }
+        .login-input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; text-align: center; outline: none; }
+        .login-btn { width: 100%; padding: 15px; margin: 20px 0; background: #3b82f6; color: white; border: none; border-radius: 12px; cursor: pointer; }
         
-        /* لیست کاربران */
-        .user-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
-        .user-item:hover { background: rgba(255,255,255,0.1); }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; }
-
+        .chat-header { background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 300px; background: #f8fafc; border-left: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .users-list { flex: 1; overflow-y: auto; padding: 15px; }
+        .user-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 12px; border: 2px solid #eee; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+        .user-item:hover { border-color: #3b82f6; background: #eff6ff; }
+        
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: #f8fafc; }
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .input-area { padding: 15px 20px; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
+        .message-input { flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 25px; outline: none; resize: none; }
+        
         /* پنجره شناور چت خصوصی */
         .private-window {
-            position: fixed; bottom: 20px; left: 20px; width: 350px; height: 450px;
-            background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            display: flex; flex-direction: column; z-index: 2000; overflow: hidden;
-            border: 2px solid #3b82f6; animation: slideUp 0.3s ease;
+            position: fixed; bottom: 20px; left: 20px; width: 320px; height: 400px;
+            background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; z-index: 2000; border: 2px solid #3b82f6;
         }
-        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .priv-header { background: #3b82f6; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; cursor: move; }
-        .priv-messages { flex: 1; padding: 10px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 8px; }
-        .priv-input { padding: 10px; border-top: 1px solid #eee; display: flex; gap: 5px; }
+        .priv-header { background: #3b82f6; color: white; padding: 10px; display: flex; justify-content: space-between; border-radius: 12px 12px 0 0; }
+        .priv-msgs { flex: 1; padding: 10px; overflow-y: auto; background: #f1f5f9; display: flex; flex-direction: column; gap: 5px; }
+        .priv-input { padding: 10px; display: flex; gap: 5px; border-top: 1px solid #ddd; }
         
-        /* حباب پیام‌ها */
-        .msg { padding: 8px 12px; border-radius: 12px; max-width: 80%; font-size: 14px; margin: 2px 0; position: relative; word-wrap: break-word; }
-        .msg.sent { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg.received { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .msg img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
+        /* حباب پیام */
+        .bubble { padding: 8px 12px; border-radius: 15px; max-width: 85%; font-size: 13px; }
+        .sent { background: #3b82f6; color: white; align-self: flex-end; }
+        .received { background: #e2e8f0; color: black; align-self: flex-start; }
+        .bubble img { max-width: 100%; border-radius: 8px; margin-top: 5px; }
 
-        .login-overlay { position: fixed; inset: 0; background: #0f172a; z-index: 3000; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; width: 350px; text-align: center; }
-        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; outline: none; }
-        button { background: #3b82f6; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 12px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 3000; border-right: 5px solid #3b82f6; }
     </style>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 </head>
 <body>
 
-    <div id="loginPage" class="login-overlay">
-        <div class="login-box">
-            <h2>ورود به آرانا</h2>
-            <input type="text" id="usernameInput" placeholder="نام کاربری...">
-            <button onclick="login()">ورود امن</button>
+    <div class="login-page" id="loginPage">
+        <div class="login-card">
+            <h1 style="color: #1e293b;">چت هوشمند جهانی</h1>
+            <p style="color: #64748b; margin: 15px 0;">سیستم انتخاب مدیریت خودکار • چت P2P واقعی</p>
+            <input type="text" class="login-input" id="usernameInput" placeholder="نام خود را وارد کنید">
+            <button class="login-btn" id="loginBtn" onclick="login()">ورود به چت</button>
         </div>
     </div>
 
-    <div class="main-container">
-        <div class="sidebar">
-            <div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <h3 id="managementText">مدیریت: در حال بررسی...</h3>
-                <small id="myIdDisplay"></small>
+    <div class="container" id="chatContainer" style="display: none;">
+        <div class="chat-header">
+            <div style="font-weight: bold;">💬 چت هوشمند جهانی</div>
+            <div style="display: flex; gap: 15px; font-size: 14px;">
+                <span id="mgmtStatus">مدیریت: در حال بررسی...</span>
+                <span>آنلاین: <span id="userCount">0</span></span>
             </div>
-            <div id="userList" style="flex: 1; overflow-y: auto;">
+        </div>
+        
+        <div class="main-layout">
+            <div class="sidebar">
+                <div style="padding: 15px; font-weight: bold; border-bottom: 1px solid #eee;">👥 کاربران آنلاین (برای چت خصوصی کلیک کنید)</div>
+                <div class="users-list" id="publicUsersList"></div>
+            </div>
+            
+            <div class="chat-area">
+                <div id="messagesContainer" class="messages-container"></div>
+                <div class="input-area">
+                    <textarea id="messageInput" class="message-input" placeholder="پیام عمومی..." rows="1"></textarea>
+                    <button onclick="sendPublicMessage()" style="padding: 0 20px; background: #3b82f6; color: white; border-radius: 20px; border: none; cursor: pointer;">ارسال</button>
                 </div>
-        </div>
-
-        <div class="chat-main">
-            <div style="padding: 15px; background: #1e293b; color: white;">چت عمومی (نمای کلی)</div>
-            <div id="publicMessages" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column;"></div>
-            <div class="priv-input">
-                <input type="text" id="publicInput" placeholder="پیام عمومی...">
-                <button onclick="sendPublicMessage()" style="width: 80px;">ارسال</button>
             </div>
         </div>
     </div>
 
-    <div id="privateChatContainer"></div>
+    <div id="privateChatsWrapper"></div>
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <script>
         let peer, myId, myName;
-        let activePrivates = {}; // ذخیره اتصالات مستقیم P2P
-        const GLOBAL_ROOM = "ARANA_SECURE_P2P_V4";
+        let connections = new Map(); // برای مدیریت شبکه
+        let p2pChats = new Map(); // چت‌های خصوصی واقعی P2P
+        const ROOM_PREFIX = "ARANA_GLOBAL_V5_";
+        const MGMT_ID = ROOM_PREFIX + "MANAGEMENT_NODE";
+
+        function showNote(txt) {
+            const n = document.createElement('div');
+            n.className = 'notification';
+            n.innerText = txt;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 3000);
+        }
 
         async function login() {
-            myName = document.getElementById('usernameInput').value;
-            if(!myName) return alert("نام را وارد کنید");
+            myName = document.getElementById('usernameInput').value.trim();
+            if(!myName) return showNote("نام الزامی است");
             
-            // تولید ID بر اساس زمان برای یکتا بودن
-            myId = GLOBAL_ROOM + "_" + Math.floor(Math.random() * 10000);
-            initPeer();
+            myId = ROOM_PREFIX + Date.now() + "_" + Math.floor(Math.random()*1000);
+            startElection();
         }
 
-        function initPeer() {
-            peer = new Peer(myId);
-
-            peer.on('open', (id) => {
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('myIdDisplay').innerText = "شناسه شما: " + id;
-                checkManagement();
-            });
-
-            // دریافت درخواست چت مستقیم (P2P واقعی)
-            peer.on('connection', (conn) => {
-                setupP2PConnection(conn);
+        async function startElection() {
+            const testPeer = new Peer();
+            testPeer.on('open', () => {
+                const conn = testPeer.connect(MGMT_ID);
+                let found = false;
+                conn.on('open', () => { found = true; testPeer.destroy(); joinAsMember(); });
+                setTimeout(() => { if(!found) { testPeer.destroy(); joinAsManagement(); } }, 2000);
             });
         }
 
-        // بررسی مدیریت شبکه
-        function checkManagement() {
-            const mgmtId = GLOBAL_ROOM + "_ADMIN";
-            const testConn = peer.connect(mgmtId);
-            
-            let timeout = setTimeout(() => {
-                // اگر کسی ادمین نبود، این کاربر ادمین (مدیریت) می‌شود
-                becomeManagement(mgmtId);
-            }, 3000);
-
-            testConn.on('open', () => {
-                clearTimeout(timeout);
-                document.getElementById('managementText').innerText = "مدیریت: فعال";
-                announcePresence(testConn);
-            });
-        }
-
-        function becomeManagement(id) {
-            peer.destroy();
-            peer = new Peer(id);
+        function joinAsManagement() {
+            peer = new Peer(MGMT_ID);
             peer.on('open', () => {
-                document.getElementById('managementText').innerText = "مدیریت: شما هستید";
-                document.getElementById('loginPage').style.display = 'none';
-                
-                peer.on('connection', (conn) => {
-                    if(conn.metadata?.type === 'presence') {
-                        updateUserListUI(conn.peer, conn.metadata.name);
-                    }
-                });
+                document.getElementById('mgmtStatus').innerText = "مدیریت: شما هستید";
+                initChatUI();
+                listenForNetwork();
+            });
+            peer.on('error', (err) => { if(err.type === 'unavailable-id') joinAsMember(); });
+        }
+
+        function joinAsMember() {
+            peer = new Peer(myId);
+            peer.on('open', () => {
+                document.getElementById('mgmtStatus').innerText = "مدیریت: فعال";
+                initChatUI();
+                const conn = peer.connect(MGMT_ID, { metadata: { name: myName, type: 'registration' } });
+                listenForNetwork();
             });
         }
 
-        // برقراری اتصال مستقیم بین دو نفر
-        function openPrivateChat(targetPeerId, targetName) {
-            if (activePrivates[targetPeerId]) return;
-
-            const conn = peer.connect(targetPeerId, {
-                metadata: { name: myName }
-            });
-
-            createPrivateWindow(targetPeerId, targetName, conn);
-            setupP2PConnection(conn);
+        function initChatUI() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'flex';
         }
 
-        function setupP2PConnection(conn) {
-            conn.on('open', () => {
-                if (!activePrivates[conn.peer]) {
-                    createPrivateWindow(conn.peer, conn.metadata.name, conn);
+        function listenForNetwork() {
+            peer.on('connection', (conn) => {
+                if(conn.metadata?.type === 'registration') {
+                    connections.set(conn.peer, { name: conn.metadata.name, conn });
+                    updateUserList();
+                } else {
+                    // دریافت درخواست چت خصوصی مستقیم (P2P واقعی)
+                    setupP2P(conn);
                 }
-                activePrivates[conn.peer].conn = conn;
+            });
+        }
+
+        function updateUserList() {
+            const list = document.getElementById('publicUsersList');
+            list.innerHTML = "";
+            connections.forEach((info, id) => {
+                const el = document.createElement('div');
+                el.className = 'user-item';
+                el.innerHTML = `<div>${info.name}</div>`;
+                el.onclick = () => openPrivateWindow(id, info.name);
+                list.appendChild(el);
+            });
+            document.getElementById('userCount').innerText = connections.size;
+        }
+
+        // --- بخش چت خصوصی پیر 2 پیر (P2P) واقعی ---
+
+        function openPrivateWindow(targetId, targetName) {
+            if(p2pChats.has(targetId)) return;
+
+            const conn = peer.connect(targetId, { metadata: { name: myName, type: 'p2p' } });
+            createWindowUI(targetId, targetName, conn);
+            setupP2P(conn);
+        }
+
+        function setupP2P(conn) {
+            conn.on('open', () => {
+                if(!p2pChats.has(conn.peer)) {
+                    createWindowUI(conn.peer, conn.metadata.name, conn);
+                }
+                p2pChats.get(conn.peer).conn = conn;
+                showNote("اتصال امن برقرار شد");
             });
 
             conn.on('data', (data) => {
-                displayMessage(conn.peer, data, 'received');
+                renderMsg(conn.peer, data, 'received');
             });
         }
 
-        function createPrivateWindow(peerId, name, conn) {
+        function createWindowUI(peerId, name, conn) {
             const win = document.createElement('div');
             win.className = 'private-window';
             win.id = `win_${peerId}`;
             win.innerHTML = `
                 <div class="priv-header">
-                    <span>چت مستقیم با: ${name}</span>
-                    <button onclick="closeWin('${peerId}')" style="width:30px; background:none;">×</button>
+                    <span>${name}</span>
+                    <button onclick="closeWin('${peerId}')" style="background:none; border:none; color:white; cursor:pointer;">✕</button>
                 </div>
-                <div id="msg_box_${peerId}" class="priv-messages"></div>
+                <div id="box_${peerId}" class="priv-msgs"></div>
                 <div class="priv-input">
-                    <input type="text" id="input_${peerId}" placeholder="پیام خصوصی...">
-                    <label style="cursor:pointer; background:#10b981; padding:5px; border-radius:5px; color:white; font-size:12px;">
-                        🖼️ <input type="file" style="display:none" onchange="sendImage(this, '${peerId}')">
+                    <input type="text" id="in_${peerId}" style="flex:1; padding:5px; border-radius:5px; border:1px solid #ddd;">
+                    <label style="cursor:pointer; background:#10b981; color:white; padding:5px; border-radius:5px;">
+                        🖼️ <input type="file" style="display:none" onchange="sendFile(this, '${peerId}')">
                     </label>
-                    <button onclick="sendPrivateText('${peerId}')" style="width:60px;">ارسال</button>
+                    <button onclick="sendP2PText('${peerId}')" style="background:#3b82f6; color:white; border:none; padding:5px 10px; border-radius:5px;">ارسال</button>
                 </div>
             `;
-            document.getElementById('privateChatContainer').appendChild(win);
-            activePrivates[peerId] = { name, conn };
+            document.getElementById('privateChatsWrapper').appendChild(win);
+            p2pChats.set(peerId, { name, conn });
         }
 
-        function sendPrivateText(peerId) {
-            const input = document.getElementById(`input_${peerId}`);
+        function sendP2PText(id) {
+            const input = document.getElementById(`in_${id}`);
             const msg = input.value;
             if(!msg) return;
-
-            activePrivates[peerId].conn.send({ type: 'text', content: msg });
-            displayMessage(peerId, { type: 'text', content: msg }, 'sent');
-            input.value = '';
+            p2pChats.get(id).conn.send({ type: 'text', content: msg });
+            renderMsg(id, { type: 'text', content: msg }, 'sent');
+            input.value = "";
         }
 
-        // ارسال تصویر به صورت مستقیم (Base64)
-        function sendImage(input, peerId) {
+        function sendFile(input, id) {
             const file = input.files[0];
-            if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const imageData = { type: 'image', content: e.target.result };
-                activePrivates[peerId].conn.send(imageData);
-                displayMessage(peerId, imageData, 'sent');
+            reader.onload = () => {
+                const data = { type: 'img', content: reader.result };
+                p2pChats.get(id).conn.send(data);
+                renderMsg(id, data, 'sent');
             };
             reader.readAsDataURL(file);
         }
 
-        function displayMessage(peerId, data, type) {
-            const box = document.getElementById(`msg_box_${peerId}`);
+        function renderMsg(peerId, data, side) {
+            const box = document.getElementById(`box_${peerId}`);
             if(!box) return;
-
-            const div = document.createElement('div');
-            div.className = `msg ${type}`;
-            
-            if (data.type === 'text') {
-                div.innerText = data.content;
-            } else if (data.type === 'image') {
-                const img = document.createElement('img');
-                img.src = data.content;
-                div.appendChild(img);
-            }
-
-            box.appendChild(div);
+            const msgEl = document.createElement('div');
+            msgEl.className = `bubble ${side}`;
+            if(data.type === 'text') msgEl.innerText = data.content;
+            else if(data.type === 'img') msgEl.innerHTML = `<img src="${data.content}">`;
+            box.appendChild(msgEl);
             box.scrollTop = box.scrollHeight;
-        }
-
-        function updateUserListUI(id, name) {
-            if(id === myId) return;
-            const list = document.getElementById('userList');
-            if(document.getElementById(`user_${id}`)) return;
-
-            const item = document.createElement('div');
-            item.className = 'user-item';
-            item.id = `user_${id}`;
-            item.innerHTML = `<div class="status-dot"></div> ${name}`;
-            item.onclick = () => openPrivateChat(id, name);
-            list.appendChild(item);
         }
 
         function closeWin(id) {
             document.getElementById(`win_${id}`).remove();
-            delete activePrivates[id];
-        }
-
-        function announcePresence(conn) {
-            conn.send({ type: 'presence', name: myName });
+            p2pChats.delete(id);
         }
     </script>
 </body>
