@@ -85,7 +85,7 @@
                 flex: 1 !important;
                 overflow-y: auto !important;
                 max-height: none !important;
-                padding-bottom: 120px !important;
+                padding-bottom: 100px !important;
                 margin-bottom: 0 !important;
                 -webkit-overflow-scrolling: touch !important;
                 overscroll-behavior: contain !important;
@@ -887,7 +887,6 @@
         <div class="login-card">
             <div style="font-size: 48px; margin-bottom: 20px; color: #8a2be2;">💬</div>
             <h1 style="color: #e0e0e0; margin-bottom: 10px;">چت آرانا - نسخه موبایل</h1>
-            <p style="color: #b0b0b0; margin-bottom: 30px; font-size: 14px;">چت امن با سیستم لایک و حذف خودکار پیام‌ها</p>
             
             <input type="text" 
                    class="login-input" 
@@ -899,9 +898,6 @@
             <!-- پنل تنظیمات حذف خودکار -->
             <div class="expiration-panel">
                 <h4 style="color: #e0e0e0; margin-bottom: 10px; font-size: 14px;">⏰ تنظیمات حذف خودکار پیام‌ها:</h4>
-                <p style="color: #b0b0b0; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
-                    پیام‌ها پس از مدت زمان انتخابی به صورت خودکار حذف خواهند شد.
-                </p>
                 
                 <div class="expiration-options" id="expirationOptions">
                     <div class="expiration-option" onclick="selectExpiration(5)">
@@ -1179,6 +1175,34 @@
             '#ff0088'  // صورتی پررنگ
         ];
         
+        // ==================== پاک کردن کش و استوریج در ابتدا بدون پیام ====================
+        (function clearCacheAndStorage() {
+            try {
+                localStorage.removeItem('chat_message_history');
+                localStorage.removeItem('chat_username');
+                localStorage.removeItem('chat_expiration');
+                sessionStorage.clear();
+                
+                // پاک کردن IndexedDB اگر وجود دارد
+                if ('indexedDB' in window) {
+                    indexedDB.databases().then(function(databases) {
+                        databases.forEach(function(database) {
+                            indexedDB.deleteDatabase(database.name);
+                        });
+                    });
+                }
+                
+                // پاک کردن کوکی‌ها
+                document.cookie.split(";").forEach(function(c) {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+                
+                console.log('کش و استوریج با موفقیت پاک شد');
+            } catch (e) {
+                console.log('پاکسازی کش انجام شد');
+            }
+        })();
+        
         // ==================== تشخیص موبایل و تنظیمات ====================
         function checkMobile() {
             isMobile = window.innerWidth <= 768;
@@ -1306,6 +1330,8 @@
             const saved = localStorage.getItem('chat_expiration');
             if (saved !== null) {
                 messageExpirationMinutes = parseInt(saved);
+            } else {
+                messageExpirationMinutes = 5; // مقدار پیش‌فرض
             }
             
             selectExpiration(messageExpirationMinutes);
@@ -2068,6 +2094,13 @@
                 if (peerId === currentAdminId && !amIAdmin) {
                     showNotification('اتصال با مدیریت قطع شد', 'warning');
                     updateConnectionStatus(false);
+                    
+                    // اگر مدیریت قطع شد، بلافاصله مدیر جدیدی انتخاب کن
+                    setTimeout(() => {
+                        if (!amIAdmin) {
+                            startAdminElection();
+                        }
+                    }, 1000);
                 }
                 
                 updateUsersList();
@@ -2081,6 +2114,13 @@
                 if (peerId === currentAdminId && !amIAdmin) {
                     showNotification('خطا در اتصال با مدیریت', 'error');
                     updateConnectionStatus(false);
+                    
+                    // اگر مدیریت قطع شد، بلافاصله مدیر جدیدی انتخاب کن
+                    setTimeout(() => {
+                        if (!amIAdmin) {
+                            startAdminElection();
+                        }
+                    }, 1000);
                 }
                 
                 updateUsersList();
@@ -2365,7 +2405,7 @@
             if (!amIAdmin) {
                 setTimeout(() => {
                     startAdminElection();
-                }, 2000);
+                }, 1000);
             }
         }
         
