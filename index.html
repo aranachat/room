@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>چت روم عمومی</title>
+    <title>چت روم هوشمند</title>
     <style>
         * {
             margin: 0;
@@ -13,30 +13,30 @@
         }
         
         :root {
-            --primary: #667eea;
-            --primary-dark: #5a67d8;
-            --secondary: #764ba2;
-            --success: #48bb78;
-            --danger: #f56565;
-            --warning: #ed8936;
-            --light: #f7fafc;
-            --dark: #2d3748;
-            --gray: #a0aec0;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
         }
         
         body {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
         
         .login-page {
@@ -57,66 +57,161 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         
-        .room-info {
+        .header-left {
+            flex: 1;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .connection-status {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .header-right {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            gap: 10px;
         }
         
-        .room-code {
+        .status-badge {
             background: rgba(255,255,255,0.2);
             padding: 5px 10px;
-            border-radius: 10px;
-            font-family: monospace;
-            cursor: pointer;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: var(--light);
+            border-left: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .users-section {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .users-section h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 14px;
         }
         
         .users-list {
-            padding: 15px;
-            background: var(--light);
-            border-bottom: 1px solid #e2e8f0;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            max-height: 120px;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
             overflow-y: auto;
         }
         
-        .user-badge {
-            background: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 14px;
+        .user-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .user-item:hover {
+            transform: translateX(-5px);
+            border-color: var(--primary);
+        }
+        
+        .user-item.leader {
+            border-color: var(--warning);
+            background: #fffbeb;
         }
         
         .user-avatar {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: var(--primary);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
             font-weight: bold;
         }
         
-        .status-dot {
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .hidden-name {
+            font-size: 11px;
+            color: var(--gray);
+            font-family: monospace;
+        }
+        
+        .user-status {
             width: 8px;
             height: 8px;
             border-radius: 50%;
         }
         
-        .online { background: var(--success); }
-        .offline { background: var(--gray); }
-        .admin { background: var(--warning); }
+        .user-status.online {
+            background: var(--success);
+        }
+        
+        .user-status.offline {
+            background: var(--gray);
+        }
+        
+        .leader-badge {
+            background: var(--warning);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+        
+        .messages-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .messages-header {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+        }
+        
+        .current-chat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         
         .messages-container {
             flex: 1;
@@ -125,12 +220,12 @@
             background: #f8fafc;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
         }
         
         .message {
-            max-width: 75%;
-            padding: 12px 15px;
+            max-width: 70%;
+            padding: 12px 16px;
             border-radius: 15px;
             position: relative;
             animation: slideIn 0.3s ease;
@@ -141,13 +236,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .incoming {
+        .message.incoming {
             background: white;
             align-self: flex-start;
             border-bottom-right-radius: 5px;
         }
         
-        .outgoing {
+        .message.outgoing {
             background: var(--primary);
             color: white;
             align-self: flex-end;
@@ -158,19 +253,21 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 5px;
+        }
+        
+        .message-sender {
             font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .message-time {
+            font-size: 11px;
             opacity: 0.8;
         }
         
         .message-content {
             line-height: 1.5;
             word-break: break-word;
-        }
-        
-        .message-time {
-            font-size: 11px;
-            text-align: left;
-            margin-top: 5px;
         }
         
         .input-area {
@@ -222,14 +319,15 @@
             top: 20px;
             right: 20px;
             background: white;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
             gap: 10px;
             z-index: 1000;
             animation: notificationIn 0.3s ease;
+            border-right: 4px solid var(--primary);
         }
         
         @keyframes notificationIn {
@@ -237,15 +335,11 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .notification.success { border-right: 4px solid var(--success); }
-        .notification.error { border-right: 4px solid var(--danger); }
-        .notification.info { border-right: 4px solid var(--primary); }
-        
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #e2e8f0;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -255,26 +349,54 @@
             to { transform: rotate(360deg); }
         }
         
-        .login-input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 16px;
-            text-align: center;
-            outline: none;
-            transition: border 0.3s;
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 0 auto;
         }
         
-        .login-input:focus {
+        .login-title {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .login-subtitle {
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border 0.3s;
+            outline: none;
+        }
+        
+        .form-input:focus {
             border-color: var(--primary);
         }
         
         .login-btn {
             width: 100%;
             padding: 15px;
-            margin: 20px 0;
             background: var(--primary);
             color: white;
             border: none;
@@ -282,156 +404,166 @@
             font-size: 16px;
             cursor: pointer;
             transition: background 0.3s;
+            margin-top: 10px;
         }
         
         .login-btn:hover {
             background: var(--primary-dark);
         }
         
-        .connection-stats {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-top: 10px;
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .system-message {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: var(--dark);
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+        
+        .debug-panel {
+            background: #f7fafc;
+            padding: 10px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 20px;
         }
         
         .admin-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            padding: 15px;
+            border-top: 1px solid #e2e8f0;
         }
         
         .admin-btn {
+            width: 100%;
+            padding: 10px;
             background: var(--warning);
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .discovery-panel {
-            background: #edf2f7;
-            padding: 15px;
             border-radius: 10px;
-            margin: 20px 0;
-        }
-        
-        .discovery-panel h4 {
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-        
-        .user-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background: white;
-            margin: 5px 0;
-            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
+            font-size: 14px;
         }
         
-        .user-item:hover {
-            background: #e2e8f0;
-        }
-        
-        .connect-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
+        .admin-btn:hover {
+            background: #eab308;
         }
     </style>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container" id="loginPage">
-        <div class="login-page">
-            <h1 style="color: var(--primary); margin-bottom: 10px;">🧠 چت روم هوشمند</h1>
-            <p style="color: var(--dark); margin-bottom: 30px;">سیستم کشف خودکار کاربران</p>
+    <!-- صفحه ورود -->
+    <div class="container login-page" id="loginPage">
+        <div class="login-card">
+            <h1 class="login-title">💬 چت روم هوشمند</h1>
+            <p class="login-subtitle">سیستم کشف خودکار با نام‌های پنهان</p>
             
-            <input type="text" 
-                   class="login-input" 
-                   id="usernameInput" 
-                   placeholder="نام کاربری خود را وارد کنید"
-                   maxlength="20">
-            
-            <div class="discovery-panel">
-                <h4>💡 روش کار:</h4>
-                <p style="font-size: 14px; color: var(--dark); margin-bottom: 10px;">
-                    سیستم به صورت خودکار کاربران آنلاین را پیدا می‌کند.
-                    فقط کافیست نام کاربری وارد کنید و دکمه ورود را بزنید.
-                </p>
-                <p style="font-size: 12px; color: var(--gray);">
-                    اگر کاربر دیگری آنلاین نباشد، شما به عنوان اولین کاربر وارد می‌شوید
-                    و دیگران به صورت خودکار شما را پیدا خواهند کرد.
-                </p>
+            <div class="form-group">
+                <label class="form-label">نام قابل نمایش شما</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="usernameInput" 
+                       placeholder="مثلاً: علی، مریم، ..."
+                       maxlength="20">
+                <small style="color: var(--gray); font-size: 12px;">
+                    این نام در چت نمایش داده می‌شود
+                </small>
             </div>
             
-            <button class="login-btn" id="loginBtn" onclick="login()">
-                <span id="loginBtnText">ورود به چت روم</span>
+            <div class="form-group">
+                <label class="form-label">کد اتاق (اختیاری)</label>
+                <input type="text" 
+                       class="form-input" 
+                       id="roomCodeInput" 
+                       placeholder="کد اتاق را وارد کنید یا خالی بگذارید">
+                <small style="color: var(--gray); font-size: 12px;">
+                    اگر کدی ندارید، خالی بگذارید تا یک اتاق جدید ساخته شود
+                </small>
+            </div>
+            
+            <button class="login-btn" id="loginBtn" onclick="startConnection()">
+                <span id="loginBtnText">ورود به چت</span>
             </button>
             
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                <button onclick="showRoomCode()" 
-                        style="width: 100%; padding: 10px; background: var(--warning); color: white; border: none; border-radius: 10px; cursor: pointer;">
-                    نمایش کد اتاق
-                </button>
-                <button onclick="resetAllData()" 
-                        style="width: 100%; padding: 10px; margin-top: 10px; background: var(--danger); color: white; border: none; border-radius: 10px; cursor: pointer;">
-                    پاکسازی کامل
-                </button>
+            <div class="debug-panel" id="debugPanel" style="display: none;">
+                <div>🔍 وضعیت اتصال:</div>
+                <div id="debugInfo">در حال راه‌اندازی...</div>
             </div>
         </div>
     </div>
     
+    <!-- صفحه چت -->
     <div class="container chat-page" id="chatPage">
         <div class="header">
-            <div class="room-info">
-                <div>
-                    <h3>💬 چت عمومی</h3>
-                    <p id="connectionStatus">در حال اتصال...</p>
-                </div>
-                <div class="room-code" onclick="copyRoomCode()" title="کپی کد اتاق">
-                    <span id="roomCodeDisplay">...</span>
+            <div class="header-left">
+                <div class="header-title">💬 چت عمومی</div>
+                <div class="connection-status">
+                    <span id="connectionInfo">در حال اتصال...</span>
+                    | 
+                    <span id="userCount">0 کاربر</span>
                 </div>
             </div>
             
-            <div class="admin-controls">
-                <div id="adminBadge" style="display: none;">
-                    <span class="admin-btn">ادمین</span>
+            <div class="header-right">
+                <div class="status-badge">
+                    <span id="roleBadge">👤 عضو</span>
                 </div>
-                <button class="admin-btn" onclick="refreshNetwork()" title="بروزرسانی شبکه">
-                    🔄
-                </button>
-                <button class="admin-btn" onclick="leaveChat()" title="خروج">
-                    خروج
-                </button>
+                <div class="status-badge" onclick="showRoomInfo()" style="cursor: pointer;">
+                    <span id="roomCodeBadge">کد: ...</span>
+                </div>
             </div>
         </div>
         
-        <div class="users-list" id="usersList">
-            <!-- لیست کاربران -->
-        </div>
-        
-        <div class="messages-container" id="messagesContainer">
-            <!-- پیام‌ها -->
-        </div>
-        
-        <div class="input-area">
-            <textarea id="messageInput" 
-                      class="message-input" 
-                      placeholder="پیام خود را بنویسید..." 
-                      rows="1"
-                      onkeydown="handleKeyPress(event)"
-                      oninput="autoResize(this)"></textarea>
-            <button onclick="sendMessage()" id="sendBtn" class="send-btn">ارسال</button>
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="users-section">
+                    <h3>👥 کاربران آنلاین</h3>
+                    <div class="users-list" id="usersList">
+                        <!-- کاربران اینجا نمایش داده می‌شوند -->
+                    </div>
+                </div>
+                
+                <div class="admin-controls">
+                    <button class="admin-btn" onclick="refreshNetwork()">
+                        🔄 بروزرسانی شبکه
+                    </button>
+                    <button class="admin-btn" onclick="leaveChat()" style="margin-top: 10px; background: var(--danger);">
+                        🚪 خروج از چت
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Main Chat Area -->
+            <div class="messages-section">
+                <div class="messages-header">
+                    <div class="current-chat">
+                        <div>💬 چت عمومی</div>
+                    </div>
+                </div>
+                
+                <div class="messages-container" id="messagesContainer">
+                    <!-- پیام‌ها اینجا نمایش داده می‌شوند -->
+                </div>
+                
+                <div class="input-area">
+                    <textarea id="messageInput" 
+                              class="message-input" 
+                              placeholder="پیام خود را بنویسید..." 
+                              rows="1"
+                              onkeydown="handleKeyPress(event)"
+                              oninput="autoResize(this)"></textarea>
+                    <button onclick="sendMessage()" id="sendBtn" class="send-btn">ارسال</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -439,36 +571,47 @@
     <script>
         // ==================== متغیرهای اصلی ====================
         let peer = null;
-        let myId = null;
-        let myUsername = null;
-        let roomCode = null;
+        let myVisibleName = '';
+        let myHiddenName = '';
+        let myPeerId = '';
+        let roomCode = '';
         
         let connections = new Map(); // اتصالات فعال
-        let discoveredPeers = new Set(); // peerهای کشف شده
-        let userDirectory = new Map(); // دایرکتوری کاربران
+        let users = new Map(); // اطلاعات همه کاربران
+        let leaderPeerId = ''; // شناسه رهبر فعلی
+        let amILeader = false;
         
         let heartbeatInterval = null;
         let discoveryInterval = null;
         
-        const DISCOVERY_CHANNEL = 'chat-room-discovery-v3';
-        const HEARTBEAT_INTERVAL = 15000; // 15 ثانیه
-        const DISCOVERY_INTERVAL = 10000; // 10 ثانیه
+        const HIDDEN_NAME_PREFIX = 'admin';
+        const HEARTBEAT_INTERVAL = 10000; // 10 ثانیه
+        const DISCOVERY_INTERVAL = 5000; // 5 ثانیه
         
         // ==================== توابع کمکی ====================
         function generateRoomCode() {
-            // تولید یک کد اتاق ۶ رقمی
             return Math.random().toString(36).substr(2, 6).toUpperCase();
         }
         
-        function generateUserId(username) {
-            return `${username}_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+        function generateHiddenName(index = 1) {
+            return `${HIDDEN_NAME_PREFIX}${index}`;
+        }
+        
+        function generatePeerId(hiddenName) {
+            return `${hiddenName}_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
         }
         
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
+            notification.className = 'notification';
+            
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
             notification.innerHTML = `
-                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span>${icon}</span>
                 <span>${message}</span>
             `;
             
@@ -487,278 +630,294 @@
             });
         }
         
-        // ==================== سیستم ورود و اتصال ====================
-        async function login() {
+        // ==================== سیستم اتصال هوشمند ====================
+        async function startConnection() {
             const usernameInput = document.getElementById('usernameInput');
-            myUsername = usernameInput.value.trim();
+            myVisibleName = usernameInput.value.trim();
             
-            if (!myUsername || myUsername.length < 2) {
-                showNotification('لطفاً نام کاربری معتبر وارد کنید', 'error');
+            if (!myVisibleName || myVisibleName.length < 2) {
+                showNotification('لطفاً نام معتبر وارد کنید (حداقل ۲ کاراکتر)', 'error');
                 return;
             }
             
-            // تولید شناسه منحصر به فرد
-            myId = generateUserId(myUsername);
+            // دریافت یا تولید کد اتاق
+            const roomCodeInput = document.getElementById('roomCodeInput');
+            roomCode = roomCodeInput.value.trim() || generateRoomCode();
             
-            // تولید کد اتاق
-            roomCode = generateRoomCode();
+            if (roomCodeInput.value.trim() === '') {
+                roomCodeInput.value = roomCode;
+                showNotification(`اتاق جدید با کد ${roomCode} ساخته شد`, 'success');
+            }
             
-            // ذخیره در localStorage
-            localStorage.setItem('chat_username', myUsername);
-            localStorage.setItem('chat_room', roomCode);
+            // نمایش پنل دیباگ
+            document.getElementById('debugPanel').style.display = 'block';
+            updateDebugInfo('🔍 در حال یافتن رهبر اتاق...');
             
-            // راه‌اندازی Peer
-            await initializePeer();
-        }
-        
-        async function initializePeer() {
             const loginBtn = document.getElementById('loginBtn');
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<div class="loading"></div> در حال راه‌اندازی...';
+            loginBtn.innerHTML = '<div class="loading"></div> در حال اتصال...';
             
-            // استفاده از شناسه ترکیبی برای اطمینان از یکتایی
-            const peerId = `${roomCode}_${myId}`;
-            
-            try {
-                peer = new Peer(peerId, {
-                    host: '0.peerjs.com',
-                    port: 443,
-                    path: '/',
-                    debug: 2,
-                    config: {
-                        'iceServers': [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' }
-                        ]
-                    }
-                });
-                
-                peer.on('open', async (id) => {
-                    console.log('✅ Peer ایجاد شد:', id);
-                    
-                    // نمایش صفحه چت
-                    document.getElementById('loginPage').style.display = 'none';
-                    document.getElementById('chatPage').style.display = 'flex';
-                    
-                    // نمایش اطلاعات
-                    document.getElementById('roomCodeDisplay').textContent = roomCode;
-                    document.getElementById('connectionStatus').textContent = 'آنلاین';
-                    
-                    showNotification(`خوش آمدید ${myUsername}`, 'success');
-                    
-                    // شروع سیستم کشف
-                    startDiscovery();
-                    
-                    // ارسال اطلاعات خود به کانال کشف
-                    announcePresence();
-                    
-                    // گوش دادن به اتصالات جدید
-                    listenForConnections();
-                    
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<span id="loginBtnText">ورود به چت روم</span>';
-                });
-                
-                peer.on('error', (err) => {
-                    console.error('خطای Peer:', err);
-                    showNotification('خطا در اتصال به شبکه', 'error');
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<span id="loginBtnText">تلاش مجدد</span>';
-                });
-                
-            } catch (error) {
-                console.error('خطا در راه‌اندازی:', error);
-                showNotification('خطا در راه‌اندازی سیستم', 'error');
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<span id="loginBtnText">تلاش مجدد</span>';
-            }
+            // شروع فرآیند کشف رهبر
+            await discoverLeader();
         }
         
-        // ==================== سیستم کشف هوشمند ====================
-        function startDiscovery() {
-            // کشف کاربران موجود در همان اتاق
-            discoveryInterval = setInterval(() => {
-                discoverPeersInRoom();
-            }, DISCOVERY_INTERVAL);
+        async function discoverLeader() {
+            updateDebugInfo('🔍 در جستجوی رهبر اتاق...');
             
-            // ارسال heartbeat
-            heartbeatInterval = setInterval(() => {
-                sendHeartbeat();
-            }, HEARTBEAT_INTERVAL);
+            // مرحله ۱: تلاش برای اتصال به رهبرهای احتمالی
+            let connectedToLeader = false;
+            let leaderIndex = 1;
             
-            // بررسی اتصالات از دست رفته
-            setInterval(() => {
-                checkLostConnections();
-            }, 30000);
-        }
-        
-        async function discoverPeersInRoom() {
-            try {
-                // 1. بررسی localStorage برای کاربران ذخیره شده
-                const savedUsers = JSON.parse(localStorage.getItem(`room_${roomCode}_users`) || '[]');
+            while (!connectedToLeader && leaderIndex <= 10) {
+                const hiddenName = generateHiddenName(leaderIndex);
+                const potentialLeaderId = `${roomCode}_${hiddenName}`;
                 
-                // 2. بررسی کانال کشف عمومی
-                const discoveryPeerId = `${roomCode}_discovery`;
+                updateDebugInfo(`آزمایش ${hiddenName}...`);
                 
-                // سعی در اتصال به peer کشف
-                if (!connections.has(discoveryPeerId)) {
-                    try {
-                        const discoveryConn = peer.connect(discoveryPeerId, {
-                            reliable: true,
-                            metadata: { type: 'discovery' }
-                        });
-                        
-                        discoveryConn.on('open', () => {
-                            console.log('✅ به کانال کشف متصل شدیم');
-                            
-                            // درخواست لیست کاربران
-                            discoveryConn.send({
-                                type: 'get_users',
-                                from: myId,
-                                username: myUsername,
-                                timestamp: Date.now()
-                            });
-                        });
-                        
-                        setupConnection(discoveryConn, discoveryPeerId);
-                        
-                    } catch (error) {
-                        // اگر peer کشف وجود نداشت، ما خودمان آن را ایجاد می‌کنیم
-                        if (Math.random() < 0.3) { // 30% شانس
-                            becomeDiscoveryPeer();
+                try {
+                    // سعی می‌کنیم به رهبر احتمالی متصل شویم
+                    const tempPeer = new Peer(`temp_${Date.now()}_${Math.random()}`, {
+                        host: '0.peerjs.com',
+                        port: 443,
+                        path: '/',
+                        debug: 0
+                    });
+                    
+                    await new Promise((resolve) => {
+                        tempPeer.on('open', resolve);
+                        tempPeer.on('error', resolve);
+                    });
+                    
+                    const conn = tempPeer.connect(potentialLeaderId, {
+                        reliable: true,
+                        metadata: {
+                            type: 'leader_discovery',
+                            visibleName: myVisibleName,
+                            roomCode: roomCode
                         }
+                    });
+                    
+                    const connectionResult = await new Promise((resolve) => {
+                        conn.on('open', () => {
+                            // موفقیت! رهبر پیدا شد
+                            leaderPeerId = potentialLeaderId;
+                            connectedToLeader = true;
+                            conn.close();
+                            tempPeer.destroy();
+                            resolve(true);
+                        });
+                        
+                        conn.on('error', () => {
+                            // رهبری با این نام وجود ندارد
+                            conn.close();
+                            tempPeer.destroy();
+                            resolve(false);
+                        });
+                        
+                        setTimeout(() => {
+                            conn.close();
+                            tempPeer.destroy();
+                            resolve(false);
+                        }, 3000);
+                    });
+                    
+                    if (connectionResult) {
+                        break;
                     }
+                    
+                } catch (error) {
+                    console.log(`رهبر ${hiddenName} یافت نشد:`, error);
                 }
                 
-                // 3. اتصال به کاربران ذخیره شده
-                savedUsers.forEach(user => {
-                    if (user.peerId !== myId && !connections.has(user.peerId)) {
-                        setTimeout(() => {
-                            tryConnectToPeer(user.peerId, user.username);
-                        }, Math.random() * 2000); // تاخیر تصادفی برای جلوگیری از collision
+                leaderIndex++;
+            }
+            
+            if (connectedToLeader) {
+                // رهبر پیدا شد - به عنوان کاربر عادی متصل شو
+                updateDebugInfo(`✅ رهبر پیدا شد: ${leaderPeerId.split('_')[1]}`);
+                await connectAsMember();
+            } else {
+                // رهبری یافت نشد - خودمان رهبر شویم
+                updateDebugInfo('👑 شما اولین کاربر اتاق هستید (رهبر جدید)');
+                await becomeLeader();
+            }
+        }
+        
+        async function becomeLeader() {
+            amILeader = true;
+            myHiddenName = generateHiddenName(1);
+            myPeerId = `${roomCode}_${myHiddenName}`;
+            leaderPeerId = myPeerId;
+            
+            updateDebugInfo(`رهبر شدن با نام ${myHiddenName}...`);
+            
+            // راه‌اندازی Peer به عنوان رهبر
+            await initializePeer(true);
+            
+            // ذخیره اطلاعات رهبر در localStorage
+            localStorage.setItem(`leader_${roomCode}`, JSON.stringify({
+                peerId: myPeerId,
+                hiddenName: myHiddenName,
+                visibleName: myVisibleName,
+                timestamp: Date.now()
+            }));
+            
+            showNotification('👑 شما رهبر اتاق شدید', 'success');
+            updateUI();
+        }
+        
+        async function connectAsMember() {
+            amILeader = false;
+            
+            // انتخاب نام پنهان (از رهبر درخواست کنیم یا خودمان انتخاب کنیم)
+            const leaderHiddenName = leaderPeerId.split('_')[1];
+            const leaderNumber = parseInt(leaderHiddenName.replace(HIDDEN_NAME_PREFIX, ''));
+            myHiddenName = generateHiddenName(leaderNumber + 1);
+            myPeerId = generatePeerId(myHiddenName);
+            
+            updateDebugInfo(`اتصال به عنوان ${myHiddenName}...`);
+            
+            // راه‌اندازی Peer به عنوان عضو
+            await initializePeer(false);
+            
+            // اتصال به رهبر
+            await connectToLeader();
+        }
+        
+        async function initializePeer(isLeader) {
+            return new Promise((resolve, reject) => {
+                try {
+                    peer = new Peer(myPeerId, {
+                        host: '0.peerjs.com',
+                        port: 443,
+                        path: '/',
+                        debug: 0,
+                        config: {
+                            'iceServers': [
+                                { urls: 'stun:stun.l.google.com:19302' }
+                            ]
+                        }
+                    });
+                    
+                    peer.on('open', (id) => {
+                        console.log(`✅ Peer ${isLeader ? 'رهبر' : 'عضو'} ایجاد شد:`, id);
+                        
+                        // نمایش صفحه چت
+                        document.getElementById('loginPage').style.display = 'none';
+                        document.getElementById('chatPage').style.display = 'flex';
+                        
+                        // ذخیره اطلاعات خودمان
+                        users.set(myPeerId, {
+                            peerId: myPeerId,
+                            visibleName: myVisibleName,
+                            hiddenName: myHiddenName,
+                            isLeader: isLeader,
+                            isOnline: true,
+                            lastSeen: Date.now()
+                        });
+                        
+                        // بروزرسانی UI
+                        updateUI();
+                        
+                        // گوش دادن به اتصالات ورودی
+                        listenForConnections();
+                        
+                        // شروع سیستم heartbeat
+                        startHeartbeat();
+                        
+                        resolve();
+                    });
+                    
+                    peer.on('error', (err) => {
+                        console.error('خطای Peer:', err);
+                        
+                        if (err.type === 'unavailable-id') {
+                            // شناسه تکراری - نام پنهان دیگری امتحان کن
+                            if (amILeader) {
+                                showNotification('نام رهبر قبلاً گرفته شده. در حال تلاش مجدد...', 'warning');
+                                setTimeout(() => discoverLeader(), 2000);
+                            } else {
+                                // عضو جدید هستیم و شناسه تکراری داریم
+                                myHiddenName = generateHiddenName(parseInt(myHiddenName.replace(HIDDEN_NAME_PREFIX, '')) + 1);
+                                myPeerId = generatePeerId(myHiddenName);
+                                setTimeout(() => initializePeer(false), 1000);
+                            }
+                        }
+                        
+                        reject(err);
+                    });
+                    
+                } catch (error) {
+                    console.error('خطا در راه‌اندازی Peer:', error);
+                    reject(error);
+                }
+            });
+        }
+        
+        async function connectToLeader() {
+            updateDebugInfo(`در حال اتصال به رهبر ${leaderPeerId}...`);
+            
+            try {
+                const conn = peer.connect(leaderPeerId, {
+                    reliable: true,
+                    metadata: {
+                        type: 'member_join',
+                        visibleName: myVisibleName,
+                        hiddenName: myHiddenName,
+                        peerId: myPeerId
                     }
                 });
                 
+                conn.on('open', () => {
+                    console.log('✅ به رهبر متصل شدیم');
+                    
+                    connections.set(leaderPeerId, conn);
+                    
+                    // معرفی خود به رهبر
+                    conn.send({
+                        type: 'register',
+                        visibleName: myVisibleName,
+                        hiddenName: myHiddenName,
+                        peerId: myPeerId,
+                        timestamp: Date.now()
+                    });
+                    
+                    // تنظیم listener برای این اتصال
+                    setupConnectionListeners(conn, leaderPeerId);
+                    
+                    showNotification(`به اتاق ${roomCode} پیوستید`, 'success');
+                    updateUI();
+                });
+                
+                conn.on('error', (err) => {
+                    console.error('خطا در اتصال به رهبر:', err);
+                    showNotification('خطا در اتصال به رهبر', 'error');
+                    
+                    // تلاش مجدد بعد از 5 ثانیه
+                    setTimeout(() => connectToLeader(), 5000);
+                });
+                
             } catch (error) {
-                console.error('خطا در کشف:', error);
+                console.error('خطا در ایجاد اتصال به رهبر:', error);
+                setTimeout(() => connectToLeader(), 5000);
             }
-        }
-        
-        function becomeDiscoveryPeer() {
-            console.log('👑 تبدیل شدن به peer کشف');
-            
-            // اطلاعات خود را در localStorage ذخیره کن
-            const discoveryInfo = {
-                peerId: `${roomCode}_discovery`,
-                username: 'Discovery',
-                timestamp: Date.now()
-            };
-            
-            localStorage.setItem(`room_${roomCode}_discovery`, JSON.stringify(discoveryInfo));
-            
-            // به همه اعلام کن که peer کشف جدیدی داریم
-            broadcastToKnownPeers({
-                type: 'new_discovery',
-                discoveryId: discoveryInfo.peerId,
-                timestamp: Date.now()
-            });
-        }
-        
-        function announcePresence() {
-            // اطلاعات خود را ذخیره کن
-            const userInfo = {
-                peerId: peer.id,
-                username: myUsername,
-                roomCode: roomCode,
-                timestamp: Date.now(),
-                isOnline: true
-            };
-            
-            // ذخیره در localStorage
-            const roomUsers = JSON.parse(localStorage.getItem(`room_${roomCode}_users`) || '[]');
-            const existingIndex = roomUsers.findIndex(u => u.peerId === peer.id);
-            
-            if (existingIndex >= 0) {
-                roomUsers[existingIndex] = userInfo;
-            } else {
-                roomUsers.push(userInfo);
-            }
-            
-            localStorage.setItem(`room_${roomCode}_users`, JSON.stringify(roomUsers));
-            
-            // اعلام به peerهای شناخته شده
-            broadcastToKnownPeers({
-                type: 'user_announce',
-                user: userInfo,
-                timestamp: Date.now()
-            });
-        }
-        
-        function broadcastToKnownPeers(data) {
-            connections.forEach((conn, peerId) => {
-                if (conn.open && !peerId.includes('discovery')) {
-                    try {
-                        conn.send(data);
-                    } catch (error) {
-                        console.error('خطا در ارسال به:', peerId, error);
-                    }
-                }
-            });
-        }
-        
-        function tryConnectToPeer(peerId, username) {
-            if (connections.has(peerId) || peerId === peer.id) {
-                return;
-            }
-            
-            console.log(`🔄 تلاش برای اتصال به ${username} (${peerId})`);
-            
-            const conn = peer.connect(peerId, {
-                reliable: true,
-                metadata: {
-                    type: 'direct',
-                    from: myId,
-                    username: myUsername
-                }
-            });
-            
-            setupConnection(conn, peerId);
-            
-            // timeout برای اتصال
-            setTimeout(() => {
-                if (!conn.open) {
-                    console.log(`⏰ زمان اتصال به ${peerId} به پایان رسید`);
-                    conn.close();
-                }
-            }, 10000);
         }
         
         // ==================== مدیریت اتصالات ====================
         function listenForConnections() {
             peer.on('connection', (conn) => {
                 console.log('🔗 درخواست اتصال از:', conn.peer);
-                setupConnection(conn, conn.peer);
+                
+                setupConnectionListeners(conn, conn.peer);
+                
+                // اگر رهبر هستیم، اتصال را بپذیر
+                if (amILeader) {
+                    connections.set(conn.peer, conn);
+                }
             });
         }
         
-        function setupConnection(conn, peerId) {
-            conn.on('open', () => {
-                console.log('✅ اتصال برقرار شد با:', peerId);
-                connections.set(peerId, conn);
-                
-                // ارسال سلام
-                conn.send({
-                    type: 'hello',
-                    from: myId,
-                    username: myUsername,
-                    peerId: peer.id,
-                    timestamp: Date.now()
-                });
-                
-                // بروزرسانی UI
-                updateUsersList();
-            });
-            
+        function setupConnectionListeners(conn, peerId) {
             conn.on('data', (data) => {
                 handleIncomingData(data, peerId);
             });
@@ -767,9 +926,11 @@
                 console.log('❌ اتصال بسته شد با:', peerId);
                 connections.delete(peerId);
                 
-                // اگر peer کشف بود، دوباره جستجو کن
-                if (peerId.includes('discovery')) {
-                    setTimeout(() => discoverPeersInRoom(), 5000);
+                // به‌روزرسانی وضعیت کاربر
+                const user = users.get(peerId);
+                if (user) {
+                    user.isOnline = false;
+                    showNotification(`کاربر ${user.visibleName} آفلاین شد`, 'warning');
                 }
                 
                 updateUsersList();
@@ -783,18 +944,14 @@
         }
         
         function handleIncomingData(data, fromPeerId) {
+            console.log('📩 داده دریافتی:', data.type, 'از:', fromPeerId);
+            
             switch(data.type) {
-                case 'hello':
-                    handleHello(data, fromPeerId);
+                case 'register':
+                    handleUserRegistration(data, fromPeerId);
                     break;
-                case 'user_announce':
-                    handleUserAnnounce(data, fromPeerId);
-                    break;
-                case 'chat_message':
+                case 'message':
                     handleChatMessage(data, fromPeerId);
-                    break;
-                case 'get_users':
-                    handleGetUsers(data, fromPeerId);
                     break;
                 case 'users_list':
                     handleUsersList(data, fromPeerId);
@@ -802,94 +959,204 @@
                 case 'heartbeat':
                     handleHeartbeat(data, fromPeerId);
                     break;
-                case 'new_discovery':
-                    handleNewDiscovery(data, fromPeerId);
+                case 'leader_announcement':
+                    handleLeaderAnnouncement(data, fromPeerId);
+                    break;
+                case 'new_leader':
+                    handleNewLeader(data, fromPeerId);
                     break;
             }
         }
         
-        function handleHello(data, fromPeerId) {
-            // ذخیره اطلاعات کاربر
-            userDirectory.set(fromPeerId, {
+        function handleUserRegistration(data, fromPeerId) {
+            // ذخیره اطلاعات کاربر جدید
+            const userInfo = {
                 peerId: data.peerId,
-                username: data.username,
+                visibleName: data.visibleName,
+                hiddenName: data.hiddenName,
+                isLeader: false,
                 isOnline: true,
                 lastSeen: Date.now()
-            });
+            };
             
-            // پاسخ به سلام
-            const conn = connections.get(fromPeerId);
-            if (conn && conn.open) {
-                conn.send({
-                    type: 'hello_response',
-                    from: myId,
-                    username: myUsername,
-                    timestamp: Date.now(),
-                    users: Array.from(userDirectory.values())
-                });
-            }
+            users.set(data.peerId, userInfo);
             
-            // بروزرسانی UI
-            updateUsersList();
+            showNotification(`کاربر جدید: ${data.visibleName}`, 'success');
             
-            showNotification(`👋 ${data.username} به چت پیوست`, 'success');
-        }
-        
-        function handleUserAnnounce(data, fromPeerId) {
-            const user = data.user;
-            userDirectory.set(user.peerId, {
-                ...user,
-                lastSeen: Date.now()
-            });
-            
-            // ذخیره در localStorage
-            const roomUsers = JSON.parse(localStorage.getItem(`room_${roomCode}_users`) || '[]');
-            const existingIndex = roomUsers.findIndex(u => u.peerId === user.peerId);
-            
-            if (existingIndex >= 0) {
-                roomUsers[existingIndex] = user;
-            } else {
-                roomUsers.push(user);
-            }
-            
-            localStorage.setItem(`room_${roomCode}_users`, JSON.stringify(roomUsers));
-            
-            // اگر کاربر جدیدی است، سعی کن به او وصل شو
-            if (user.peerId !== peer.id && !connections.has(user.peerId)) {
-                setTimeout(() => {
-                    tryConnectToPeer(user.peerId, user.username);
-                }, 1000);
+            // اگر رهبر هستیم، لیست کاربران را به روز کرده و برای همه بفرست
+            if (amILeader) {
+                // ارسال لیست کامل کاربران به کاربر جدید
+                const conn = connections.get(fromPeerId);
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'users_list',
+                        users: Array.from(users.values()),
+                        timestamp: Date.now()
+                    });
+                }
+                
+                // اعلام کاربر جدید به بقیه
+                broadcast({
+                    type: 'user_joined',
+                    user: userInfo,
+                    timestamp: Date.now()
+                }, [fromPeerId]);
             }
             
             updateUsersList();
         }
         
-        function handleGetUsers(data, fromPeerId) {
-            // ارسال لیست کاربران
+        function handleChatMessage(data, fromPeerId) {
+            // نمایش پیام
+            displayMessage(data, false);
+            
+            // اگر رهبر هستیم، پیام را به همه بفرست (به جز فرستنده)
+            if (amILeader && data.chatType === 'public') {
+                broadcast({
+                    type: 'message',
+                    ...data
+                }, [fromPeerId]);
+            }
+        }
+        
+        function handleUsersList(data, fromPeerId) {
+            // دریافت لیست کاربران از رهبر
+            data.users.forEach(user => {
+                if (user.peerId !== myPeerId) {
+                    users.set(user.peerId, user);
+                }
+            });
+            
+            updateUsersList();
+            
+            // اتصال به سایر کاربران (برای پیام مستقیم)
+            data.users.forEach(user => {
+                if (user.peerId !== myPeerId && user.peerId !== leaderPeerId && !connections.has(user.peerId)) {
+                    connectToUser(user.peerId);
+                }
+            });
+        }
+        
+        function handleHeartbeat(data, fromPeerId) {
+            // به‌روزرسانی زمان آخرین فعالیت کاربر
+            const user = users.get(fromPeerId);
+            if (user) {
+                user.lastSeen = Date.now();
+                user.isOnline = true;
+            }
+            
+            // پاسخ به heartbeat
             const conn = connections.get(fromPeerId);
             if (conn && conn.open) {
                 conn.send({
-                    type: 'users_list',
-                    users: Array.from(userDirectory.values()),
+                    type: 'heartbeat_response',
                     timestamp: Date.now()
                 });
             }
         }
         
-        function handleUsersList(data, fromPeerId) {
-            // دریافت لیست کاربران
-            data.users.forEach(user => {
-                if (user.peerId !== peer.id) {
-                    userDirectory.set(user.peerId, {
-                        ...user,
-                        lastSeen: Date.now()
-                    });
+        function handleLeaderAnnouncement(data, fromPeerId) {
+            // رهبر جدید خود را معرفی می‌کند
+            leaderPeerId = fromPeerId;
+            amILeader = false;
+            
+            // اتصال به رهبر جدید
+            if (!connections.has(leaderPeerId)) {
+                connectToLeader();
+            }
+            
+            showNotification(`رهبر جدید: ${data.visibleName}`, 'info');
+            updateUI();
+        }
+        
+        function handleNewLeader(data, fromPeerId) {
+            // رهبر فعلی رهبر جدید را معرفی می‌کند
+            leaderPeerId = data.newLeaderId;
+            
+            // اگر رهبر جدید ما هستیم
+            if (leaderPeerId === myPeerId) {
+                amILeader = true;
+                showNotification('👑 شما رهبر جدید شدید', 'success');
+                
+                // ذخیره اطلاعات رهبر
+                localStorage.setItem(`leader_${roomCode}`, JSON.stringify({
+                    peerId: myPeerId,
+                    hiddenName: myHiddenName,
+                    visibleName: myVisibleName,
+                    timestamp: Date.now()
+                }));
+            }
+            
+            updateUI();
+            
+            // اتصال به رهبر جدید اگر ما رهبر نیستیم
+            if (!amILeader && !connections.has(leaderPeerId)) {
+                connectToLeader();
+            }
+        }
+        
+        // ==================== مدیریت شبکه ====================
+        function broadcast(data, excludePeers = []) {
+            connections.forEach((conn, peerId) => {
+                if (conn.open && !excludePeers.includes(peerId)) {
+                    try {
+                        conn.send(data);
+                    } catch (error) {
+                        console.error('خطا در ارسال به:', peerId, error);
+                    }
+                }
+            });
+        }
+        
+        function connectToUser(peerId) {
+            if (connections.has(peerId) || peerId === myPeerId) {
+                return;
+            }
+            
+            try {
+                const conn = peer.connect(peerId, {
+                    reliable: true,
+                    metadata: {
+                        type: 'direct_connection',
+                        from: myPeerId,
+                        visibleName: myVisibleName
+                    }
+                });
+                
+                conn.on('open', () => {
+                    console.log('✅ اتصال مستقیم برقرار شد با:', peerId);
+                    connections.set(peerId, conn);
+                    setupConnectionListeners(conn, peerId);
+                });
+                
+            } catch (error) {
+                console.error('خطا در اتصال به کاربر:', peerId, error);
+            }
+        }
+        
+        function startHeartbeat() {
+            heartbeatInterval = setInterval(() => {
+                // ارسال heartbeat به همه اتصالات
+                broadcast({
+                    type: 'heartbeat',
+                    from: myPeerId,
+                    timestamp: Date.now()
+                });
+                
+                // بررسی کاربران آفلاین
+                checkOfflineUsers();
+            }, HEARTBEAT_INTERVAL);
+        }
+        
+        function checkOfflineUsers() {
+            const now = Date.now();
+            users.forEach((user, peerId) => {
+                if (peerId !== myPeerId && now - user.lastSeen > 30000) { // 30 ثانیه
+                    user.isOnline = false;
                     
-                    // سعی در اتصال
-                    if (!connections.has(user.peerId)) {
-                        setTimeout(() => {
-                            tryConnectToPeer(user.peerId, user.username);
-                        }, Math.random() * 3000);
+                    // اگر رهبر آفلاین شد
+                    if (user.isLeader && amILeader === false) {
+                        handleLeaderOffline();
                     }
                 }
             });
@@ -897,136 +1164,141 @@
             updateUsersList();
         }
         
-        function handleHeartbeat(data, fromPeerId) {
-            // به‌روزرسانی زمان آخرین فعالیت
-            const user = userDirectory.get(fromPeerId);
-            if (user) {
-                user.lastSeen = Date.now();
-                user.isOnline = true;
-            }
-        }
-        
-        function handleNewDiscovery(data, fromPeerId) {
-            console.log('🔍 peer کشف جدید:', data.discoveryId);
+        function handleLeaderOffline() {
+            showNotification('⚠️ رهبر اتاق آفلاین شد', 'warning');
             
-            // سعی کن به peer کشف جدید وصل شو
-            if (!connections.has(data.discoveryId)) {
-                tryConnectToPeer(data.discoveryId, 'Discovery');
-            }
-        }
-        
-        function handleChatMessage(data, fromPeerId) {
-            displayMessage(data, false);
-        }
-        
-        // ==================== مدیریت شبکه ====================
-        function sendHeartbeat() {
-            connections.forEach((conn, peerId) => {
-                if (conn.open) {
-                    try {
-                        conn.send({
-                            type: 'heartbeat',
-                            from: myId,
-                            timestamp: Date.now()
-                        });
-                    } catch (error) {
-                        console.error('خطا در ارسال heartbeat به:', peerId);
-                    }
-                }
-            });
-        }
-        
-        function checkLostConnections() {
-            const now = Date.now();
-            let updated = false;
-            
-            userDirectory.forEach((user, peerId) => {
-                if (now - user.lastSeen > 60000) { // 60 ثانیه
-                    user.isOnline = false;
-                    updated = true;
-                    
-                    // اگر اتصالی داریم، آن را ببند
-                    if (connections.has(peerId)) {
-                        const conn = connections.get(peerId);
-                        if (conn) conn.close();
-                    }
-                }
-            });
-            
-            if (updated) {
-                updateUsersList();
-            }
-        }
-        
-        function refreshNetwork() {
-            showNotification('🔄 در حال بروزرسانی شبکه...', 'info');
-            
-            // پاکسازی اتصالات قدیمی
-            connections.forEach((conn, peerId) => {
-                if (!conn.open) {
-                    connections.delete(peerId);
-                }
-            });
-            
-            // شروع جستجوی جدید
-            discoverPeersInRoom();
-            
-            // اعلام حضور مجدد
-            announcePresence();
-            
+            // اگر ما عضو هستیم و رهبر آفلاین شد، منتظر انتخاب رهبر جدید می‌مانیم
+            // یا خودمان سعی می‌کنیم رهبر شویم
             setTimeout(() => {
-                showNotification('✅ شبکه بروزرسانی شد', 'success');
-            }, 2000);
+                if (amILeader === false) {
+                    // بررسی کن که آیا هنوز رهبر آفلاین است
+                    const leader = users.get(leaderPeerId);
+                    if (leader && !leader.isOnline) {
+                        // سعی کن رهبر شوی
+                        attemptBecomeLeader();
+                    }
+                }
+            }, 10000);
+        }
+        
+        function attemptBecomeLeader() {
+            // ما سعی می‌کنیم رهبر شویم
+            // ابتدا بررسی می‌کنیم که آیا کاربران دیگر آنلاین هستند
+            const onlineUsers = Array.from(users.values()).filter(u => u.isOnline && !u.isLeader);
+            
+            // اگر ما اولین کاربر آنلاین بعدی باشیم
+            if (onlineUsers.length > 0) {
+                // بر اساس نام پنهان مرتب کن (اعداد کوچکتر اولویت دارند)
+                onlineUsers.sort((a, b) => {
+                    const numA = parseInt(a.hiddenName.replace(HIDDEN_NAME_PREFIX, ''));
+                    const numB = parseInt(b.hiddenName.replace(HIDDEN_NAME_PREFIX, ''));
+                    return numA - numB;
+                });
+                
+                const nextLeader = onlineUsers[0];
+                
+                if (nextLeader.peerId === myPeerId) {
+                    // ما رهبر جدید می‌شویم
+                    amILeader = true;
+                    leaderPeerId = myPeerId;
+                    
+                    // اعلام به همه
+                    broadcast({
+                        type: 'new_leader',
+                        newLeaderId: myPeerId,
+                        visibleName: myVisibleName,
+                        timestamp: Date.now()
+                    });
+                    
+                    showNotification('👑 شما رهبر جدید اتاق شدید', 'success');
+                    updateUI();
+                }
+            }
         }
         
         // ==================== UI Functions ====================
+        function updateUI() {
+            // به‌روزرسانی اطلاعات اتصال
+            document.getElementById('connectionInfo').textContent = 
+                amILeader ? 'رهبر اتاق' : 'عضو اتاق';
+            
+            document.getElementById('userCount').textContent = 
+                `${users.size} کاربر`;
+            
+            document.getElementById('roleBadge').textContent = 
+                amILeader ? '👑 رهبر' : '👤 عضو';
+            
+            document.getElementById('roomCodeBadge').textContent = 
+                `کد: ${roomCode}`;
+            
+            // به‌روزرسانی لیست کاربران
+            updateUsersList();
+        }
+        
         function updateUsersList() {
             const container = document.getElementById('usersList');
             container.innerHTML = '';
             
             // اضافه کردن خودمان
-            const myself = document.createElement('div');
-            myself.className = 'user-badge';
-            myself.innerHTML = `
-                <div class="user-avatar">${myUsername.charAt(0)}</div>
-                <span>${myUsername} (شما)</span>
-                <div class="status-dot online"></div>
-            `;
-            container.appendChild(myself);
+            const myself = users.get(myPeerId);
+            if (myself) {
+                const myselfEl = createUserElement(myself, true);
+                container.appendChild(myselfEl);
+            }
             
-            // اضافه کردن کاربران دیگر
-            userDirectory.forEach((user, peerId) => {
-                if (peerId !== myId) {
-                    const userEl = document.createElement('div');
-                    userEl.className = 'user-badge';
-                    userEl.innerHTML = `
-                        <div class="user-avatar" style="background: ${user.peerId.includes('discovery') ? '#ed8936' : '#667eea'}">
-                            ${user.username.charAt(0)}
-                        </div>
-                        <span>${user.username}</span>
-                        <div class="status-dot ${user.isOnline ? 'online' : 'offline'}"></div>
-                        ${user.peerId.includes('discovery') ? '<span style="font-size: 10px; color: #ed8936;">🔍</span>' : ''}
-                    `;
+            // اضافه کردن سایر کاربران
+            users.forEach((user, peerId) => {
+                if (peerId !== myPeerId) {
+                    const userEl = createUserElement(user, false);
                     container.appendChild(userEl);
                 }
             });
             
-            // نمایش آمار
-            const onlineCount = Array.from(userDirectory.values()).filter(u => u.isOnline).length;
-            document.getElementById('connectionStatus').innerHTML = `
-                ${onlineCount + 1} کاربر آنلاین | ${connections.size} اتصال فعال
+            // اگر کاربری وجود ندارد
+            if (users.size === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--gray); padding: 20px;">
+                        هنوز کاربر دیگری وجود ندارد
+                    </div>
+                `;
+            }
+        }
+        
+        function createUserElement(user, isSelf) {
+            const el = document.createElement('div');
+            el.className = `user-item ${user.isLeader ? 'leader' : ''}`;
+            
+            el.innerHTML = `
+                <div class="user-avatar" style="background: ${user.isLeader ? 'var(--warning)' : 'var(--primary)'}">
+                    ${user.visibleName.charAt(0)}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">
+                        ${user.visibleName} ${isSelf ? '(شما)' : ''}
+                        ${user.isLeader ? '<span class="leader-badge">رهبر</span>' : ''}
+                    </div>
+                    <div class="hidden-name">${user.hiddenName}</div>
+                </div>
+                <div class="user-status ${user.isOnline ? 'online' : 'offline'}"></div>
             `;
+            
+            return el;
+        }
+        
+        function updateDebugInfo(message) {
+            document.getElementById('debugInfo').textContent = message;
         }
         
         function displayMessage(data, isOutgoing) {
             const container = document.getElementById('messagesContainer');
+            
             const messageEl = document.createElement('div');
             messageEl.className = `message ${isOutgoing ? 'outgoing' : 'incoming'}`;
             
             messageEl.innerHTML = `
                 <div class="message-header">
-                    <span>${data.sender || (isOutgoing ? myUsername : 'کاربر')}</span>
-                    <span>${formatTime(data.timestamp)}</span>
+                    <div class="message-sender">${data.senderName}</div>
+                    <div class="message-time">${formatTime(data.timestamp)}</div>
                 </div>
                 <div class="message-content">${data.content}</div>
             `;
@@ -1042,25 +1314,31 @@
             if (!content) return;
             
             const messageData = {
-                type: 'chat_message',
+                type: 'message',
                 content: content,
-                sender: myUsername,
+                senderId: myPeerId,
+                senderName: myVisibleName,
+                chatType: 'public',
                 timestamp: Date.now()
             };
             
             // نمایش پیام خودمان
             displayMessage(messageData, true);
             
-            // ارسال به همه اتصالات فعال
-            connections.forEach((conn, peerId) => {
-                if (conn.open && !peerId.includes('discovery')) {
-                    try {
-                        conn.send(messageData);
-                    } catch (error) {
-                        console.error('خطا در ارسال پیام به:', peerId);
-                    }
+            // ارسال پیام
+            if (amILeader) {
+                // اگر رهبر هستیم، به همه بفرست
+                broadcast(messageData);
+            } else {
+                // اگر عضو هستیم، به رهبر بفرست
+                const leaderConn = connections.get(leaderPeerId);
+                if (leaderConn && leaderConn.open) {
+                    leaderConn.send(messageData);
+                } else {
+                    // یا مستقیماً به همه بفرست (اگر اتصالات مستقیم داریم)
+                    broadcast(messageData);
                 }
-            });
+            }
             
             input.value = '';
             autoResize(input);
@@ -1078,26 +1356,22 @@
             }
         }
         
-        function copyRoomCode() {
-            navigator.clipboard.writeText(roomCode)
-                .then(() => showNotification('کد اتاق کپی شد', 'success'))
-                .catch(() => showNotification('خطا در کپی کردن', 'error'));
-        }
-        
-        function showRoomCode() {
-            const usernameInput = document.getElementById('usernameInput');
-            const username = usernameInput.value.trim();
+        function refreshNetwork() {
+            showNotification('🔄 در حال بروزرسانی شبکه...', 'info');
             
-            if (!username) {
-                alert('لطفاً ابتدا نام کاربری وارد کنید');
-                return;
-            }
+            // پاکسازی اتصالات قدیمی
+            connections.forEach((conn, peerId) => {
+                if (!conn.open) {
+                    connections.delete(peerId);
+                }
+            });
             
-            const code = generateRoomCode();
-            alert(`کد اتاق شما:\n\n${code}\n\nاین کد را به دوستان خود بدهید تا به اتاق شما بپیوندند.`);
+            // به‌روزرسانی لیست کاربران
+            updateUsersList();
             
-            // ذخیره در input
-            localStorage.setItem('temp_room_code', code);
+            setTimeout(() => {
+                showNotification('✅ شبکه بروزرسانی شد', 'success');
+            }, 1000);
         }
         
         function leaveChat() {
@@ -1110,6 +1384,9 @@
                 if (heartbeatInterval) clearInterval(heartbeatInterval);
                 if (discoveryInterval) clearInterval(discoveryInterval);
                 
+                // پاکسازی localStorage
+                localStorage.removeItem(`leader_${roomCode}`);
+                
                 // بازگشت به صفحه ورود
                 document.getElementById('loginPage').style.display = 'block';
                 document.getElementById('chatPage').style.display = 'none';
@@ -1118,37 +1395,9 @@
             }
         }
         
-        function resetAllData() {
-            if (confirm('⚠️ همه داده‌ها پاک خواهند شد. آیا مطمئن هستید؟')) {
-                localStorage.clear();
-                location.reload();
-            }
+        function showRoomInfo() {
+            alert(`کد اتاق: ${roomCode}\n\nاین کد را با دیگران به اشتراک بگذارید تا به اتاق شما بپیوندند.`);
         }
-        
-        // ==================== راه‌اندازی اولیه ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            // بازیابی اطلاعات ذخیره شده
-            const savedUsername = localStorage.getItem('chat_username');
-            const savedRoom = localStorage.getItem('chat_room');
-            
-            if (savedUsername) {
-                document.getElementById('usernameInput').value = savedUsername;
-            }
-            
-            // اگر قبلاً در اتاقی بودیم، سعی می‌کنیم مجدداً وصل شویم
-            if (savedUsername && savedRoom) {
-                const tempRoom = localStorage.getItem('temp_room_code');
-                if (tempRoom) {
-                    roomCode = tempRoom;
-                    localStorage.removeItem('temp_room_code');
-                    login();
-                }
-            }
-            
-            // اضافه کردن انیمیشن برای زیبایی
-            const loginInput = document.getElementById('usernameInput');
-            loginInput.focus();
-        });
     </script>
 </body>
 </html>
