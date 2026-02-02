@@ -95,6 +95,28 @@
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        
+        /* دکمه پاکسازی */
+        .danger-btn {
+            background: #ef4444 !important;
+            color: white !important;
+            margin-top: 10px;
+        }
+        
+        .danger-btn:hover {
+            background: #dc2626 !important;
+        }
+        
+        .storage-info {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+        }
     </style>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 </head>
@@ -104,7 +126,7 @@
         <div class="login-card">
             <div style="font-size: 48px; margin-bottom: 20px; color: #3b82f6;">💬</div>
             <h1 style="color: #1e293b; margin-bottom: 10px;">چت هوشمند جهانی</h1>
-            <p style="color: #64748b; margin-bottom: 30px; font-size: 14px;">چت گروهی عمومی با مدیریت مرکزی</p>
+            <p style="color: #64748b; margin-bottom: 30px; font-size: 14px;">چت گروهی عمومی با تاریخچه پیام‌ها</p>
             
             <input type="text" 
                    class="login-input" 
@@ -114,13 +136,13 @@
                    autocomplete="off">
             
             <div style="margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 10px; text-align: right;">
-                <h4 style="color: #1e293b; margin-bottom: 10px; font-size: 14px;">🎯 ویژگی‌های سیستم:</h4>
+                <h4 style="color: #1e293b; margin-bottom: 10px; font-size: 14px;">🎯 ویژگی‌های جدید:</h4>
                 <p style="color: #64748b; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
-                    • مدیریت مرکزی پیام‌ها<br>
+                    • تاریخچه ۱۰۰۰ پیام آخر ذخیره می‌شود<br>
+                    • دریافت پیام‌های قدیمی هنگام ورود<br>
+                    • پاکسازی خودکار پیام‌های کاربران آفلاین<br>
                     • رنگ متفاوت برای هر کاربر<br>
-                    • قابلیت ریپلای روی پیام‌ها<br>
-                    • ارسال تصویر<br>
-                    • اتصال مستقیم همتا به همتا
+                    • سیستم ریپلای پیام‌ها
                 </p>
             </div>
             
@@ -165,12 +187,24 @@
                     <div class="users-list" id="publicUsersList">
                         <!-- کاربران عمومی اینجا نمایش داده می‌شوند -->
                     </div>
+                    
+                    <!-- اطلاعات ذخیره سازی -->
+                    <div class="storage-info" id="storageInfo">
+                        <div>📊 ذخیره سازی:</div>
+                        <div id="messageCount">0 پیام</div>
+                        <div id="storageStatus">...</div>
+                    </div>
                 </div>
                 
                 <div style="padding: 15px; margin-top: auto; border-top: 1px solid #e2e8f0;">
                     <button onclick="refreshNetwork()" style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px;">
                         <i class="fas fa-sync-alt"></i> بروزرسانی شبکه
                     </button>
+                    
+                    <button onclick="clearLocalStorage()" class="danger-btn" style="width: 100%; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px;">
+                        <i class="fas fa-trash-alt"></i> پاکسازی کش محلی
+                    </button>
+                    
                     <button onclick="leaveChat()" style="width: 100%; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 10px; cursor: pointer;">
                         <i class="fas fa-sign-out-alt"></i> خروج از چت
                     </button>
@@ -260,10 +294,14 @@
         let incomingImages = new Map(); // برای دریافت تصاویر
         let userColors = new Map(); // رنگ‌های کاربران
         
+        // تاریخچه پیام‌ها (حداکثر 1000 پیام)
+        let messageHistory = [];
+        const MAX_MESSAGES = 1000;
+        
         // متغیرهای سیستم ریپلای
         let replyingTo = null; // {messageId, author, content}
         
-        const GLOBAL_ROOM = 'GLOBAL_CHAT_ROOM_V5';
+        const GLOBAL_ROOM = 'GLOBAL_CHAT_ROOM_V6';
         const ADMIN_NAME = 'global_admin';
         const ADMIN_PEER_ID = `${GLOBAL_ROOM}_${ADMIN_NAME}`;
         
@@ -335,6 +373,122 @@
                 userColors.set(peerId, USER_COLORS[colorIndex]);
             }
             return userColors.get(peerId);
+        }
+        
+        // ==================== مدیریت تاریخچه پیام‌ها ====================
+        function addToHistory(message) {
+            messageHistory.push(message);
+            
+            // اگر تعداد پیام‌ها از حد مجاز بیشتر شد، قدیمی‌ترین را حذف کن
+            if (messageHistory.length > MAX_MESSAGES) {
+                messageHistory.shift(); // اولین (قدیمی‌ترین) پیام را حذف کن
+            }
+            
+            // ذخیره در localStorage اگر مدیریت هستیم
+            if (amIAdmin) {
+                saveMessageHistory();
+            }
+            
+            updateStorageInfo();
+        }
+        
+        function removeUserMessagesFromHistory(userPeerId) {
+            // حذف پیام‌های کاربر از تاریخچه
+            const initialLength = messageHistory.length;
+            messageHistory = messageHistory.filter(msg => msg.senderId !== userPeerId);
+            
+            // ذخیره تغییرات
+            if (amIAdmin) {
+                saveMessageHistory();
+            }
+            
+            const removedCount = initialLength - messageHistory.length;
+            if (removedCount > 0) {
+                console.log(`حذف ${removedCount} پیام از کاربر ${userPeerId}`);
+            }
+            
+            updateStorageInfo();
+            return removedCount;
+        }
+        
+        function clearMessageHistory() {
+            messageHistory = [];
+            if (amIAdmin) {
+                localStorage.removeItem('chat_message_history');
+            }
+            updateStorageInfo();
+            showNotification('تاریخچه پیام‌ها پاک شد', 'success');
+        }
+        
+        function saveMessageHistory() {
+            try {
+                // فقط 1000 پیام آخر را ذخیره کن
+                const toSave = messageHistory.slice(-MAX_MESSAGES);
+                localStorage.setItem('chat_message_history', JSON.stringify(toSave));
+            } catch (e) {
+                console.error('خطا در ذخیره تاریخچه:', e);
+            }
+        }
+        
+        function loadMessageHistory() {
+            try {
+                const saved = localStorage.getItem('chat_message_history');
+                if (saved) {
+                    messageHistory = JSON.parse(saved);
+                    console.log(`تاریخچه ${messageHistory.length} پیام بارگذاری شد`);
+                }
+            } catch (e) {
+                console.error('خطا در بارگذاری تاریخچه:', e);
+                messageHistory = [];
+            }
+            updateStorageInfo();
+        }
+        
+        function updateStorageInfo() {
+            const messageCountElement = document.getElementById('messageCount');
+            const storageStatusElement = document.getElementById('storageStatus');
+            
+            if (messageCountElement) {
+                messageCountElement.textContent = `${messageHistory.length} / ${MAX_MESSAGES} پیام`;
+                
+                if (messageHistory.length >= MAX_MESSAGES) {
+                    messageCountElement.style.color = '#ef4444';
+                    storageStatusElement.textContent = '⚠️ ذخیره سازی کامل';
+                } else if (messageHistory.length > MAX_MESSAGES * 0.8) {
+                    messageCountElement.style.color = '#f59e0b';
+                    storageStatusElement.textContent = '🟡 نزدیک به ظرفیت';
+                } else {
+                    messageCountElement.style.color = '#10b981';
+                    storageStatusElement.textContent = '🟢 فضای کافی';
+                }
+            }
+        }
+        
+        function sendMessageHistoryToUser(peerId) {
+            if (!amIAdmin) return;
+            
+            const conn = connections.get(peerId);
+            if (conn && conn.open && messageHistory.length > 0) {
+                console.log(`ارسال ${messageHistory.length} پیام تاریخچه به کاربر ${peerId}`);
+                
+                // تاریخچه را به تکه‌های کوچکتر تقسیم کن (هر تکه 50 پیام)
+                const chunkSize = 50;
+                for (let i = 0; i < messageHistory.length; i += chunkSize) {
+                    const chunk = messageHistory.slice(i, i + chunkSize);
+                    
+                    setTimeout(() => {
+                        conn.send({
+                            type: 'message_history_chunk',
+                            chunk: chunk,
+                            chunkIndex: Math.floor(i / chunkSize),
+                            totalChunks: Math.ceil(messageHistory.length / chunkSize),
+                            timestamp: Date.now()
+                        });
+                    }, i * 100); // تأخیر برای جلوگیری از overload
+                }
+                
+                showNotification(`ارسال تاریخچه پیام‌ها به کاربر جدید`, 'info');
+            }
         }
         
         // ==================== سیستم لاگین ====================
@@ -556,6 +710,9 @@
                 isMe: true
             });
             
+            // بارگذاری تاریخچه پیام‌ها
+            loadMessageHistory();
+            
             showChatPage();
             listenForIncomingConnections();
             startHeartbeatSystem();
@@ -590,6 +747,7 @@
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'flex';
             initEmojiPicker();
+            updateStorageInfo();
         }
         
         // ==================== مدیریت اتصالات ====================
@@ -661,6 +819,12 @@
             conn.on('close', () => {
                 console.log('❌ اتصال بسته شد با:', peerId);
                 connections.delete(peerId);
+                
+                // اگر مدیریت هستیم و کاربر آفلاین شد
+                if (amIAdmin && peerId !== ADMIN_PEER_ID) {
+                    handleUserOffline(peerId);
+                }
+                
                 updateUsersList();
                 updateConnectionStatus(connections.size > 0);
             });
@@ -668,6 +832,12 @@
             conn.on('error', (err) => {
                 console.error('خطا در اتصال:', peerId, err);
                 connections.delete(peerId);
+                
+                // اگر مدیریت هستیم و کاربر آفلاین شد
+                if (amIAdmin && peerId !== ADMIN_PEER_ID) {
+                    handleUserOffline(peerId);
+                }
+                
                 updateUsersList();
                 updateConnectionStatus(connections.size > 0);
             });
@@ -696,6 +866,12 @@
                     break;
                 case 'image_chunk':
                     handleImageChunk(data, fromPeerId);
+                    break;
+                case 'message_history_chunk':
+                    handleMessageHistoryChunk(data, fromPeerId);
+                    break;
+                case 'user_offline':
+                    handleUserOfflineMessage(data, fromPeerId);
                     break;
             }
         }
@@ -735,6 +911,9 @@
                     users: Array.from(users.values()).filter(u => u.isOnline),
                     timestamp: Date.now()
                 });
+                
+                // ارسال تاریخچه پیام‌ها به کاربر جدید
+                sendMessageHistoryToUser(data.peerId);
             }
             
             // اعلام کاربر جدید به همه
@@ -749,6 +928,9 @@
         }
         
         function handlePublicMessage(data, fromPeerId) {
+            // ذخیره در تاریخچه
+            addToHistory(data);
+            
             // اگر مدیریت هستیم، پیام را به همه ارسال کن
             if (amIAdmin) {
                 // تایید دریافت پیام
@@ -762,7 +944,7 @@
                     });
                 }
                 
-                // ✅ رفع مشکل: ارسال پیام به همه کاربران
+                // ✅ ارسال پیام به همه کاربران
                 broadcastToAll({
                     ...data,
                     status: 'delivered'
@@ -797,6 +979,70 @@
             const status = data.status;
             
             updateMessageStatus(messageId, status);
+        }
+        
+        function handleMessageHistoryChunk(data, fromPeerId) {
+            console.log(`دریافت chunk تاریخچه ${data.chunkIndex + 1}/${data.totalChunks}`);
+            
+            // اضافه کردن پیام‌های تاریخچه به لیست نمایش
+            data.chunk.forEach(message => {
+                // فقط نمایش پیام‌هایی که قبلاً نداریم
+                if (!messageHistory.some(m => m.messageId === message.messageId)) {
+                    displayMessage(message, message.senderId === myPeerId, 'public');
+                }
+            });
+            
+            if (data.chunkIndex === data.totalChunks - 1) {
+                showNotification(`تاریخچه ${data.totalChunks * data.chunk.length} پیام بارگذاری شد`, 'success');
+            }
+        }
+        
+        function handleUserOfflineMessage(data, fromPeerId) {
+            if (amIAdmin) return; // مدیریت خودش این پیام را ایجاد کرده
+            
+            // حذف پیام‌های کاربر آفلاین از نمایش
+            removeUserMessagesFromDisplay(data.userPeerId);
+            showNotification(`پیام‌های ${data.userName} حذف شد`, 'info');
+        }
+        
+        // ==================== مدیریت کاربران آفلاین ====================
+        function handleUserOffline(userPeerId) {
+            if (!amIAdmin) return;
+            
+            const user = users.get(userPeerId);
+            if (!user) return;
+            
+            console.log(`کاربر آفلاین شد: ${user.visibleName} (${userPeerId})`);
+            
+            // به روزرسانی وضعیت کاربر
+            user.isOnline = false;
+            updateUsersList();
+            
+            // حذف پیام‌های کاربر از تاریخچه
+            const removedCount = removeUserMessagesFromHistory(userPeerId);
+            
+            // اطلاع به همه کاربران برای حذف پیام‌های این کاربر
+            broadcastToAll({
+                type: 'user_offline',
+                userPeerId: userPeerId,
+                userName: user.visibleName,
+                removedCount: removedCount,
+                timestamp: Date.now()
+            });
+            
+            showNotification(`پیام‌های ${user.visibleName} حذف شدند (${removedCount} پیام)`, 'warning');
+        }
+        
+        function removeUserMessagesFromDisplay(userPeerId) {
+            // حذف پیام‌های کاربر از UI
+            const messageElements = document.querySelectorAll('.message-container');
+            messageElements.forEach(el => {
+                if (el.dataset.senderId === userPeerId) {
+                    el.style.opacity = '0.3';
+                    el.style.textDecoration = 'line-through';
+                    setTimeout(() => el.remove(), 1000);
+                }
+            });
         }
         
         // ==================== مدیریت شبکه ====================
@@ -839,8 +1085,7 @@
             const now = Date.now();
             users.forEach((user, peerId) => {
                 if (peerId !== myPeerId && now - user.lastSeen > 30000) {
-                    user.isOnline = false;
-                    updateUsersList();
+                    handleUserOffline(peerId);
                 }
             });
         }
@@ -872,6 +1117,7 @@
             
             if (amIAdmin) {
                 // اگر مدیریت هستیم، مستقیماً به همه ارسال کن
+                addToHistory(messageData);
                 broadcastToAll(messageData);
                 updateMessageStatus(messageData.messageId, 'delivered');
             } else {
@@ -1011,6 +1257,11 @@
                     status: 'delivered'
                 };
                 
+                // ذخیره در تاریخچه اگر مدیریت هستیم
+                if (amIAdmin) {
+                    addToHistory(imageData);
+                }
+                
                 displayMessage(imageData, imageData.senderId === myPeerId, 'public');
                 incomingImages.delete(data.messageId);
                 
@@ -1136,6 +1387,8 @@
             
             const messageEl = document.createElement('div');
             messageEl.id = `msg_${data.messageId}`;
+            messageEl.className = 'message-container';
+            messageEl.dataset.senderId = data.senderId;
             
             // تعیین رنگ بر اساس کاربر
             const userColor = getUserColor(data.senderId);
@@ -1211,6 +1464,14 @@
             
             container.appendChild(messageEl);
             
+            // فقط 100 پیام آخر را در UI نگه دار
+            const allMessages = container.querySelectorAll('.message-container');
+            if (allMessages.length > 100) {
+                for (let i = 0; i < allMessages.length - 100; i++) {
+                    allMessages[i].remove();
+                }
+            }
+            
             setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
             }, 100);
@@ -1258,6 +1519,32 @@
             document.body.appendChild(fullscreenDiv);
         }
         
+        // ==================== پاکسازی کش ====================
+        function clearLocalStorage() {
+            if (confirm('آیا می‌خواهید تمام ذخیره‌سازی‌های محلی پاک شود؟\nاین عمل باعث حذف تاریخچه پیام‌ها و تنظیمات می‌شود.')) {
+                try {
+                    // پاکسازی localStorage
+                    localStorage.removeItem('chat_message_history');
+                    localStorage.removeItem('chat_username');
+                    
+                    // پاکسازی متغیرهای محلی
+                    messageHistory = [];
+                    
+                    // پاکسازی UI
+                    const container = document.getElementById('messagesContainer');
+                    container.innerHTML = '';
+                    document.getElementById('emptyState').style.display = 'block';
+                    
+                    showNotification('ذخیره‌سازی محلی با موفقیت پاک شد', 'success');
+                    updateStorageInfo();
+                    
+                } catch (error) {
+                    showNotification('خطا در پاکسازی ذخیره‌سازی', 'error');
+                    console.error('خطا در پاکسازی:', error);
+                }
+            }
+        }
+        
         function initEmojiPicker() {
             const emojis = ['😀', '😂', '😍', '😎', '😭', '😡', '👍', '👎', '❤️', '🔥', '🎉', '💯', '🤔', '👏', '🙏', '😴', '🥳', '😷', '🤯', '🥰'];
             const picker = document.getElementById('emojiPicker');
@@ -1298,7 +1585,7 @@
         }
         
         function clearChat() {
-            if (confirm('آیا می‌خواهید تاریخچه این چت پاک شود؟')) {
+            if (confirm('آیا می‌خواهید تاریخچه نمایشی این چت پاک شود؟')) {
                 const container = document.getElementById('messagesContainer');
                 container.innerHTML = '';
                 document.getElementById('emptyState').style.display = 'block';
@@ -1337,6 +1624,11 @@
                     emojiPicker.style.display = 'none';
                 }
             });
+            
+            // بارگذاری تاریخچه پیام‌ها (اگر کاربر هستیم و قبلاً ذخیره شده)
+            if (!amIAdmin) {
+                loadMessageHistory();
+            }
         });
     </script>
 </body>
