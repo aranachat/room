@@ -35,6 +35,7 @@
         @media (max-width: 768px) {
             body {
                 padding: 0 !important;
+                overflow: hidden;
             }
             
             .container { 
@@ -42,11 +43,18 @@
                 height: 100vh !important;
                 border-radius: 0 !important;
                 margin: 0 !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
             }
             
             .chat-header {
                 padding: 12px 15px !important;
                 font-size: 14px !important;
+                height: 60px !important;
+                flex-shrink: 0;
             }
             
             .sidebar {
@@ -66,9 +74,10 @@
             
             .chat-area {
                 width: 100% !important;
-                height: calc(100vh - 70px) !important;
+                height: 100vh !important;
                 display: flex !important;
                 flex-direction: column !important;
+                position: relative;
             }
             
             .messages-container {
@@ -76,10 +85,14 @@
                 flex: 1 !important;
                 overflow-y: auto !important;
                 max-height: none !important;
-                padding-bottom: 100px !important; /* فضای اضافه برای input */
+                padding-bottom: 120px !important;
                 margin-bottom: 0 !important;
                 -webkit-overflow-scrolling: touch !important;
                 overscroll-behavior: contain !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 10px !important;
+                min-height: 0 !important;
             }
             
             .input-area {
@@ -92,12 +105,15 @@
                 border-top: 1px solid #2a2a2a;
                 z-index: 1000;
                 height: auto !important;
-                min-height: 70px;
+                min-height: 80px;
+                max-height: 150px;
+                box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
             }
             
             .message-input {
                 max-height: 80px !important;
                 font-size: 16px !important;
+                line-height: 1.4 !important;
             }
             
             .action-buttons {
@@ -168,12 +184,11 @@
             .message-container {
                 max-width: 85% !important;
                 padding: 10px 14px !important;
-                margin-bottom: 8px !important;
-                transition: transform 0.2s;
-            }
-            
-            .message-container:active {
-                transform: scale(0.98);
+                margin-bottom: 5px !important;
+                animation: fadeIn 0.3s ease;
+                word-break: break-word;
+                position: relative;
+                min-width: 120px;
             }
             
             /* دکمه‌های لایک/دیسلایک برای موبایل */
@@ -188,13 +203,30 @@
             
             /* پنل ریپلای برای موبایل */
             .reply-panel {
-                padding: 8px 12px !important;
+                position: fixed !important;
+                bottom: 80px !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 999 !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                padding: 10px 15px !important;
             }
             
-            /* جلوگیری از باز شدن کیبورد روی فوکوس */
-            .message-input {
-                -webkit-user-select: text !important;
-                user-select: text !important;
+            /* وضعیت شبکه در موبایل */
+            .network-status {
+                position: fixed !important;
+                bottom: 80px !important;
+                left: 10px !important;
+                right: 10px !important;
+                z-index: 998 !important;
+                margin: 0 !important;
+            }
+            
+            /* ایموجی پیکر */
+            #emojiPicker {
+                bottom: 150px !important;
+                max-height: 250px !important;
             }
         }
         
@@ -1055,7 +1087,7 @@
     </div>
 
     <!-- Emoji Picker for Mobile -->
-    <div id="emojiPicker" style="display: none; position: fixed; bottom: 120px; right: 10px; left: 10px; background: #2a2a2a; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); padding: 15px; z-index: 1002; border: 1px solid #3a3a3a; max-height: 200px; overflow-y: auto;">
+    <div id="emojiPicker" style="display: none; position: fixed; bottom: 150px; right: 10px; left: 10px; background: #2a2a2a; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); padding: 15px; z-index: 1002; border: 1px solid #3a3a3a; max-height: 250px; overflow-y: auto;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
             <div style="font-weight: bold; color: #e0e0e0;">ایموجی‌ها</div>
             <button onclick="toggleEmojiPicker()" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #e0e0e0;">×</button>
@@ -1071,8 +1103,6 @@
             <h3 style="color: #e0e0e0; margin-bottom: 15px; text-align: center; font-size: 18px;">🗑️ حذف پیام‌های کاربر</h3>
             
             <div style="margin-bottom: 20px;">
-                <p style="color: #b0b0b0; margin-bottom: 15px; font-size: 14px;">لطفاً کاربری که می‌خواهید پیام‌هایش حذف شود را انتخاب کنید:</p>
-                
                 <div style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;" id="userListForDeletion">
                     <!-- لیست کاربران اینجا نمایش داده می‌شود -->
                 </div>
@@ -1858,9 +1888,9 @@
             
             autoRefreshInterval = setInterval(() => {
                 syncMessages();
-            }, 30000); // هر 30 ثانیه
+            }, 60000); // تغییر به 60 ثانیه
             
-            console.log('سیستم بروزرسانی خودکار هر 30 ثانیه فعال شد');
+            console.log('سیستم بروزرسانی خودکار هر 60 ثانیه فعال شد');
         }
         
         function stopAutoRefresh() {
@@ -2839,10 +2869,18 @@
             const borderColor = userColor;
             const textColor = isOutgoing ? userColor : '#e0e0e0';
             
+            // استایل دینامیک بر اساس موبایل یا دسکتاپ
+            const maxWidth = isMobile ? '85%' : '65%';
+            const padding = isMobile ? '10px 14px' : '12px 16px';
+            const alignSelf = isOutgoing ? 'flex-end' : 'flex-start';
+            const borderRadius = isOutgoing ? 
+                '18px 18px 5px 18px' : 
+                '18px 18px 18px 5px';
+            
             messageEl.style.cssText = `
-                max-width: ${isMobile ? '85%' : '65%'};
-                padding: ${isMobile ? '10px 14px' : '12px 16px'};
-                border-radius: 18px;
+                max-width: ${maxWidth};
+                padding: ${padding};
+                border-radius: ${borderRadius};
                 position: relative;
                 animation: fadeIn 0.3s ease;
                 word-break: break-word;
@@ -2851,10 +2889,8 @@
                 color: ${textColor};
                 border: 2px solid ${borderColor};
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                ${isOutgoing ? 
-                    'align-self: flex-end; border-bottom-left-radius: 5px;' : 
-                    'align-self: flex-start; border-bottom-right-radius: 5px;'
-                }
+                align-self: ${alignSelf};
+                margin: ${isOutgoing ? '5px 0 5px auto' : '5px auto 5px 0'};
             `;
             
             if (data.type !== 'image') {
@@ -2940,14 +2976,15 @@
             setTimeout(() => {
                 const container = document.getElementById('messagesContainer');
                 if (container) {
-                    container.scrollTo({
-                        top: container.scrollHeight,
-                        behavior: 'smooth'
+                    // استفاده از requestAnimationFrame برای انیمیشن نرم
+                    requestAnimationFrame(() => {
+                        container.scrollTo({
+                            top: container.scrollHeight,
+                            behavior: 'smooth'
+                        });
                     });
-                    
-                    container.scrollTop = container.scrollHeight;
                 }
-            }, 100);
+            }, 50);
         }
         
         function removeUserMessagesFromDisplay(userPeerId) {
@@ -3237,9 +3274,6 @@
                 }
             }, { passive: false });
             
-            // تنظیم ارتفاع مناسب برای پیام‌ها در موبایل
-            window.addEventListener('resize', adjustForMobile);
-            
             // تنظیم فوکوس روی اینپوت هنگام تایپ
             const messageInput = document.getElementById('messageInput');
             if (messageInput) {
@@ -3261,6 +3295,15 @@
             if (messagesContainer) {
                 observer.observe(messagesContainer, { childList: true, subtree: true });
             }
+            
+            // وقتی کیبورد باز یا بسته می‌شود
+            window.addEventListener('resize', function() {
+                if (isMobile) {
+                    setTimeout(() => {
+                        scrollToBottom();
+                    }, 100);
+                }
+            });
         });
     </script>
 </body>
