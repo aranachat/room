@@ -3,69 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>چت آرانا</title>
+    <title>چت آرانا - تم تاریک</title>
     
     <style>
+        /* تم تاریک - شبیه دارک تلگرام */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazir', sans-serif; }
-        body { background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.4); height: 90vh; display: flex; flex-direction: column; }
+        body { 
+            background: #0f0f0f;
+            min-height: 100vh; 
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: #1e1e1e; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5); 
+            height: 90vh; 
+            display: flex; 
+            flex-direction: column; 
+            border: 1px solid #2a2a2a;
+        }
         
-        .login-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 90%; text-align: center; }
-        .login-input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; text-align: center; outline: none; transition: border 0.3s; }
-        .login-btn { width: 100%; padding: 15px; margin: 20px 0; background: #3b82f6; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; transition: background 0.3s; }
+        .login-page { 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background: #0f0f0f; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000; 
+        }
+        .login-card { 
+            background: #1e1e1e; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.7); 
+            max-width: 500px; 
+            width: 90%; 
+            text-align: center; 
+            border: 1px solid #2a2a2a;
+        }
+        .login-input { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 10px 0; 
+            background: #2a2a2a; 
+            border: 2px solid #3a3a3a; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            text-align: center; 
+            outline: none; 
+            transition: border 0.3s; 
+            color: #e0e0e0;
+        }
+        .login-input:focus {
+            border-color: #8a2be2;
+        }
+        .login-btn { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 20px 0; 
+            background: linear-gradient(135deg, #8a2be2, #6a0dad);
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            font-weight: bold;
+        }
+        .login-btn:hover {
+            background: linear-gradient(135deg, #9a3bf2, #7a1dbd);
+            transform: translateY(-2px);
+        }
         
-        .chat-header { background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .main-layout { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 300px; background: #f8fafc; border-left: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
-        .users-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding: 15px; }
-        .user-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 12px; border: 2px solid transparent; transition: all 0.3s; cursor: pointer; }
-        .chat-area { flex: 1; display: flex; flex-direction: column; background: #f8fafc; }
-        .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .input-area { padding: 15px 20px; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: flex-end; }
-        .message-input { flex: 1; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 25px; font-size: 14px; resize: none; outline: none; transition: border 0.3s; max-height: 150px; }
-        .send-btn { padding: 12px 25px; background: #3b82f6; color: white; border: none; border-radius: 25px; cursor: pointer; transition: all 0.3s; }
+        .chat-header { 
+            background: #121212; 
+            color: #e0e0e0; 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .main-layout { 
+            display: flex; 
+            flex: 1; 
+            overflow: hidden; 
+        }
+        .sidebar { 
+            width: 300px; 
+            background: #1a1a1a; 
+            border-left: 1px solid #2a2a2a; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+        .users-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            max-height: 300px; 
+            overflow-y: auto; 
+            padding: 15px; 
+        }
+        .user-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 12px; 
+            background: #2a2a2a; 
+            border-radius: 12px; 
+            border: 2px solid transparent; 
+            transition: all 0.3s; 
+            cursor: pointer; 
+        }
+        .user-item:hover {
+            background: #3a3a3a;
+            transform: translateX(-4px);
+        }
+        .chat-area { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            background: #1a1a1a; 
+        }
+        .messages-container { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        .input-area { 
+            padding: 15px 20px; 
+            background: #1e1e1e; 
+            border-top: 1px solid #2a2a2a; 
+            display: flex; 
+            gap: 10px; 
+            align-items: flex-end; 
+        }
+        .message-input { 
+            flex: 1; 
+            padding: 12px 16px; 
+            background: #2a2a2a; 
+            border: 2px solid #3a3a3a; 
+            color: #e0e0e0;
+            border-radius: 25px; 
+            font-size: 14px; 
+            resize: none; 
+            outline: none; 
+            transition: border 0.3s; 
+            max-height: 150px; 
+        }
+        .message-input:focus {
+            border-color: #8a2be2;
+        }
+        .send-btn { 
+            padding: 12px 25px; 
+            background: linear-gradient(135deg, #8a2be2, #6a0dad);
+            color: white; 
+            border: none; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            font-weight: bold;
+        }
+        .send-btn:hover {
+            background: linear-gradient(135deg, #9a3bf2, #7a1dbd);
+            transform: scale(1.05);
+        }
         
-        .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; z-index: 1001; animation: notificationIn 0.3s ease; border-right: 4px solid #3b82f6; }
-        @keyframes notificationIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .notification { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background: #2a2a2a; 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            z-index: 1001; 
+            animation: notificationIn 0.3s ease; 
+            border-right: 4px solid #8a2be2; 
+            color: #e0e0e0;
+            border: 1px solid #3a3a3a;
+        }
+        @keyframes notificationIn { 
+            from { transform: translateX(100%); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
         
-        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading { 
+            display: inline-block; 
+            width: 20px; 
+            height: 20px; 
+            border: 3px solid #3a3a3a; 
+            border-top-color: #8a2be2; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+        }
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
+        }
         
-        .message-status { font-size: 10px; margin-right: 5px; }
-        .status-delivered { color: #3b82f6; }
-        .status-read { color: #10b981; }
+        .message-status { 
+            font-size: 10px; 
+            margin-right: 5px; 
+        }
+        .status-delivered { 
+            color: #8a2be2; 
+        }
+        .status-read { 
+            color: #00ff88; 
+        }
         
-        .file-upload-btn { padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 12px; }
+        .file-upload-btn { 
+            padding: 8px 16px; 
+            background: #00cc66; 
+            color: white; 
+            border: none; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            font-weight: bold;
+        }
+        .file-upload-btn:hover {
+            background: #00dd77;
+        }
         
-        .image-message { max-width: 300px; border-radius: 12px; margin-top: 5px; cursor: pointer; }
-        .image-message.fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; max-width: 100%; display: flex; align-items: center; justify-content: center; }
-        .image-message.fullscreen img { max-width: 90%; max-height: 90%; }
+        .image-message { 
+            max-width: 300px; 
+            border-radius: 12px; 
+            margin-top: 5px; 
+            cursor: pointer; 
+            border: 2px solid #3a3a3a;
+        }
+        .image-message.fullscreen { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 2000; 
+            max-width: 100%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .image-message.fullscreen img { 
+            max-width: 90%; 
+            max-height: 90%; 
+            border: 2px solid #8a2be2;
+            border-radius: 8px;
+        }
         
-        .unread-badge { background: #ef4444; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .unread-badge { 
+            background: #ff4444; 
+            color: white; 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 10px; 
+            font-weight: bold;
+        }
         
-        .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
+        .action-buttons { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 10px; 
+        }
         
         /* استایل برای ریپلای */
         .reply-container {
-            background: #f3f4f6;
-            border-right: 3px solid #3b82f6;
+            background: #2a2a2a;
+            border-right: 3px solid #8a2be2;
             border-radius: 8px;
             padding: 8px 12px;
             margin-bottom: 8px;
             max-width: 100%;
+            border: 1px solid #3a3a3a;
         }
         
         .reply-author {
             font-size: 12px;
             font-weight: bold;
-            color: #3b82f6;
+            color: #8a2be2;
             margin-bottom: 4px;
         }
         
         .reply-content {
             font-size: 13px;
-            color: #4b5563;
+            color: #b0b0b0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -74,21 +313,26 @@
         .cancel-reply-btn {
             background: none;
             border: none;
-            color: #ef4444;
+            color: #ff4444;
             cursor: pointer;
             font-size: 12px;
             padding: 2px 6px;
+            font-weight: bold;
+        }
+        .cancel-reply-btn:hover {
+            color: #ff6666;
         }
         
         /* پنل ریپلای */
         .reply-panel {
-            background: #f8fafc;
+            background: #2a2a2a;
             padding: 10px 15px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #3a3a3a;
             display: flex;
             justify-content: space-between;
             align-items: center;
             animation: slideIn 0.3s ease;
+            border-bottom: 1px solid #3a3a3a;
         }
         
         @keyframes slideIn {
@@ -96,26 +340,210 @@
             to { transform: translateY(0); opacity: 1; }
         }
         
+        /* دکمه‌های لایک/دیسلایک */
+        .reaction-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            align-items: center;
+        }
+        
+        .reaction-btn {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 16px;
+            padding: 4px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+        
+        .reaction-btn:hover {
+            background: #3a3a3a;
+            transform: translateY(-2px);
+        }
+        
+        .reaction-btn.liked {
+            background: rgba(138, 43, 226, 0.2);
+            border-color: #8a2be2;
+            color: #8a2be2;
+        }
+        
+        .reaction-btn.disliked {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+        
+        .reaction-count {
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
         /* دکمه پاکسازی */
         .danger-btn {
-            background: #ef4444 !important;
+            background: linear-gradient(135deg, #ff4444, #cc0000) !important;
             color: white !important;
             margin-top: 10px;
+            font-weight: bold;
         }
         
         .danger-btn:hover {
-            background: #dc2626 !important;
+            background: linear-gradient(135deg, #ff6666, #dd0000) !important;
+            transform: translateY(-2px);
         }
         
         .storage-info {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
             border-radius: 10px;
             padding: 10px;
             margin-top: 10px;
             font-size: 12px;
-            color: #64748b;
+            color: #b0b0b0;
             text-align: center;
+        }
+        
+        /* پنل تنظیمات حذف خودکار */
+        .expiration-panel {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .expiration-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .expiration-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .expiration-option:hover {
+            background: #3a3a3a;
+        }
+        
+        .expiration-option.selected {
+            background: rgba(138, 43, 226, 0.2);
+            border: 1px solid #8a2be2;
+        }
+        
+        /* اسکرول بار سفارشی */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #8a2be2;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9a3bf2;
+        }
+        
+        /* انیمیشن‌های جدید */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+        
+        /* استایل‌های جدید برای تم تاریک */
+        .admin-badge {
+            background: linear-gradient(135deg, #ffaa00, #ff8800);
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        
+        .me-badge {
+            background: linear-gradient(135deg, #8a2be2, #6a0dad);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        
+        .user-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .status-online {
+            background: #00ff88;
+            box-shadow: 0 0 8px #00ff88;
+        }
+        
+        .status-offline {
+            background: #ff4444;
+        }
+        
+        /* گلویی برای متن‌های بلند */
+        .message-content {
+            word-break: break-word;
+            line-height: 1.6;
+        }
+        
+        /* استایل برای تاریخ */
+        .message-date {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: left;
+        }
+        
+        /* استایل برای بارگذاری */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            border-radius: 16px;
         }
     </style>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
@@ -124,9 +552,9 @@
     <!-- Login Page -->
     <div class="login-page" id="loginPage">
         <div class="login-card">
-            <div style="font-size: 48px; margin-bottom: 20px; color: #3b82f6;">💬</div>
-            <h1 style="color: #1e293b; margin-bottom: 10px;">چت هوشمند جهانی</h1>
-            <p style="color: #64748b; margin-bottom: 30px; font-size: 14px;">چت گروهی عمومی با تاریخچه پیام‌ها</p>
+            <div style="font-size: 48px; margin-bottom: 20px; color: #8a2be2;">💬</div>
+            <h1 style="color: #e0e0e0; margin-bottom: 10px;">چت آرانا - تم تاریک</h1>
+            <p style="color: #b0b0b0; margin-bottom: 30px; font-size: 14px;">چت امن با سیستم لایک و حذف خودکار پیام‌ها</p>
             
             <input type="text" 
                    class="login-input" 
@@ -135,19 +563,58 @@
                    maxlength="20"
                    autocomplete="off">
             
-            <div style="margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 10px; text-align: right;">
-                <h4 style="color: #1e293b; margin-bottom: 10px; font-size: 14px;">🎯 ویژگی‌های جدید:</h4>
-                <p style="color: #64748b; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
-                    • تاریخچه ۱۰۰۰ پیام آخر ذخیره می‌شود<br>
-                    • دریافت پیام‌های قدیمی هنگام ورود<br>
-                    • پاکسازی خودکار پیام‌های کاربران آفلاین<br>
-                    • رنگ متفاوت برای هر کاربر<br>
-                    • سیستم ریپلای پیام‌ها
+            <!-- پنل تنظیمات حذف خودکار -->
+            <div class="expiration-panel">
+                <h4 style="color: #e0e0e0; margin-bottom: 10px; font-size: 14px;">⏰ تنظیمات حذف خودکار پیام‌ها:</h4>
+                <p style="color: #b0b0b0; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
+                    پیام‌ها پس از مدت زمان انتخابی به صورت خودکار حذف خواهند شد.
                 </p>
+                
+                <div class="expiration-options" id="expirationOptions">
+                    <div class="expiration-option" onclick="selectExpiration(5)">
+                        <input type="radio" name="expiration" id="expire5" style="display: none;">
+                        <label for="expire5" style="cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%;">
+                            <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #8a2be2; display: none;"></div>
+                            </div>
+                            <span>حذف پیام‌ها بعد از ۵ دقیقه</span>
+                        </label>
+                    </div>
+                    
+                    <div class="expiration-option" onclick="selectExpiration(10)">
+                        <input type="radio" name="expiration" id="expire10" style="display: none;">
+                        <label for="expire10" style="cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%;">
+                            <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #8a2be2; display: none;"></div>
+                            </div>
+                            <span>حذف پیام‌ها بعد از ۱۰ دقیقه</span>
+                        </label>
+                    </div>
+                    
+                    <div class="expiration-option" onclick="selectExpiration(30)">
+                        <input type="radio" name="expiration" id="expire30" style="display: none;">
+                        <label for="expire30" style="cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%;">
+                            <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #8a2be2; display: none;"></div>
+                            </div>
+                            <span>حذف پیام‌ها بعد از ۳۰ دقیقه</span>
+                        </label>
+                    </div>
+                    
+                    <div class="expiration-option" onclick="selectExpiration(0)">
+                        <input type="radio" name="expiration" id="expireNever" style="display: none;">
+                        <label for="expireNever" style="cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%;">
+                            <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #8a2be2; display: none;"></div>
+                            </div>
+                            <span>هرگز حذف نشود</span>
+                        </label>
+                    </div>
+                </div>
             </div>
             
             <button class="login-btn" id="loginBtn" onclick="login()">
-                <span id="loginBtnText">ورود به چت جهانی</span>
+                <span id="loginBtnText">🚀 ورود به چت</span>
             </button>
         </div>
     </div>
@@ -157,19 +624,19 @@
         <div class="chat-header">
             <div style="display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: bold;">
                 <i class="fas fa-globe"></i>
-                <span>چت هوشمند جهانی</span>
+                <span>چت آرانا - تم تاریک</span>
             </div>
             
             <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;" id="statusIndicator"></div>
+                <div style="background: rgba(138, 43, 226, 0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(138, 43, 226, 0.3);">
+                    <div class="status-online" id="statusIndicator"></div>
                     <span id="connectionStatus">در حال اتصال...</span>
                 </div>
-                <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                <div style="background: rgba(138, 43, 226, 0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(138, 43, 226, 0.3);">
                     <i class="fas fa-user-shield"></i>
                     <span id="adminText">مدیریت: ...</span>
                 </div>
-                <div style="background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                <div style="background: rgba(138, 43, 226, 0.1); padding: 8px 15px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(138, 43, 226, 0.3);">
                     <i class="fas fa-users"></i>
                     <span id="userCount">0</span> کاربر
                 </div>
@@ -179,10 +646,10 @@
         <div class="main-layout">
             <!-- Sidebar -->
             <div class="sidebar">
-                <div style="padding: 15px; border-bottom: 1px solid #e2e8f0;">
+                <div style="padding: 15px; border-bottom: 1px solid #2a2a2a;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="color: #1e293b; font-size: 16px;">👥 کاربران آنلاین</h3>
-                        <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;" id="onlineCount">0</span>
+                        <h3 style="color: #e0e0e0; font-size: 16px;">👥 کاربران آنلاین</h3>
+                        <span style="background: #00cc66; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: bold;" id="onlineCount">0</span>
                     </div>
                     <div class="users-list" id="publicUsersList">
                         <!-- کاربران عمومی اینجا نمایش داده می‌شوند -->
@@ -190,22 +657,27 @@
                     
                     <!-- اطلاعات ذخیره سازی -->
                     <div class="storage-info" id="storageInfo">
-                        <div>📊 ذخیره سازی:</div>
+                        <div>💾 ذخیره سازی:</div>
                         <div id="messageCount">0 پیام</div>
                         <div id="storageStatus">...</div>
+                        <div id="expirationStatus" style="margin-top: 5px; font-size: 11px;"></div>
                     </div>
                 </div>
                 
-                <div style="padding: 15px; margin-top: auto; border-top: 1px solid #e2e8f0;">
-                    <button onclick="refreshNetwork()" style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px;">
+                <div style="padding: 15px; margin-top: auto; border-top: 1px solid #2a2a2a;">
+                    <button onclick="refreshNetwork()" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #8a2be2, #6a0dad); color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px; font-weight: bold;">
                         <i class="fas fa-sync-alt"></i> بروزرسانی شبکه
                     </button>
                     
-                    <button onclick="clearLocalStorage()" class="danger-btn" style="width: 100%; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px;">
-                        <i class="fas fa-trash-alt"></i> پاکسازی کش محلی
+                    <button onclick="clearUserMessagesPrompt()" class="danger-btn" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #ff4444, #cc0000); color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px; font-weight: bold;">
+                        <i class="fas fa-user-slash"></i> حذف پیام‌های کاربر
                     </button>
                     
-                    <button onclick="leaveChat()" style="width: 100%; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 10px; cursor: pointer;">
+                    <button onclick="clearLocalStorage()" class="danger-btn" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #ff4444, #cc0000); color: white; border: none; border-radius: 10px; cursor: pointer; margin-bottom: 10px; font-weight: bold;">
+                        <i class="fas fa-trash-alt"></i> پاکسازی کامل
+                    </button>
+                    
+                    <button onclick="leaveChat()" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #444, #222); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">
                         <i class="fas fa-sign-out-alt"></i> خروج از چت
                     </button>
                 </div>
@@ -213,13 +685,13 @@
             
             <!-- Chat Area -->
             <div class="chat-area">
-                <div style="padding: 15px 20px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <div style="padding: 15px 20px; background: #1e1e1e; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <div style="font-size: 18px; color: #1e293b;" id="chatTitle">💬 چت عمومی جهانی</div>
-                        <div style="font-size: 12px; color: #64748b;" id="chatInfo">همه پیام‌های عمومی در اینجا نمایش داده می‌شوند</div>
+                        <div style="font-size: 18px; color: #e0e0e0; font-weight: bold;" id="chatTitle">💬 چت عمومی</div>
+                        <div style="font-size: 12px; color: #b0b0b0;" id="chatInfo">پیام‌های عمومی - حذف خودکار پس از <span id="currentExpirationTime">۵</span> دقیقه</div>
                     </div>
                     <div id="chatActions">
-                        <button onclick="clearChat()" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                        <button onclick="clearChat()" style="padding: 6px 12px; background: #2a2a2a; color: #e0e0e0; border: 1px solid #3a3a3a; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold;">
                             <i class="fas fa-trash"></i> پاک کردن چت
                         </button>
                     </div>
@@ -236,7 +708,7 @@
                 
                 <div class="messages-container" id="messagesContainer">
                     <!-- پیام‌ها اینجا نمایش داده می‌شوند -->
-                    <div style="text-align: center; padding: 40px 20px; color: #64748b;" id="emptyState">
+                    <div style="text-align: center; padding: 40px 20px; color: #b0b0b0;" id="emptyState">
                         <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">💬</div>
                         <p>هنوز پیامی در این چت ارسال نشده است</p>
                         <p style="font-size: 12px; margin-top: 10px;">اولین پیام را شما ارسال کنید!</p>
@@ -246,10 +718,10 @@
                 <div class="input-area">
                     <div style="display: flex; flex-direction: column; flex: 1;">
                         <div class="action-buttons" id="actionButtons">
-                            <button onclick="toggleEmojiPicker()" style="padding: 6px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                            <button onclick="toggleEmojiPicker()" style="padding: 6px 12px; background: #2a2a2a; color: #e0e0e0; border: 1px solid #3a3a3a; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold;">
                                 😀 ایموجی
                             </button>
-                            <label for="fileInput" style="padding: 6px 12px; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                            <label for="fileInput" style="padding: 6px 12px; background: #00cc66; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold;">
                                 <i class="fas fa-image"></i> تصویر
                                 <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                             </label>
@@ -268,13 +740,37 @@
     </div>
 
     <!-- Emoji Picker (hidden by default) -->
-    <div id="emojiPicker" style="display: none; position: fixed; bottom: 100px; right: 20px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 15px; z-index: 1002; width: 300px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <div style="font-weight: bold;">ایموجی‌ها</div>
-            <button onclick="toggleEmojiPicker()" style="background: none; border: none; cursor: pointer; font-size: 18px;">×</button>
+    <div id="emojiPicker" style="display: none; position: fixed; bottom: 100px; right: 20px; background: #2a2a2a; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); padding: 15px; z-index: 1002; width: 300px; border: 1px solid #3a3a3a;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+            <div style="font-weight: bold; color: #e0e0e0;">ایموجی‌ها</div>
+            <button onclick="toggleEmojiPicker()" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #e0e0e0;">×</button>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 200px; overflow-y: auto;">
             <!-- Emojis will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Modal برای انتخاب کاربر برای حذف -->
+    <div id="deleteUserModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 3000; display: flex; align-items: center; justify-content: center;">
+        <div style="background: #2a2a2a; padding: 30px; border-radius: 16px; max-width: 400px; width: 90%; border: 1px solid #3a3a3a; box-shadow: 0 8px 32px rgba(0,0,0,0.7);">
+            <h3 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">🗑️ حذف پیام‌های کاربر</h3>
+            
+            <div style="margin-bottom: 20px;">
+                <p style="color: #b0b0b0; margin-bottom: 15px; font-size: 14px;">لطفاً کاربری که می‌خواهید پیام‌هایش حذف شود را انتخاب کنید:</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto;" id="userListForDeletion">
+                    <!-- لیست کاربران اینجا نمایش داده می‌شود -->
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeDeleteUserModal()" style="padding: 8px 16px; background: #3a3a3a; color: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    لغو
+                </button>
+                <button onclick="confirmDeleteUserMessages()" style="padding: 8px 16px; background: linear-gradient(135deg, #ff4444, #cc0000); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    حذف پیام‌ها
+                </button>
+            </div>
         </div>
     </div>
 
@@ -293,15 +789,20 @@
         let pendingMessages = new Map();
         let incomingImages = new Map(); // برای دریافت تصاویر
         let userColors = new Map(); // رنگ‌های کاربران
+        let selectedUserForDeletion = null; // کاربر انتخاب شده برای حذف
         
         // تاریخچه پیام‌ها (حداکثر 1000 پیام)
         let messageHistory = [];
         const MAX_MESSAGES = 1000;
         
+        // تنظیمات حذف خودکار (دقیقه - 0 به معنای هرگز)
+        let messageExpirationMinutes = 5; // مقدار پیش‌فرض
+        let expirationInterval = null;
+        
         // متغیرهای سیستم ریپلای
         let replyingTo = null; // {messageId, author, content}
         
-        const GLOBAL_ROOM = 'GLOBAL_CHAT_ROOM_V6';
+        const GLOBAL_ROOM = 'GLOBAL_CHAT_ROOM_V7';
         const ADMIN_NAME = 'global_admin';
         const ADMIN_PEER_ID = `${GLOBAL_ROOM}_${ADMIN_NAME}`;
         
@@ -309,20 +810,20 @@
         let electionTimeout = null;
         let reconnectInterval = null;
         
-        // لیست رنگ‌های مختلف برای کاربران
+        // لیست رنگ‌های فسفوری برای کاربران در تم تاریک
         const USER_COLORS = [
-            '#3b82f6', // آبی
-            '#ef4444', // قرمز
-            '#10b981', // سبز
-            '#f59e0b', // نارنجی
-            '#8b5cf6', // بنفش
-            '#06b6d4', // فیروزه‌ای
-            '#ec4899', // صورتی
-            '#84cc16', // سبز لیمویی
-            '#f97316', // نارنجی پررنگ
-            '#6366f1', // نیلی
-            '#14b8a6', // تورکواز
-            '#f43f5e'  // صورتی تیره
+            '#8a2be2', // بنفش فسفوری
+            '#00ff88', // سبز فسفوری
+            '#00ffff', // فیروزه‌ای فسفوری
+            '#ffaa00', // نارنجی فسفوری
+            '#ff00ff', // صورتی فسفوری
+            '#00ccff', // آبی فسفوری
+            '#ffff00', // زرد فسفوری
+            '#ff4444', // قرمز فسفوری
+            '#aa00ff', // ارغوانی فسفوری
+            '#00ffaa', // سبز آبی فسفوری
+            '#ff8800', // نارنجی پررنگ
+            '#ff0088'  // صورتی پررنگ
         ];
         
         // ==================== توابع کمکی ====================
@@ -343,6 +844,7 @@
             if (type === 'success') icon = '✅';
             if (type === 'error') icon = '❌';
             if (type === 'warning') icon = '⚠️';
+            if (type === 'delete') icon = '🗑️';
             
             notification.innerHTML = `
                 <span>${icon}</span>
@@ -364,15 +866,130 @@
             });
         }
         
-        // تابع برای تولید رنگ بر اساس peerId
+        function formatDate(timestamp) {
+            return new Date(timestamp).toLocaleDateString('fa-IR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        // تابع برای تولید رنگ فسفوری بر اساس peerId
         function getUserColor(peerId) {
             if (!userColors.has(peerId)) {
-                // اگر کاربر رنگ ندارد، یک رنگ تصادفی انتخاب کن
+                // اگر کاربر رنگ ندارد، یک رنگ فسفوری تصادفی انتخاب کن
                 const hash = peerId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
                 const colorIndex = hash % USER_COLORS.length;
                 userColors.set(peerId, USER_COLORS[colorIndex]);
             }
             return userColors.get(peerId);
+        }
+        
+        // ==================== سیستم انتخاب زمان حذف خودکار ====================
+        function selectExpiration(minutes) {
+            messageExpirationMinutes = minutes;
+            localStorage.setItem('chat_expiration', minutes);
+            
+            // آپدیت UI رادیوها
+            const options = document.querySelectorAll('.expiration-option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+                const radio = option.querySelector('div div');
+                radio.style.display = 'none';
+            });
+            
+            // پیدا کردن گزینه انتخاب شده و هایلایت آن
+            const selectedOption = document.querySelector(`[onclick="selectExpiration(${minutes})"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+                const radio = selectedOption.querySelector('div div');
+                radio.style.display = 'block';
+            }
+            
+            // آپدیت متن نمایشی
+            const expirationText = minutes === 0 ? 'هرگز' : `${minutes} دقیقه`;
+            document.getElementById('currentExpirationTime').textContent = expirationText;
+            
+            console.log(`زمان حذف خودکار تنظیم شد: ${expirationText}`);
+        }
+        
+        function loadExpirationSetting() {
+            const saved = localStorage.getItem('chat_expiration');
+            if (saved !== null) {
+                messageExpirationMinutes = parseInt(saved);
+            }
+            
+            // اعمال گزینه انتخابی در UI
+            selectExpiration(messageExpirationMinutes);
+            
+            // آپدیت وضعیت در sidebar
+            updateExpirationStatus();
+        }
+        
+        function updateExpirationStatus() {
+            const element = document.getElementById('expirationStatus');
+            if (element) {
+                const expirationText = messageExpirationMinutes === 0 ? 
+                    'پیام‌ها حذف نمی‌شوند' : 
+                    `پیام‌ها پس از ${messageExpirationMinutes} دقیقه حذف می‌شوند`;
+                element.textContent = `⏰ ${expirationText}`;
+            }
+        }
+        
+        // ==================== سیستم حذف خودکار پیام‌ها ====================
+        function startExpirationSystem() {
+            if (expirationInterval) clearInterval(expirationInterval);
+            
+            // اگر زمان حذف 0 باشد (هرگز)، سیستم حذف را راه‌اندازی نکن
+            if (messageExpirationMinutes === 0) return;
+            
+            expirationInterval = setInterval(() => {
+                checkAndExpireMessages();
+            }, 60000); // هر دقیقه بررسی کن
+        }
+        
+        function checkAndExpireMessages() {
+            if (!amIAdmin || messageExpirationMinutes === 0) return;
+            
+            const now = Date.now();
+            const expirationTime = messageExpirationMinutes * 60 * 1000; // به میلی‌ثانیه
+            
+            // پیام‌های قدیمی را پیدا کن
+            const expiredMessages = messageHistory.filter(msg => 
+                (now - msg.timestamp) > expirationTime
+            );
+            
+            if (expiredMessages.length > 0) {
+                console.log(`حذف ${expiredMessages.length} پیام منقضی شده`);
+                
+                // حذف از تاریخچه
+                messageHistory = messageHistory.filter(msg => 
+                    (now - msg.timestamp) <= expirationTime
+                );
+                
+                // ذخیره تاریخچه جدید
+                saveMessageHistory();
+                
+                // اطلاع به همه کاربران برای حذف این پیام‌ها
+                broadcastToAll({
+                    type: 'expired_messages',
+                    messageIds: expiredMessages.map(m => m.messageId),
+                    timestamp: now
+                });
+                
+                // حذف از UI مدیریت
+                expiredMessages.forEach(msg => {
+                    const messageEl = document.getElementById(`msg_${msg.messageId}`);
+                    if (messageEl) {
+                        messageEl.style.opacity = '0.3';
+                        messageEl.style.textDecoration = 'line-through';
+                        setTimeout(() => messageEl.remove(), 1000);
+                    }
+                });
+                
+                showNotification(`${expiredMessages.length} پیام منقضی شده حذف شد`, 'delete');
+                updateStorageInfo();
+            }
         }
         
         // ==================== مدیریت تاریخچه پیام‌ها ====================
@@ -381,7 +998,8 @@
             
             // اگر تعداد پیام‌ها از حد مجاز بیشتر شد، قدیمی‌ترین را حذف کن
             if (messageHistory.length > MAX_MESSAGES) {
-                messageHistory.shift(); // اولین (قدیمی‌ترین) پیام را حذف کن
+                const removed = messageHistory.shift(); // اولین (قدیمی‌ترین) پیام را حذف کن
+                console.log(`پیام قدیمی حذف شد: ${removed.messageId}`);
             }
             
             // ذخیره در localStorage اگر مدیریت هستیم
@@ -403,11 +1021,6 @@
             }
             
             const removedCount = initialLength - messageHistory.length;
-            if (removedCount > 0) {
-                console.log(`حذف ${removedCount} پیام از کاربر ${userPeerId}`);
-            }
-            
-            updateStorageInfo();
             return removedCount;
         }
         
@@ -452,16 +1065,18 @@
                 messageCountElement.textContent = `${messageHistory.length} / ${MAX_MESSAGES} پیام`;
                 
                 if (messageHistory.length >= MAX_MESSAGES) {
-                    messageCountElement.style.color = '#ef4444';
+                    messageCountElement.style.color = '#ff4444';
                     storageStatusElement.textContent = '⚠️ ذخیره سازی کامل';
                 } else if (messageHistory.length > MAX_MESSAGES * 0.8) {
-                    messageCountElement.style.color = '#f59e0b';
+                    messageCountElement.style.color = '#ffaa00';
                     storageStatusElement.textContent = '🟡 نزدیک به ظرفیت';
                 } else {
-                    messageCountElement.style.color = '#10b981';
+                    messageCountElement.style.color = '#00ff88';
                     storageStatusElement.textContent = '🟢 فضای کافی';
                 }
             }
+            
+            updateExpirationStatus();
         }
         
         function sendMessageHistoryToUser(peerId) {
@@ -488,6 +1103,117 @@
                 }
                 
                 showNotification(`ارسال تاریخچه پیام‌ها به کاربر جدید`, 'info');
+            }
+        }
+        
+        // ==================== سیستم لایک/دیسلایک ====================
+        function addReaction(messageId, reactionType) {
+            // پیدا کردن پیام در تاریخچه
+            const messageIndex = messageHistory.findIndex(msg => msg.messageId === messageId);
+            if (messageIndex === -1) return;
+            
+            const message = messageHistory[messageIndex];
+            
+            // مقداردهی اولیه آرایه‌های لایک/دیسلایک اگر وجود ندارند
+            if (!message.likes) message.likes = [];
+            if (!message.dislikes) message.dislikes = [];
+            
+            // بررسی اینکه کاربر قبلاً لایک یا دیسلایک کرده یا نه
+            const userLikedIndex = message.likes.indexOf(myPeerId);
+            const userDislikedIndex = message.dislikes.indexOf(myPeerId);
+            
+            if (reactionType === 'like') {
+                if (userLikedIndex > -1) {
+                    // اگر قبلاً لایک کرده، لایک را بردار
+                    message.likes.splice(userLikedIndex, 1);
+                } else {
+                    // لایک جدید
+                    message.likes.push(myPeerId);
+                    
+                    // اگر قبلاً دیسلایک کرده، دیسلایک را بردار
+                    if (userDislikedIndex > -1) {
+                        message.dislikes.splice(userDislikedIndex, 1);
+                    }
+                }
+            } else if (reactionType === 'dislike') {
+                if (userDislikedIndex > -1) {
+                    // اگر قبلاً دیسلایک کرده، دیسلایک را بردار
+                    message.dislikes.splice(userDislikedIndex, 1);
+                } else {
+                    // دیسلایک جدید
+                    message.dislikes.push(myPeerId);
+                    
+                    // اگر قبلاً لایک کرده، لایک را بردار
+                    if (userLikedIndex > -1) {
+                        message.likes.splice(userLikedIndex, 1);
+                    }
+                }
+            }
+            
+            // ذخیره تغییرات در تاریخچه
+            messageHistory[messageIndex] = message;
+            if (amIAdmin) {
+                saveMessageHistory();
+            }
+            
+            // ارسال به سرور برای انتشار
+            if (amIAdmin) {
+                // اگر مدیریت هستیم، مستقیماً به همه ارسال کن
+                broadcastToAll({
+                    type: 'message_reaction',
+                    messageId: messageId,
+                    likes: message.likes,
+                    dislikes: message.dislikes,
+                    timestamp: Date.now()
+                });
+            } else {
+                // اگر عضو هستیم، به مدیریت ارسال کن
+                const adminConn = connections.get(ADMIN_PEER_ID);
+                if (adminConn && adminConn.open) {
+                    adminConn.send({
+                        type: 'message_reaction',
+                        messageId: messageId,
+                        likes: message.likes,
+                        dislikes: message.dislikes,
+                        timestamp: Date.now()
+                    });
+                }
+            }
+            
+            // آپدیت UI
+            updateReactionUI(messageId, message.likes, message.dislikes);
+        }
+        
+        function updateReactionUI(messageId, likes, dislikes) {
+            const messageEl = document.getElementById(`msg_${messageId}`);
+            if (!messageEl) return;
+            
+            // آپدیت دکمه‌های لایک/دیسلایک
+            const likeBtn = messageEl.querySelector('.reaction-btn.like-btn');
+            const dislikeBtn = messageEl.querySelector('.reaction-btn.dislike-btn');
+            
+            if (likeBtn) {
+                const likeCount = likes ? likes.length : 0;
+                likeBtn.innerHTML = `👍 <span class="reaction-count">${likeCount}</span>`;
+                
+                // اگر کاربر لایک کرده، کلاس liked را اضافه کن
+                if (likes && likes.includes(myPeerId)) {
+                    likeBtn.classList.add('liked');
+                } else {
+                    likeBtn.classList.remove('liked');
+                }
+            }
+            
+            if (dislikeBtn) {
+                const dislikeCount = dislikes ? dislikes.length : 0;
+                dislikeBtn.innerHTML = `👎 <span class="reaction-count">${dislikeCount}</span>`;
+                
+                // اگر کاربر دیسلایک کرده، کلاس disliked را اضافه کن
+                if (dislikes && dislikes.includes(myPeerId)) {
+                    dislikeBtn.classList.add('disliked');
+                } else {
+                    dislikeBtn.classList.remove('disliked');
+                }
             }
         }
         
@@ -710,13 +1436,15 @@
                 isMe: true
             });
             
-            // بارگذاری تاریخچه پیام‌ها
+            // بارگذاری تنظیمات
+            loadExpirationSetting();
             loadMessageHistory();
             
             showChatPage();
             listenForIncomingConnections();
             startHeartbeatSystem();
             startReconnectMonitor();
+            startExpirationSystem();
             
             showNotification(`شما مدیریت شبکه شدید!`, 'success');
             updateUI();
@@ -733,6 +1461,9 @@
                 lastSeen: Date.now(),
                 isMe: true
             });
+            
+            // بارگذاری تنظیمات
+            loadExpirationSetting();
             
             showChatPage();
             listenForIncomingConnections();
@@ -778,7 +1509,8 @@
                 metadata: {
                     type: 'member_join',
                     visibleName: myVisibleName,
-                    peerId: myPeerId
+                    peerId: myPeerId,
+                    expiration: messageExpirationMinutes
                 }
             });
             
@@ -792,6 +1524,7 @@
                     type: 'register',
                     peerId: myPeerId,
                     visibleName: myVisibleName,
+                    expiration: messageExpirationMinutes,
                     timestamp: Date.now()
                 });
                 
@@ -819,12 +1552,6 @@
             conn.on('close', () => {
                 console.log('❌ اتصال بسته شد با:', peerId);
                 connections.delete(peerId);
-                
-                // اگر مدیریت هستیم و کاربر آفلاین شد
-                if (amIAdmin && peerId !== ADMIN_PEER_ID) {
-                    handleUserOffline(peerId);
-                }
-                
                 updateUsersList();
                 updateConnectionStatus(connections.size > 0);
             });
@@ -832,12 +1559,6 @@
             conn.on('error', (err) => {
                 console.error('خطا در اتصال:', peerId, err);
                 connections.delete(peerId);
-                
-                // اگر مدیریت هستیم و کاربر آفلاین شد
-                if (amIAdmin && peerId !== ADMIN_PEER_ID) {
-                    handleUserOffline(peerId);
-                }
-                
                 updateUsersList();
                 updateConnectionStatus(connections.size > 0);
             });
@@ -870,8 +1591,14 @@
                 case 'message_history_chunk':
                     handleMessageHistoryChunk(data, fromPeerId);
                     break;
-                case 'user_offline':
-                    handleUserOfflineMessage(data, fromPeerId);
+                case 'message_reaction':
+                    handleMessageReaction(data, fromPeerId);
+                    break;
+                case 'delete_user_messages':
+                    handleDeleteUserMessages(data, fromPeerId);
+                    break;
+                case 'expired_messages':
+                    handleExpiredMessages(data, fromPeerId);
                     break;
             }
         }
@@ -898,7 +1625,8 @@
                 isAdmin: false,
                 isOnline: true,
                 lastSeen: Date.now(),
-                isMe: false
+                isMe: false,
+                expiration: data.expiration || 5
             };
             
             users.set(data.peerId, userInfo);
@@ -928,6 +1656,10 @@
         }
         
         function handlePublicMessage(data, fromPeerId) {
+            // اضافه کردن لایک/دیسلایک خالی اگر وجود ندارند
+            if (!data.likes) data.likes = [];
+            if (!data.dislikes) data.dislikes = [];
+            
             // ذخیره در تاریخچه
             addToHistory(data);
             
@@ -997,50 +1729,49 @@
             }
         }
         
-        function handleUserOfflineMessage(data, fromPeerId) {
-            if (amIAdmin) return; // مدیریت خودش این پیام را ایجاد کرده
+        function handleMessageReaction(data, fromPeerId) {
+            // آپدیت پیام در تاریخچه
+            const messageIndex = messageHistory.findIndex(msg => msg.messageId === data.messageId);
+            if (messageIndex > -1) {
+                messageHistory[messageIndex].likes = data.likes || [];
+                messageHistory[messageIndex].dislikes = data.dislikes || [];
+            }
             
-            // حذف پیام‌های کاربر آفلاین از نمایش
+            // آپدیت UI
+            updateReactionUI(data.messageId, data.likes, data.dislikes);
+            
+            // اگر مدیریت هستیم، به همه ارسال کن
+            if (amIAdmin) {
+                broadcastToAll(data, [fromPeerId]);
+            }
+        }
+        
+        function handleDeleteUserMessages(data, fromPeerId) {
+            // حذف پیام‌های کاربر از تاریخچه محلی
+            const removedCount = removeUserMessagesFromHistory(data.userPeerId);
+            
+            // حذف از UI
             removeUserMessagesFromDisplay(data.userPeerId);
-            showNotification(`پیام‌های ${data.userName} حذف شد`, 'info');
+            
+            // نمایش نوتیفیکیشن
+            if (data.userName) {
+                showNotification(`پیام‌های ${data.userName} حذف شد (${removedCount} پیام)`, 'delete');
+            }
+            
+            // اگر مدیریت هستیم، به بقیه ارسال کن
+            if (amIAdmin) {
+                broadcastToAll(data, [fromPeerId]);
+            }
         }
         
-        // ==================== مدیریت کاربران آفلاین ====================
-        function handleUserOffline(userPeerId) {
-            if (!amIAdmin) return;
-            
-            const user = users.get(userPeerId);
-            if (!user) return;
-            
-            console.log(`کاربر آفلاین شد: ${user.visibleName} (${userPeerId})`);
-            
-            // به روزرسانی وضعیت کاربر
-            user.isOnline = false;
-            updateUsersList();
-            
-            // حذف پیام‌های کاربر از تاریخچه
-            const removedCount = removeUserMessagesFromHistory(userPeerId);
-            
-            // اطلاع به همه کاربران برای حذف پیام‌های این کاربر
-            broadcastToAll({
-                type: 'user_offline',
-                userPeerId: userPeerId,
-                userName: user.visibleName,
-                removedCount: removedCount,
-                timestamp: Date.now()
-            });
-            
-            showNotification(`پیام‌های ${user.visibleName} حذف شدند (${removedCount} پیام)`, 'warning');
-        }
-        
-        function removeUserMessagesFromDisplay(userPeerId) {
-            // حذف پیام‌های کاربر از UI
-            const messageElements = document.querySelectorAll('.message-container');
-            messageElements.forEach(el => {
-                if (el.dataset.senderId === userPeerId) {
-                    el.style.opacity = '0.3';
-                    el.style.textDecoration = 'line-through';
-                    setTimeout(() => el.remove(), 1000);
+        function handleExpiredMessages(data, fromPeerId) {
+            // حذف پیام‌های منقضی شده از UI
+            data.messageIds.forEach(messageId => {
+                const messageEl = document.getElementById(`msg_${messageId}`);
+                if (messageEl) {
+                    messageEl.style.opacity = '0.3';
+                    messageEl.style.textDecoration = 'line-through';
+                    setTimeout(() => messageEl.remove(), 1000);
                 }
             });
         }
@@ -1085,7 +1816,8 @@
             const now = Date.now();
             users.forEach((user, peerId) => {
                 if (peerId !== myPeerId && now - user.lastSeen > 30000) {
-                    handleUserOffline(peerId);
+                    user.isOnline = false;
+                    updateUsersList();
                 }
             });
         }
@@ -1109,7 +1841,9 @@
                     messageId: replyingTo.messageId,
                     author: replyingTo.author,
                     content: replyingTo.content
-                } : null
+                } : null,
+                likes: [],
+                dislikes: []
             };
             
             // نمایش پیام
@@ -1194,7 +1928,9 @@
                 messageId: messageId,
                 status: 'sending',
                 content: '📸 در حال بارگذاری تصویر...',
-                totalChunks: totalChunks
+                totalChunks: totalChunks,
+                likes: [],
+                dislikes: []
             };
             
             displayMessage(loadingMessage, true, 'public');
@@ -1254,7 +1990,9 @@
                     senderName: img.senderName,
                     timestamp: Date.now(),
                     messageId: data.messageId,
-                    status: 'delivered'
+                    status: 'delivered',
+                    likes: [],
+                    dislikes: []
                 };
                 
                 // ذخیره در تاریخچه اگر مدیریت هستیم
@@ -1274,8 +2012,8 @@
             document.getElementById('connectionStatus').textContent = 
                 amIAdmin ? '👑 مدیریت شبکه' : '👤 عضو شبکه';
             
-            document.getElementById('statusIndicator').style.background = 
-                connections.size > 0 ? '#10b981' : '#ef4444';
+            document.getElementById('statusIndicator').className = 
+                amIAdmin ? 'user-status status-online' : 'user-status status-online';
             
             document.getElementById('adminText').textContent = 
                 amIAdmin ? 'شما مدیریت هستید' : `مدیریت: ${users.get(ADMIN_PEER_ID)?.visibleName || '...'}`;
@@ -1292,10 +2030,10 @@
             const statusText = document.getElementById('connectionStatus');
             
             if (connected) {
-                indicator.style.background = '#10b981';
+                indicator.className = 'user-status status-online';
                 statusText.textContent = amIAdmin ? '👑 مدیریت شبکه' : '✅ متصل';
             } else {
-                indicator.style.background = '#ef4444';
+                indicator.className = 'user-status status-offline';
                 statusText.textContent = '🔴 قطع';
             }
         }
@@ -1308,28 +2046,30 @@
             
             // نمایش سایر کاربران
             users.forEach((user, peerId) => {
-                if (user.isOnline && !user.isMe) {
+                if (!user.isMe) {
                     hasUsers = true;
                     
                     const userEl = document.createElement('div');
                     userEl.className = 'user-item';
+                    userEl.dataset.peerId = peerId;
                     
                     const userColor = getUserColor(peerId);
+                    const userStatus = user.isOnline ? 'status-online' : 'status-offline';
                     
                     userEl.innerHTML = `
-                        <div style="width: 40px; height: 40px; border-radius: 50%; background: ${user.isAdmin ? 'linear-gradient(135deg, #f59e0b, #f97316)' : userColor}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: ${user.isAdmin ? 'linear-gradient(135deg, #ffaa00, #ff8800)' : '#2a2a2a'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; border: 2px solid ${userColor}; box-shadow: 0 0 8px ${userColor}80;">
                             ${user.visibleName.charAt(0)}
                         </div>
                         <div style="flex: 1;">
-                            <div style="font-size: 14px; font-weight: 500; color: #1e293b; margin-bottom: 2px;">
+                            <div style="font-size: 14px; font-weight: 500; color: #e0e0e0; margin-bottom: 2px; display: flex; align-items: center;">
+                                <div class="user-status ${userStatus}" style="margin-left: 5px;"></div>
                                 ${user.visibleName}
-                                ${user.isAdmin ? '<span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-right: 5px;">مدیریت</span>' : ''}
+                                ${user.isAdmin ? '<span class="admin-badge">مدیریت</span>' : ''}
                             </div>
-                            <div style="font-size: 11px; color: #64748b;">
+                            <div style="font-size: 11px; color: #b0b0b0;">
                                 ${user.isAdmin ? 'مدیر شبکه' : 'کاربر'}
                             </div>
                         </div>
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
                     `;
                     
                     container.appendChild(userEl);
@@ -1341,26 +2081,27 @@
             if (me) {
                 const userEl = document.createElement('div');
                 userEl.className = 'user-item';
-                userEl.style.background = '#f0f9ff';
-                userEl.style.borderColor = '#3b82f6';
+                userEl.style.background = 'rgba(138, 43, 226, 0.1)';
+                userEl.style.borderColor = '#8a2be2';
+                userEl.dataset.peerId = myPeerId;
                 
                 const myColor = getUserColor(myPeerId);
                 
                 userEl.innerHTML = `
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: ${myColor}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #8a2be2, #6a0dad); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; border: 2px solid ${myColor}; box-shadow: 0 0 8px ${myColor}80;">
                         ${me.visibleName.charAt(0)}
                     </div>
                     <div style="flex: 1;">
-                        <div style="font-size: 14px; font-weight: 500; color: #1e293b; margin-bottom: 2px;">
+                        <div style="font-size: 14px; font-weight: 500; color: #e0e0e0; margin-bottom: 2px; display: flex; align-items: center;">
+                            <div class="user-status status-online" style="margin-left: 5px;"></div>
                             ${me.visibleName}
-                            <span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-right: 5px;">شما</span>
-                            ${me.isAdmin ? '<span style="background: #f59e0b; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-right: 5px;">مدیریت</span>' : ''}
+                            <span class="me-badge">شما</span>
+                            ${me.isAdmin ? '<span class="admin-badge">مدیریت</span>' : ''}
                         </div>
-                        <div style="font-size: 11px; color: #64748b;">
+                        <div style="font-size: 11px; color: #b0b0b0;">
                             ${me.isAdmin ? 'مدیر شبکه' : 'کاربر'}
                         </div>
                     </div>
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div>
                 `;
                 
                 container.insertBefore(userEl, container.firstChild);
@@ -1369,9 +2110,9 @@
             
             if (!hasUsers) {
                 container.innerHTML = `
-                    <div style="text-align: center; padding: 20px 0; color: #64748b;">
+                    <div style="text-align: center; padding: 20px 0; color: #b0b0b0;">
                         <div style="font-size: 32px; margin-bottom: 10px; opacity: 0.5;">👤</div>
-                        <p>کاربر آنلاین دیگری وجود ندارد</p>
+                        <p>کاربر دیگری وجود ندارد</p>
                     </div>
                 `;
             }
@@ -1389,30 +2130,34 @@
             messageEl.id = `msg_${data.messageId}`;
             messageEl.className = 'message-container';
             messageEl.dataset.senderId = data.senderId;
+            messageEl.dataset.timestamp = data.timestamp;
             
-            // تعیین رنگ بر اساس کاربر
+            // تعیین رنگ فسفوری بر اساس کاربر
             const userColor = getUserColor(data.senderId);
             
-            // برای پیام‌های تصویری، رنگ کاربر را نشان نده
-            const backgroundColor = data.type === 'image' ? 
-                (isOutgoing ? '#3b82f6' : 'white') : 
-                (isOutgoing ? userColor : 'white');
+            // استایل حباب پیام در تم تاریک
+            const backgroundColor = isOutgoing ? 
+                `linear-gradient(135deg, ${userColor}20, ${userColor}10)` : 
+                'linear-gradient(135deg, #2a2a2a, #1a1a1a)';
             
-            const textColor = data.type === 'image' ? 
-                (isOutgoing ? 'white' : '#1e293b') : 
-                (isOutgoing ? 'white' : '#1e293b');
+            const borderColor = userColor;
+            const textColor = isOutgoing ? userColor : '#e0e0e0';
             
             messageEl.style.cssText = `
                 max-width: 65%;
                 padding: 12px 16px;
                 border-radius: 18px;
                 position: relative;
-                animation: slideIn 0.3s ease;
+                animation: fadeIn 0.3s ease;
                 word-break: break-word;
                 cursor: pointer;
+                background: ${backgroundColor};
+                color: ${textColor};
+                border: 2px solid ${borderColor};
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                 ${isOutgoing ? 
-                    `background: ${backgroundColor}; color: ${textColor}; align-self: flex-end; border-bottom-left-radius: 5px; border: ${data.type !== 'image' ? `2px solid ${userColor}` : 'none'};` : 
-                    `background: ${backgroundColor}; color: ${textColor}; align-self: flex-start; border-bottom-right-radius: 5px; border: ${data.type !== 'image' ? `2px solid ${userColor}` : 'none'};`
+                    'align-self: flex-end; border-bottom-left-radius: 5px;' : 
+                    'align-self: flex-start; border-bottom-right-radius: 5px;'
                 }
             `;
             
@@ -1431,9 +2176,9 @@
             
             let contentHtml = '';
             if (data.type === 'image') {
-                contentHtml = `<img src="${data.content}" style="max-width: 100%; border-radius: 8px; cursor: pointer;" onclick="viewImageFullscreen(this)">`;
+                contentHtml = `<img src="${data.content}" class="image-message" onclick="viewImageFullscreen(this)">`;
             } else {
-                contentHtml = data.content;
+                contentHtml = `<div class="message-content">${data.content}</div>`;
             }
             
             // اضافه کردن بخش ریپلای اگر وجود دارد
@@ -1447,10 +2192,32 @@
                 `;
             }
             
+            // ایجاد دکمه‌های لایک/دیسلایک
+            const likes = data.likes || [];
+            const dislikes = data.dislikes || [];
+            const likeCount = likes.length;
+            const dislikeCount = dislikes.length;
+            const userLiked = likes.includes(myPeerId);
+            const userDisliked = dislikes.includes(myPeerId);
+            
+            const likeBtnClass = `reaction-btn like-btn ${userLiked ? 'liked' : ''}`;
+            const dislikeBtnClass = `reaction-btn dislike-btn ${userDisliked ? 'disliked' : ''}`;
+            
+            const reactionButtons = `
+                <div class="reaction-buttons">
+                    <div class="${likeBtnClass}" onclick="addReaction('${data.messageId}', 'like'); event.stopPropagation();">
+                        👍 <span class="reaction-count">${likeCount}</span>
+                    </div>
+                    <div class="${dislikeBtnClass}" onclick="addReaction('${data.messageId}', 'dislike'); event.stopPropagation();">
+                        👎 <span class="reaction-count">${dislikeCount}</span>
+                    </div>
+                </div>
+            `;
+            
             messageEl.innerHTML = `
                 ${replySection}
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <div style="font-size: 12px; font-weight: 500;">
+                    <div style="font-size: 12px; font-weight: 500; color: ${userColor};">
                         ${data.senderName || (isOutgoing ? myVisibleName : 'کاربر')}
                         ${data.type !== 'image' ? '<span style="font-size: 10px; opacity: 0.7; margin-right: 5px;">(برای ریپلای کلیک کنید)</span>' : ''}
                     </div>
@@ -1459,7 +2226,9 @@
                         ${isOutgoing ? `<span class="message-status ${data.status}">${statusIcon}</span>` : ''}
                     </div>
                 </div>
-                <div style="line-height: 1.5; font-size: 14px;">${contentHtml}</div>
+                ${contentHtml}
+                ${reactionButtons}
+                <div class="message-date">${formatDate(data.timestamp)}</div>
             `;
             
             container.appendChild(messageEl);
@@ -1475,6 +2244,26 @@
             setTimeout(() => {
                 container.scrollTop = container.scrollHeight;
             }, 100);
+        }
+        
+        function removeUserMessagesFromDisplay(userPeerId) {
+            // حذف پیام‌های کاربر از UI
+            const messageElements = document.querySelectorAll('.message-container');
+            let removedCount = 0;
+            
+            messageElements.forEach(el => {
+                if (el.dataset.senderId === userPeerId) {
+                    el.style.opacity = '0.3';
+                    el.style.textDecoration = 'line-through';
+                    el.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        el.remove();
+                        removedCount++;
+                    }, 500);
+                }
+            });
+            
+            return removedCount;
         }
         
         function updateMessageStatus(messageId, status) {
@@ -1519,13 +2308,102 @@
             document.body.appendChild(fullscreenDiv);
         }
         
+        // ==================== مدیریت حذف پیام‌های کاربر ====================
+        function clearUserMessagesPrompt() {
+            if (!amIAdmin) {
+                showNotification('فقط مدیریت می‌تواند پیام‌های کاربران را حذف کند', 'error');
+                return;
+            }
+            
+            // پر کردن لیست کاربران در مودال
+            const userListContainer = document.getElementById('userListForDeletion');
+            userListContainer.innerHTML = '';
+            
+            users.forEach((user, peerId) => {
+                if (!user.isMe && !user.isAdmin) { // نمی‌توان پیام‌های خود یا مدیریت را حذف کرد
+                    const userEl = document.createElement('div');
+                    userEl.className = 'expiration-option';
+                    userEl.onclick = () => selectUserForDeletion(peerId, user.visibleName);
+                    userEl.dataset.peerId = peerId;
+                    
+                    userEl.innerHTML = `
+                        <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: #8a2be2; display: none;"></div>
+                        </div>
+                        <span>${user.visibleName}</span>
+                    `;
+                    
+                    userListContainer.appendChild(userEl);
+                }
+            });
+            
+            // نمایش مودال
+            document.getElementById('deleteUserModal').style.display = 'flex';
+            selectedUserForDeletion = null;
+        }
+        
+        function selectUserForDeletion(peerId, userName) {
+            // حذف انتخاب قبلی
+            const previousSelected = document.querySelector('#userListForDeletion .expiration-option.selected');
+            if (previousSelected) {
+                previousSelected.classList.remove('selected');
+                const radio = previousSelected.querySelector('div div');
+                radio.style.display = 'none';
+            }
+            
+            // انتخاب جدید
+            const selectedEl = document.querySelector(`#userListForDeletion [data-peer-id="${peerId}"]`);
+            if (selectedEl) {
+                selectedEl.classList.add('selected');
+                const radio = selectedEl.querySelector('div div');
+                radio.style.display = 'block';
+                selectedUserForDeletion = { peerId, userName };
+            }
+        }
+        
+        function closeDeleteUserModal() {
+            document.getElementById('deleteUserModal').style.display = 'none';
+            selectedUserForDeletion = null;
+        }
+        
+        function confirmDeleteUserMessages() {
+            if (!selectedUserForDeletion) {
+                showNotification('لطفاً کاربری را انتخاب کنید', 'error');
+                return;
+            }
+            
+            const { peerId, userName } = selectedUserForDeletion;
+            
+            // حذف پیام‌های کاربر از تاریخچه
+            const removedCount = removeUserMessagesFromHistory(peerId);
+            
+            // حذف از UI مدیریت
+            removeUserMessagesFromDisplay(peerId);
+            
+            // اطلاع به همه کاربران برای حذف پیام‌های این کاربر
+            broadcastToAll({
+                type: 'delete_user_messages',
+                userPeerId: peerId,
+                userName: userName,
+                removedCount: removedCount,
+                timestamp: Date.now()
+            });
+            
+            // بستن مودال
+            closeDeleteUserModal();
+            
+            // نمایش نوتیفیکیشن
+            showNotification(`پیام‌های ${userName} حذف شد (${removedCount} پیام)`, 'delete');
+        }
+        
         // ==================== پاکسازی کش ====================
         function clearLocalStorage() {
-            if (confirm('آیا می‌خواهید تمام ذخیره‌سازی‌های محلی پاک شود؟\nاین عمل باعث حذف تاریخچه پیام‌ها و تنظیمات می‌شود.')) {
+            if (confirm('⚠️ آیا می‌خواهید تمام ذخیره‌سازی‌های محلی پاک شود؟\nاین عمل باعث حذف تاریخچه پیام‌ها و تنظیمات می‌شود.')) {
                 try {
                     // پاکسازی localStorage
                     localStorage.removeItem('chat_message_history');
                     localStorage.removeItem('chat_username');
+                    localStorage.removeItem('chat_expiration');
                     
                     // پاکسازی متغیرهای محلی
                     messageHistory = [];
@@ -1535,11 +2413,15 @@
                     container.innerHTML = '';
                     document.getElementById('emptyState').style.display = 'block';
                     
-                    showNotification('ذخیره‌سازی محلی با موفقیت پاک شد', 'success');
+                    // بارگذاری مجدد تنظیمات پیش‌فرض
+                    messageExpirationMinutes = 5;
+                    selectExpiration(5);
+                    
+                    showNotification('✅ ذخیره‌سازی محلی با موفقیت پاک شد', 'success');
                     updateStorageInfo();
                     
                 } catch (error) {
-                    showNotification('خطا در پاکسازی ذخیره‌سازی', 'error');
+                    showNotification('❌ خطا در پاکسازی ذخیره‌سازی', 'error');
                     console.error('خطا در پاکسازی:', error);
                 }
             }
@@ -1555,6 +2437,7 @@
                 span.textContent = emoji;
                 span.style.cursor = 'pointer';
                 span.style.fontSize = '24px';
+                span.style.color = '#e0e0e0';
                 span.onclick = () => {
                     const input = document.getElementById('messageInput');
                     input.value += emoji;
@@ -1589,6 +2472,7 @@
                 const container = document.getElementById('messagesContainer');
                 container.innerHTML = '';
                 document.getElementById('emptyState').style.display = 'block';
+                showNotification('تاریخچه نمایشی پاک شد', 'success');
             }
         }
         
@@ -1600,6 +2484,7 @@
                 if (heartbeatInterval) clearInterval(heartbeatInterval);
                 if (reconnectInterval) clearInterval(reconnectInterval);
                 if (electionTimeout) clearTimeout(electionTimeout);
+                if (expirationInterval) clearInterval(expirationInterval);
                 
                 document.getElementById('loginPage').style.display = 'flex';
                 document.getElementById('chatContainer').style.display = 'none';
@@ -1615,6 +2500,9 @@
                 document.getElementById('usernameInput').value = savedUsername;
             }
             
+            // بارگذاری تنظیمات حذف خودکار
+            loadExpirationSetting();
+            
             // بستن ایموجی پیکر با کلیک بیرون
             document.addEventListener('click', function(event) {
                 const emojiPicker = document.getElementById('emojiPicker');
@@ -1623,12 +2511,14 @@
                     event.target.id !== 'emojiPicker') {
                     emojiPicker.style.display = 'none';
                 }
+                
+                // بستن مودال با کلیک بیرون
+                const modal = document.getElementById('deleteUserModal');
+                if (modal.style.display === 'flex' && 
+                    !modal.contains(event.target)) {
+                    closeDeleteUserModal();
+                }
             });
-            
-            // بارگذاری تاریخچه پیام‌ها (اگر کاربر هستیم و قبلاً ذخیره شده)
-            if (!amIAdmin) {
-                loadMessageHistory();
-            }
         });
     </script>
 </body>
