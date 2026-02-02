@@ -2,128 +2,176 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>گپ آرانا</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت روم عمومی</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         :root {
-            --bg-primary: #0e1621;
-            --bg-secondary: #17212b;
-            --bg-surface: #1e2c3a;
-            --bg-input: #2a3942;
-            --accent-primary: #2b5278;
-            --accent-secondary: #4d5b9c;
-            --accent-green: #00af9c;
-            --text-primary: #e1e9f0;
-            --text-secondary: #7c8b96;
-            --text-muted: #5d6c79;
-            --border-color: #2a3942;
-            --message-incoming: #182533;
-            --message-outgoing: #2b5278;
-            --status-online: #00af9c;
-            --status-offline: #7c8b96;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            --header-height: 60px;
-            --input-height: 80px;
-            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border: #dee2e6;
+            --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --radius: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 1rem;
         }
 
         body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            height: 90vh; /* 10% کمتر از صفحه */
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            -webkit-font-smoothing: antialiased;
-            padding-bottom: var(--safe-area-bottom);
-        }
-
-        /* صفحات اصلی */
-        .page {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .page.hidden {
-            transform: translateX(100%);
-        }
-
-        .page.active {
-            transform: translateX(0);
-        }
-
-        /* هدر */
-        .header {
-            background: var(--bg-secondary);
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            position: relative;
-            height: var(--header-height);
-            flex-shrink: 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .header-title {
-            flex: 1;
-            font-size: 17px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            padding: 20px;
         }
 
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .chat-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background: white;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            position: relative;
         }
 
-        .back-btn {
-            font-size: 22px;
-            color: var(--accent-green);
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: var(--light);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
         }
 
-        /* آواتار */
-        .avatar {
+        .user-info {
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+        }
+
+        .status-dot.offline {
+            background: var(--gray);
+        }
+
+        .chat-types {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .chat-type-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .chat-type-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        .chat-type-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .chat-type-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .chat-item:hover {
+            background: white;
+        }
+
+        .chat-item.active {
+            background: white;
+            border-right: 3px solid var(--primary);
+        }
+
+        .chat-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -131,547 +179,506 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 18px;
             color: white;
-            flex-shrink: 0;
-        }
-
-        .avatar.small {
-            width: 38px;
-            height: 38px;
             font-size: 16px;
         }
 
-        /* صفحه لاگین */
-        #loginPage {
-            justify-content: center;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--bg-primary), #131e29);
-        }
-
-        .login-container {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 0 20px;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .app-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--accent-green), #53bdeb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .input-group {
-            margin-bottom: 25px;
-        }
-
-        .input-label {
-            display: block;
-            margin-bottom: 10px;
-            color: var(--text-secondary);
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .username-input {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 18px;
-            text-align: center;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .username-input:focus {
-            outline: none;
-            border-color: var(--accent-green);
-            box-shadow: 0 0 0 2px rgba(0, 175, 156, 0.2);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: var(--accent-green);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: #009982;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 175, 156, 0.3);
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            background: #c82333;
-            transform: translateY(-2px);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* صفحه مخاطبین */
-        .search-bar {
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: none;
-            border-radius: 10px;
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 15px;
-            text-align: right;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--accent-green);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .contacts-list {
-            flex: 1;
-            overflow-y: auto;
-            background: var(--bg-primary);
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            padding: 14px 16px;
-            gap: 15px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background 0.2s;
-            min-height: 70px;
-        }
-
-        .contact-item:active {
-            background: var(--bg-secondary);
-        }
-
-        .contact-info {
+        .chat-info {
             flex: 1;
             min-width: 0;
         }
 
-        .contact-name {
+        .chat-name {
             font-weight: 500;
-            margin-bottom: 5px;
-            font-size: 16px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .contact-last-message {
+            margin-bottom: 3px;
             font-size: 14px;
-            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chat-name i {
+            font-size: 12px;
+        }
+
+        .chat-last-message {
+            font-size: 12px;
+            color: var(--gray);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .contact-time {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-            text-align: left;
+        .chat-time {
+            font-size: 11px;
+            color: var(--gray);
         }
 
-        .contact-status {
+        .online-indicator {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: var(--status-online);
-            flex-shrink: 0;
+            background: #4ade80;
+            border: 2px solid var(--light);
         }
 
-        .contact-status.offline {
-            background: var(--status-offline);
-        }
-
-        /* صفحه چت */
-        .chat-container {
+        /* Main Chat Area */
+        .main-chat {
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            position: relative;
         }
 
-        .messages-area {
+        .chat-header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header-info h2 {
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        .chat-header-info p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .chat-action-btn:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .messages-container {
             flex: 1;
+            padding: 20px;
             overflow-y: auto;
-            padding: 16px;
-            background: linear-gradient(180deg, var(--bg-primary) 0%, #0c151d 100%);
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            -webkit-overflow-scrolling: touch;
-            min-height: 0;
+            gap: 10px;
         }
 
-        .message-wrapper {
-            max-width: 85%;
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: var(--radius-lg);
             position: relative;
-            animation: messageAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: messageAppear 0.3s ease;
+            word-wrap: break-word;
         }
 
         @keyframes messageAppear {
             from {
                 opacity: 0;
-                transform: translateY(20px) scale(0.95);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
         }
 
-        .message-wrapper.incoming {
-            align-self: flex-start;
-        }
-
-        .message-wrapper.outgoing {
-            align-self: flex-end;
-        }
-
-        .message {
-            padding: 10px 14px;
-            border-radius: 12px;
-            position: relative;
-            word-wrap: break-word;
-            max-width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
         .message.incoming {
-            background: var(--message-incoming);
-            border-top-right-radius: 4px;
+            align-self: flex-start;
+            background: white;
+            border: 1px solid var(--border);
+            border-top-right-radius: 0;
         }
 
         .message.outgoing {
-            border-top-left-radius: 4px;
+            align-self: flex-end;
+            color: white;
+            border-top-left-radius: 0;
         }
 
-        .message-content {
-            font-size: 15px;
-            line-height: 1.4;
-            word-break: break-word;
-        }
-
-        .message-footer {
+        .message-header {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
-            gap: 6px;
-            margin-top: 4px;
-            direction: ltr;
+            margin-bottom: 5px;
+        }
+
+        .message-sender {
+            font-weight: 500;
+            font-size: 13px;
         }
 
         .message-time {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
             opacity: 0.8;
+        }
+
+        .message-content {
+            line-height: 1.5;
+            font-size: 14px;
         }
 
         .message-status {
             display: flex;
+            justify-content: flex-end;
             gap: 2px;
+            margin-top: 5px;
+            direction: ltr;
         }
 
         .status-icon {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            transition: all 0.3s;
-        }
-
-        .status-icon.sent {
-            color: #8eb5f1;
-        }
-
-        .status-icon.delivered {
-            color: #8eb5f1;
+            opacity: 0.7;
         }
 
         .status-icon.read {
-            color: var(--accent-green);
+            color: #4ade80;
         }
 
-        .message-sender {
-            font-size: 12px;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .reply-preview {
-            background: rgba(255, 255, 255, 0.05);
-            border-right: 3px solid var(--accent-green);
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-bottom: 8px;
+        .message-image {
+            max-width: 200px;
+            border-radius: var(--radius);
+            margin-top: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: transform 0.3s;
         }
 
-        .reply-preview:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .message-image:hover {
+            transform: scale(1.02);
         }
 
-        .reply-sender {
-            font-size: 12px;
-            margin-bottom: 2px;
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: fit-content;
+            margin-bottom: 10px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--gray);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .input-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .input-action-btn:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .message-input {
+            flex: 1;
+            min-height: 40px;
+            max-height: 120px;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            resize: none;
+            font-size: 14px;
+            line-height: 1.5;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .message-input:focus {
+            border-color: var(--primary);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Login Page */
+        .login-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .login-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .login-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .login-subtitle {
+            color: var(--gray);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
             font-weight: 500;
         }
 
-        .reply-content {
-            font-size: 13px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: border-color 0.3s;
         }
 
-        .reply-indicator {
-            background: var(--bg-secondary);
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
-            display: none;
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Online Users */
+        .online-users {
+            padding: 15px;
+            background: var(--light);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .online-user {
+            display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            animation: slideDown 0.3s ease;
+            gap: 8px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        @keyframes slideDown {
+        .online-user:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .online-user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
             from {
-                transform: translateY(-100%);
+                transform: translateX(100%);
                 opacity: 0;
             }
             to {
-                transform: translateY(0);
+                transform: translateX(0);
                 opacity: 1;
             }
         }
 
-        .reply-indicator-content {
-            flex: 1;
-            margin-left: 12px;
+        .notification.success {
+            border-right: 4px solid #4ade80;
         }
 
-        .reply-indicator-sender {
-            font-size: 13px;
-            color: var(--accent-green);
-            margin-bottom: 2px;
+        .notification.error {
+            border-right: 4px solid var(--danger);
         }
 
-        .reply-indicator-text {
-            font-size: 14px;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .notification.info {
+            border-right: 4px solid var(--primary);
         }
 
-        .cancel-reply {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 18px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-        }
-
-        .input-area {
-            background: var(--bg-secondary);
-            padding: 12px 16px;
-            border-top: 1px solid var(--border-color);
-            position: relative;
-            min-height: 80px;
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            transition: all 0.3s;
-            flex-shrink: 0;
-            margin-top: auto;
-            padding-bottom: calc(12px + var(--safe-area-bottom));
-        }
-
-        .input-wrapper {
-            flex: 1;
-            background: var(--bg-input);
-            border-radius: 20px;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 44px;
-            transition: all 0.3s;
-            border: 1px solid transparent;
-        }
-
-        .input-wrapper:focus-within {
-            border-color: var(--accent-green);
-        }
-
-        #messageInput {
-            flex: 1;
-            border: none;
-            background: transparent;
-            color: var(--text-primary);
-            font-size: 15px;
-            resize: none;
-            max-height: 100px;
-            min-height: 24px;
-            padding: 0;
-            font-family: inherit;
-            line-height: 1.4;
-            outline: none;
-        }
-
-        #messageInput::placeholder {
-            color: var(--text-muted);
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 20px;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .action-btn.attach {
-            color: var(--text-secondary);
-        }
-
-        .action-btn.send {
-            background: var(--accent-green);
-            color: white;
-            width: 44px;
-            height: 44px;
-        }
-
-        .action-btn.send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: var(--bg-input);
-            color: var(--text-muted);
-        }
-
-        .action-btn.send:not(:disabled):hover {
-            background: #009982;
-            transform: scale(1.05);
-        }
-
-        .messages-area::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .messages-area::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .messages-area::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        .contacts-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .contacts-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .contacts-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
+        /* Modal */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 3000;
-            animation: fadeIn 0.3s;
-            padding: 20px;
+            z-index: 1000;
         }
 
         .modal.active {
@@ -679,15 +686,15 @@
         }
 
         .modal-content {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            padding: 24px;
-            width: 100%;
-            max-width: 400px;
-            animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            animation: modalAppear 0.3s ease;
         }
 
-        @keyframes scaleIn {
+        @keyframes modalAppear {
             from {
                 opacity: 0;
                 transform: scale(0.9);
@@ -698,328 +705,290 @@
             }
         }
 
-        .notification {
-            position: fixed;
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        .modal-body {
+            margin-bottom: 30px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .sidebar {
+                width: 100%;
+                display: none;
+            }
+            
+            .sidebar.active {
+                display: flex;
+            }
+            
+            .main-chat {
+                display: none;
+            }
+            
+            .main-chat.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            position: absolute;
             top: 20px;
             right: 20px;
-            background: var(--accent-green);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: 500;
-            z-index: 2000;
-            animation: slideIn 0.3s, fadeOut 0.3s 2.7s;
-            box-shadow: var(--shadow);
-            max-width: 300px;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%) translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0) translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeOut {
-            to { opacity: 0; }
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 4000;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--accent-green);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .new-contact-btn {
-            position: fixed;
-            bottom: 24px;
-            left: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0, 175, 156, 0.4);
-            transition: all 0.3s;
             z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .new-contact-btn:active {
-            transform: scale(0.95);
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
         }
 
-        .reset-btn {
-            position: fixed;
-            bottom: 90px;
-            left: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #dc3545;
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-            transition: all 0.3s;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .reset-btn:active {
-            transform: scale(0.95);
-        }
-
-        @media (max-width: 480px) {
-            .message-wrapper {
-                max-width: 90%;
-            }
-            
-            .header {
-                padding: 0 12px;
-            }
-            
-            .input-area {
-                padding: 12px;
-            }
-            
-            .search-bar {
-                padding: 12px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            body {
-                max-width: 450px;
-                margin: 0 auto;
-                box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-                height: 90vh;
-                top: 5vh;
-                border-radius: 20px;
-                overflow: hidden;
-                border: 1px solid var(--border-color);
-            }
-            
-            .new-contact-btn {
-                bottom: 30px;
-                left: 30px;
-            }
-            
-            .reset-btn {
-                bottom: 100px;
-                left: 30px;
-            }
-        }
-
-        .file-message-icon {
-            font-size: 24px;
-            margin-right: 10px;
-        }
-
-        .file-info {
-            flex: 1;
-        }
-
-        .file-name {
-            font-weight: 500;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .file-size {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 </head>
 <body>
-    <!-- صفحه لاگین -->
-    <div id="loginPage" class="page active">
-        <div class="login-container">
-            <div class="app-icon">💬</div>
-            <h1 style="margin-bottom: 30px; font-size: 24px;">گپ آرانا</h1>
-            
-            <div class="input-group">
-                <label class="input-label">نام خود را وارد کنید</label>
-                <input type="text" class="username-input" id="usernameInput" 
-                       placeholder="مثلاً: علی، مریم، ..." maxlength="20" autofocus>
-                <small style="display: block; margin-top: 12px; color: var(--text-muted); font-size: 13px;">
-                    این نام در چت عمومی نمایش داده می‌شود
-                </small>
-            </div>
-            
-            <button class="btn btn-primary" onclick="initializePeer()" id="loginBtn">
-                <span>ورود به گپ آرانا</span>
-                <span>→</span>
-            </button>
-            
-            <button class="btn btn-danger" onclick="resetAllData()">
-                <span>پاکسازی همه چیز</span>
-            </button>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-icon">
+            <i class="fas fa-comments"></i>
         </div>
-    </div>
-
-    <!-- صفحه مخاطبین -->
-    <div id="contactsPage" class="page hidden">
-        <div class="header">
-            <div class="header-title">مخاطبین</div>
-            <div class="header-actions">
-                <button class="icon-btn" onclick="toggleSearch()">🔍</button>
-            </div>
+        <h1 class="login-title">چت روم عمومی</h1>
+        <p class="login-subtitle">به بزرگترین چت روم فارسی خوش آمدید</p>
+        
+        <div class="form-group">
+            <label for="username" class="form-label">نام کاربری خود را وارد کنید</label>
+            <input type="text" id="username" class="form-input" placeholder="مثلاً: علی، مریم، ..." maxlength="20" autofocus>
+            <small style="color: var(--gray); font-size: 12px; display: block; margin-top: 5px;">
+                این نام در چت عمومی و خصوصی نمایش داده می‌شود
+            </small>
         </div>
-
-        <div class="search-bar" id="searchBar" style="display: none;">
-            <input type="text" class="search-input" id="searchInput" placeholder="جستجو..." 
-                   oninput="filterContacts()" autocomplete="off">
-        </div>
-
-        <div class="contacts-list" id="contactsList">
-            <!-- مخاطبین اینجا لود می‌شوند -->
-        </div>
-
-        <button class="reset-btn" onclick="showResetModal()" title="پاکسازی همه چیز">
-            🗑️
+        
+        <button class="login-btn" onclick="login()" id="loginBtn">
+            <span id="loginBtnText">ورود به چت روم</span>
         </button>
         
-        <button class="new-contact-btn" onclick="showNewContactModal()">+</button>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+            <button class="btn btn-secondary" onclick="resetAllData()" style="width: 100%;">
+                <i class="fas fa-trash"></i> پاکسازی همه داده‌ها
+            </button>
+        </div>
     </div>
 
-    <!-- صفحه چت -->
-    <div id="chatPage" class="page hidden">
-        <div class="header">
-            <button class="icon-btn back-btn" onclick="goToContacts()">←</button>
-            <div class="avatar" id="chatAvatar">?</div>
-            <div style="flex: 1; min-width: 0;">
-                <div class="header-title" id="chatContactName">مخاطب</div>
-                <div style="font-size: 13px; color: var(--text-secondary);" id="chatContactStatus">
-                    <span>آفلاین</span>
+    <!-- Chat Container -->
+    <div id="chatContainer" class="chat-container" style="display: none;">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn chat-action-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar active">
+            <!-- User Info -->
+            <div class="user-info">
+                <div class="user-avatar" id="myAvatar">U</div>
+                <div class="user-details">
+                    <h3 id="myUsername">کاربر</h3>
+                    <div class="status">
+                        <span class="status-dot"></span>
+                        <span id="myStatus">آنلاین</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- نوار ریپلای -->
-        <div class="reply-indicator" id="replyIndicator">
-            <div class="reply-indicator-content">
-                <div class="reply-indicator-sender" id="replySender">پاسخ به:</div>
-                <div class="reply-indicator-text" id="replyText"></div>
-            </div>
-            <button class="cancel-reply" onclick="cancelReply()">✕</button>
-        </div>
-
-        <div class="chat-container">
-            <div class="messages-area" id="messagesArea">
-                <!-- پیام‌ها اینجا نمایش داده می‌شوند -->
+            <!-- Chat Type Selector -->
+            <div class="chat-types">
+                <button class="chat-type-btn active" onclick="showChatType('public')">
+                    <i class="fas fa-users"></i> چت عمومی
+                </button>
+                <button class="chat-type-btn" onclick="showChatType('private')">
+                    <i class="fas fa-user-friends"></i> چت خصوصی
+                </button>
             </div>
 
+            <!-- Online Users (For Public Chat) -->
+            <div id="onlineUsers" class="online-users" style="display: block;">
+                <!-- Online users will be added here -->
+            </div>
+
+            <!-- Chat List -->
+            <div class="chat-list" id="chatList">
+                <!-- Chats will be added here -->
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div id="mainChat" class="main-chat active">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div>
+                        <h2 id="currentChatName">چت عمومی</h2>
+                        <p id="currentChatStatus">
+                            <span id="onlineCount">0</span> کاربر آنلاین
+                        </p>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="chat-action-btn" onclick="showUsersModal()" title="لیست کاربران">
+                        <i class="fas fa-user-plus"></i>
+                    </button>
+                    <button class="chat-action-btn" onclick="refreshConnections()" title="بروزرسانی اتصالات">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="messages-container" id="messagesContainer">
+                <!-- Messages will be added here -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-comment-dots"></i>
+                    <p>هنوز پیامی ارسال نشده است</p>
+                    <p style="font-size: 12px; margin-top: 10px;">اولین پیام را شما ارسال کنید!</p>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <span id="typingUser">کاربر</span> در حال تایپ است
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Input Area -->
             <div class="input-area">
-                <button class="action-btn attach" onclick="openFilePicker()" title="ارسال فایل">
-                    📁
-                </button>
-                <button class="action-btn attach" onclick="openImagePicker()" title="ارسال عکس">
-                    📎
-                </button>
-                <div class="input-wrapper">
-                    <textarea id="messageInput" placeholder="پیام خود را بنویسید..." 
-                              rows="1" oninput="autoResize(this)"></textarea>
+                <div class="input-actions">
+                    <button class="input-action-btn" onclick="attachImage()" title="ارسال عکس">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="input-action-btn" onclick="attachFile()" title="ارسال فایل">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="input-action-btn" onclick="sendEmoji()" title="ارسال ایموجی">
+                        <i class="fas fa-smile"></i>
+                    </button>
                 </div>
-                <button class="action-btn send" onclick="sendMessage()" id="sendBtn" disabled>
-                    ↑
-                </button>
+                <div class="input-container">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="پیام خود را بنویسید..." 
+                        rows="1"
+                        oninput="autoResize(this)"
+                        onkeydown="handleKeyDown(event)"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- مدال‌ها -->
-    <div id="newContactModal" class="modal">
+    <!-- Modals -->
+    <div id="usersModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 20px; text-align: center;">مخاطب جدید</h2>
-            <input type="text" class="username-input" id="newContactName" 
-                   placeholder="نام مخاطب" style="margin-bottom: 16px;" autofocus>
-            <small style="display: block; margin-bottom: 24px; color: var(--text-muted); text-align: center;">
-                برای افزودن مخاطب، او نیز باید با همین نام وارد چت شده باشد
-            </small>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn" onclick="closeNewContactModal()" 
-                        style="background: var(--bg-surface); flex: 1;">لغو</button>
-                <button class="btn btn-primary" onclick="addNewContact()" style="flex: 1;">افزودن</button>
+            <div class="modal-header">
+                <h3 class="modal-title">کاربران آنلاین</h3>
+            </div>
+            <div class="modal-body">
+                <div id="usersList">
+                    <!-- Users will be added here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('usersModal')">بستن</button>
             </div>
         </div>
     </div>
 
-    <!-- مدال تایید پاکسازی -->
-    <div id="resetModal" class="modal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 20px; text-align: center;">تایید پاکسازی</h2>
-            <p style="color: var(--text-secondary); text-align: center; margin-bottom: 24px; line-height: 1.5;">
-                آیا مطمئن هستید که می‌خواهید همه داده‌ها را پاک کنید؟<br>
-                این عمل غیرقابل بازگشت است.
-            </p>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn" onclick="closeResetModal()" 
-                        style="background: var(--bg-surface); flex: 1;">لغو</button>
-                <button class="btn btn-danger" onclick="confirmResetAllData()" style="flex: 1;">پاکسازی</button>
-            </div>
-        </div>
-    </div>
+    <!-- Hidden Inputs -->
+    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
+    <input type="file" id="fileInput" accept="*" style="display: none;" onchange="handleFileSelect(event)">
 
-    <!-- لودینگ -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-    </div>
-
-    <!-- فایل اینپوت مخفی -->
-    <input type="file" id="imageInput" accept="image/*" style="display: none;" 
-           onchange="handleImageSelect(this.files[0])">
-    <input type="file" id="fileInput" accept="*" style="display: none;" 
-           onchange="handleFileSelect(this.files[0])">
-
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <script>
         // ==================== متغیرهای اصلی ====================
         let peer = null;
         let myId = null;
         let myUsername = null;
         let myColor = null;
-        let currentContact = null;
-        let contacts = {};
-        let connections = {};
+        
+        let currentChat = {
+            type: 'public', // 'public' یا 'private'
+            id: 'public',
+            name: 'چت عمومی',
+            isGroup: true
+        };
+        
+        let connections = new Map(); // برای ذخیره اتصالات P2P
+        let users = new Map(); // اطلاعات کاربران آنلاین
         let pendingMessages = new Map();
-        let replyingTo = null;
+        let chatHistory = new Map(); // تاریخچه چت‌ها
+        
+        let typingTimeouts = new Map();
+        let isTyping = false;
         
         const MESSAGE_STATUS = {
             SENDING: 'sending',
@@ -1028,1728 +997,941 @@
             READ: 'read'
         };
         
-        const CHUNK_SIZE = 32000;
-        let currentUploads = new Map();
-        let receivingFiles = new Map();
-
-        // رنگ‌های از پیش تعریف شده برای کاربران
-        const USER_COLORS = [
-            { bg: '#2b5278', text: '#ffffff' }, // آبی
-            { bg: '#00af9c', text: '#ffffff' }, // سبز
-            { bg: '#4d5b9c', text: '#ffffff' }, // بنفش
-            { bg: '#c678dd', text: '#ffffff' }, // صورتی
-            { bg: '#e5c07b', text: '#000000' }, // زرد
-            { bg: '#98c379', text: '#000000' }, // سبز روشن
-            { bg: '#e06c75', text: '#ffffff' }, // قرمز
-            { bg: '#61afef', text: '#000000' }, // آبی روشن
-            { bg: '#d19a66', text: '#000000' }, // نارنجی
-            { bg: '#56b6c2', text: '#000000' }  // فیروزه‌ای
+        const CHUNK_SIZE = 16000; // اندازه تکه‌ها برای ارسال فایل
+        const COLORS = [
+            '#4361ee', '#3a0ca3', '#7209b7', '#f72585', 
+            '#4cc9f0', '#4895ef', '#560bad', '#b5179e',
+            '#06d6a0', '#118ab2', '#073b4c', '#ef476f'
         ];
 
-        // ==================== راه‌اندازی اولیه ====================
-        function initializePeer() {
-            const usernameInput = document.getElementById('usernameInput').value.trim();
-            
-            if (!usernameInput || usernameInput.length < 2) {
-                showNotification('لطفاً یک نام معتبر وارد کنید (حداقل ۲ کاراکتر)');
-                return;
-            }
-            
-            myUsername = usernameInput;
-            
-            // تولید شناسه منحصر به فرد بر اساس نام کاربری و timestamp
-            myId = generateUserId(myUsername);
-            
-            // انتخاب رنگ برای کاربر
-            myColor = getColorForUser(myUsername);
-            
-            document.getElementById('loginBtn').disabled = true;
-            showLoading('در حال راه‌اندازی...');
-            
-            if (typeof Peer === 'undefined') {
-                loadPeerJS();
-            } else {
-                createPeer();
-            }
-        }
-        
-        function generateUserId(username) {
-            // ترکیب نام کاربری و timestamp برای ایجاد شناسه منحصر به فرد
-            const timestamp = Date.now();
-            return `${username}_${timestamp}`;
-        }
-        
-        function getColorForUser(username) {
-            // تولید رنگ بر اساس هش نام کاربری
-            let hash = 0;
-            for (let i = 0; i < username.length; i++) {
-                hash = username.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            
-            const index = Math.abs(hash) % USER_COLORS.length;
-            return USER_COLORS[index];
-        }
-        
-        function loadPeerJS() {
-            const script = document.createElement('script');
-            script.src = 'https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js';
-            script.onload = createPeer;
-            script.onerror = () => {
-                hideLoading();
-                showNotification('خطا در بارگذاری سیستم');
-                document.getElementById('loginBtn').disabled = false;
-            };
-            document.head.appendChild(script);
-        }
-        
-        function createPeer() {
-            peer = new Peer(myId, {
-                host: '0.peerjs.com',
-                port: 443,
-                path: '/',
-                debug: 0,
-                config: {
-                    'iceServers': [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:stun2.l.google.com:19302' }
-                    ]
-                }
-            });
-            
-            peer.on('open', (id) => {
-                console.log('✅ سیستم راه‌اندازی شد:', id, 'با نام:', myUsername);
-                loadContacts();
-                showPage('contactsPage');
-                hideLoading();
-                showNotification(`به گپ آرانا خوش آمدید ${myUsername}!`);
-                setInterval(checkConnections, 30000);
-            });
-            
-            peer.on('connection', (conn) => {
-                handleIncomingConnection(conn);
-            });
-            
-            peer.on('error', (err) => {
-                console.error('خطا:', err);
-                if (err.type === 'unavailable-id') {
-                    showNotification('این نام قبلاً استفاده شده، لطفاً نام دیگری انتخاب کنید');
-                    document.getElementById('loginBtn').disabled = false;
-                    hideLoading();
-                }
-            });
+        // ==================== توابع کمکی ====================
+        function getRandomColor() {
+            return COLORS[Math.floor(Math.random() * COLORS.length)];
         }
 
-        // ==================== مدیریت صفحات ====================
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-                setTimeout(() => page.classList.add('hidden'), 300);
-            });
-            
-            const page = document.getElementById(pageId);
-            page.classList.remove('hidden');
-            setTimeout(() => {
-                page.classList.add('active');
-                if (pageId === 'contactsPage') {
-                    renderContactsList();
-                    document.getElementById('searchBar').style.display = 'none';
-                } else if (pageId === 'chatPage' && currentContact) {
-                    loadChatMessages();
-                    setTimeout(() => {
-                        document.getElementById('messageInput').focus();
-                        scrollToBottom();
-                    }, 100);
-                }
-            }, 10);
-        }
-        
-        function goToContacts() {
-            currentContact = null;
-            showPage('contactsPage');
-        }
-        
-        function toggleSearch() {
-            const searchBar = document.getElementById('searchBar');
-            searchBar.style.display = searchBar.style.display === 'none' ? 'block' : 'none';
-            if (searchBar.style.display === 'block') {
-                document.getElementById('searchInput').focus();
-            }
-        }
-        
-        function filterContacts() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const contactItems = document.querySelectorAll('.contact-item');
-            
-            contactItems.forEach(item => {
-                const name = item.querySelector('.contact-name').textContent.toLowerCase();
-                
-                if (name.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+        function generateId() {
+            return Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         }
 
-        // ==================== مدیریت مخاطبین ====================
-        function loadContacts() {
-            const savedContacts = localStorage.getItem(`gap_arana_contacts_${myUsername}`);
-            if (savedContacts) {
-                contacts = JSON.parse(savedContacts);
-                Object.values(contacts).forEach(contact => {
-                    contact.isOnline = false;
-                    contact.messages = contact.messages || [];
-                    if (!contact.color) {
-                        contact.color = getColorForUser(contact.username);
-                    }
-                });
-            }
-        }
-        
-        function saveContacts() {
-            localStorage.setItem(`gap_arana_contacts_${myUsername}`, JSON.stringify(contacts));
-        }
-        
-        function showNewContactModal() {
-            document.getElementById('newContactModal').classList.add('active');
-            document.getElementById('newContactName').focus();
-        }
-        
-        function closeNewContactModal() {
-            document.getElementById('newContactModal').classList.remove('active');
-            document.getElementById('newContactName').value = '';
-        }
-        
-        function addNewContact() {
-            const nameInput = document.getElementById('newContactName');
-            const contactName = nameInput.value.trim();
-            
-            if (!contactName || contactName.length < 2) {
-                showNotification('لطفاً نام معتبر وارد کنید');
-                return;
-            }
-            
-            if (contactName === myUsername) {
-                showNotification('نمی‌توانید خودتان را اضافه کنید');
-                return;
-            }
-            
-            // بررسی وجود مخاطب با این نام
-            const existingContact = Object.values(contacts).find(c => c.username === contactName);
-            if (existingContact) {
-                showNotification('این مخاطب از قبل وجود دارد');
-                return;
-            }
-            
-            // تولید شناسه برای مخاطب
-            const contactId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            
-            contacts[contactId] = {
-                id: contactId,
-                username: contactName,
-                lastMessage: '',
-                lastMessageTime: null,
-                messages: [],
-                isOnline: false,
-                avatar: contactName.charAt(0),
-                unread: 0,
-                color: getColorForUser(contactName)
-            };
-            
-            saveContacts();
-            renderContactsList();
-            closeNewContactModal();
-            showNotification(`مخاطب ${contactName} اضافه شد`);
-        }
-        
-        function renderContactsList() {
-            const container = document.getElementById('contactsList');
-            
-            if (Object.keys(contacts).length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 60px 20px;">
-                        <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;">👤</div>
-                        <p style="color: var(--text-secondary); margin-bottom: 10px;">هنوز مخاطبی ندارید</p>
-                        <p style="color: var(--text-muted); font-size: 14px;">روی دکمه + کلیک کنید</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const sortedContacts = Object.values(contacts).sort((a, b) => {
-                return (b.lastMessageTime || 0) - (a.lastMessageTime || 0);
-            });
-            
-            container.innerHTML = '';
-            
-            sortedContacts.forEach(contact => {
-                const element = document.createElement('div');
-                element.className = 'contact-item';
-                element.onclick = () => openChat(contact);
-                
-                let lastMessage = 'شروع گفتگو';
-                let lastTime = '';
-                
-                if (contact.messages && contact.messages.length > 0) {
-                    const lastMsg = contact.messages[contact.messages.length - 1];
-                    if (lastMsg.type === 'image') {
-                        lastMessage = '📷 عکس';
-                    } else if (lastMsg.type === 'file') {
-                        lastMessage = `📁 ${lastMsg.fileName || 'فایل'}`;
-                    } else {
-                        lastMessage = lastMsg.content.substring(0, 30);
-                        if (lastMsg.content.length > 30) lastMessage += '...';
-                    }
-                    
-                    lastTime = formatTime(lastMsg.timestamp);
-                }
-                
-                element.innerHTML = `
-                    <div class="avatar small" style="background: ${contact.color.bg}; color: ${contact.color.text}">
-                        ${contact.avatar}
-                    </div>
-                    <div class="contact-info">
-                        <div class="contact-name" style="color: ${contact.color.bg}">${contact.username}</div>
-                        <div class="contact-last-message">${lastMessage}</div>
-                    </div>
-                    <div style="text-align: left; min-width: 60px;">
-                        <div class="contact-time">${lastTime}</div>
-                        <div class="contact-status ${contact.isOnline ? '' : 'offline'}"></div>
-                    </div>
-                `;
-                
-                container.appendChild(element);
-            });
-        }
-
-        // ==================== مدیریت چت و اتصالات ====================
-        function openChat(contact) {
-            currentContact = contact;
-            contact.unread = 0;
-            
-            document.getElementById('chatContactName').textContent = contact.username;
-            document.getElementById('chatContactName').style.color = contact.color.bg;
-            document.getElementById('chatAvatar').textContent = contact.avatar;
-            document.getElementById('chatAvatar').style.background = contact.color.bg;
-            document.getElementById('chatAvatar').style.color = contact.color.text;
-            updateContactStatus();
-            
-            cancelReply();
-            showPage('chatPage');
-            
-            // اگر مخاطب آنلاین نیست، سعی در اتصال نداریم
-            // چون اکنون با نام کاربری کار می‌کنیم و نه شماره
-        }
-        
-        function connectToContact(contactId) {
-            if (!peer || peer.disconnected) return;
-            
-            if (connections[contactId]) {
-                connections[contactId].close();
-            }
-            
-            const contact = contacts[contactId];
-            if (!contact) return;
-            
-            // ارسال درخواست اتصال با اطلاعات کاربر
-            const conn = peer.connect(contactId, {
-                reliable: true,
-                serialization: 'json',
-                metadata: { 
-                    type: 'chat', 
-                    version: '2.0',
-                    username: myUsername,
-                    color: myColor
-                }
-            });
-            
-            setupConnection(conn, contactId);
-            connections[contactId] = conn;
-        }
-        
-        function handleIncomingConnection(conn) {
-            const contactId = conn.peer;
-            const metadata = conn.metadata;
-            
-            if (!metadata || !metadata.username) {
-                conn.close();
-                return;
-            }
-            
-            const contactUsername = metadata.username;
-            const contactColor = metadata.color || getColorForUser(contactUsername);
-            
-            // بررسی وجود مخاطب
-            let contact = Object.values(contacts).find(c => c.username === contactUsername);
-            
-            if (!contact) {
-                // ایجاد مخاطب جدید
-                contact = {
-                    id: contactId,
-                    username: contactUsername,
-                    messages: [],
-                    isOnline: true,
-                    avatar: contactUsername.charAt(0),
-                    unread: 0,
-                    color: contactColor
-                };
-                
-                contacts[contactId] = contact;
-                saveContacts();
-            } else {
-                contact.isOnline = true;
-            }
-            
-            setupConnection(conn, contactId);
-            connections[contactId] = conn;
-            
-            if (currentContact && currentContact.id === contactId) {
-                updateContactStatus();
-            }
-            
-            renderContactsList();
-        }
-        
-        function setupConnection(conn, contactId) {
-            conn.on('open', () => {
-                console.log(`✅ متصل شد به ${contactId}`);
-                
-                const contact = contacts[contactId];
-                if (contact) {
-                    contact.isOnline = true;
-                    if (currentContact && currentContact.id === contactId) {
-                        updateContactStatus();
-                    }
-                }
-                
-                renderContactsList();
-                sendDeliveryConfirmations(contactId);
-            });
-            
-            conn.on('data', (data) => {
-                handleIncomingData(data, contactId);
-            });
-            
-            conn.on('close', () => {
-                console.log(`❌ اتصال بسته شد با ${contactId}`);
-                
-                const contact = contacts[contactId];
-                if (contact) {
-                    contact.isOnline = false;
-                    if (currentContact && currentContact.id === contactId) {
-                        updateContactStatus();
-                    }
-                }
-                
-                delete connections[contactId];
-                renderContactsList();
-            });
-            
-            conn.on('error', (err) => {
-                console.error('خطا در اتصال:', err);
-            });
-        }
-        
-        function updateContactStatus() {
-            if (!currentContact) return;
-            
-            const statusEl = document.getElementById('chatContactStatus');
-            const sendBtn = document.getElementById('sendBtn');
-            
-            if (currentContact.isOnline) {
-                statusEl.innerHTML = `<span style="color: var(--status-online)">آنلاین</span>`;
-                sendBtn.disabled = false;
-            } else {
-                statusEl.innerHTML = `<span style="color: var(--status-offline)">آفلاین</span>`;
-                sendBtn.disabled = true;
-            }
-        }
-        
-        function checkConnections() {
-            Object.keys(connections).forEach(id => {
-                if (connections[id].open) {
-                    connections[id].send({
-                        type: 'ping',
-                        timestamp: Date.now(),
-                        username: myUsername
-                    });
-                }
-            });
-        }
-
-        // ==================== سیستم ریپلای ====================
-        function setReply(message) {
-            replyingTo = {
-                messageId: message.messageId,
-                sender: message.sender,
-                content: message.content || '📷 عکس',
-                timestamp: message.timestamp
-            };
-            
-            document.getElementById('replySender').textContent = `پاسخ به ${message.senderName || 'کاربر'}:`;
-            document.getElementById('replyText').textContent = replyingTo.content.substring(0, 50);
-            document.getElementById('replyIndicator').style.display = 'flex';
-            
-            document.getElementById('messageInput').focus();
-        }
-        
-        function cancelReply() {
-            replyingTo = null;
-            document.getElementById('replyIndicator').style.display = 'none';
-        }
-
-        // ==================== ارسال و دریافت پیام‌ها ====================
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            
-            if (!message || !currentContact) return;
-            
-            const conn = connections[currentContact.id];
-            if (!conn || !conn.open) {
-                showNotification('اتصال برقرار نیست');
-                return;
-            }
-            
-            const messageId = generateId();
-            const messageData = {
-                type: 'text',
-                content: message,
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                receiver: currentContact.id,
-                timestamp: Date.now(),
-                messageId: messageId,
-                status: MESSAGE_STATUS.SENDING,
-                replyTo: replyingTo ? {
-                    messageId: replyingTo.messageId,
-                    sender: replyingTo.sender,
-                    senderName: replyingTo.senderName,
-                    content: replyingTo.content
-                } : null
-            };
-            
-            saveMessageLocally(messageData);
-            displayMessage(messageData, true);
-            
-            conn.send(messageData);
-            
-            pendingMessages.set(messageId, {
-                data: messageData,
-                retries: 0,
-                delivered: false
-            });
-            
-            input.value = '';
-            autoResize(input);
-            cancelReply();
-            input.focus();
-            
-            updateContactLastMessage(currentContact.id, message, 'text');
-            renderContactsList();
-            checkMessageDelivery(messageId);
-        }
-        
-        function handleIncomingData(data, senderId) {
-            switch (data.type) {
-                case 'text':
-                case 'image':
-                case 'file':
-                    handleIncomingMessage(data, senderId);
-                    break;
-                case 'file_chunk':
-                    handleFileChunk(data, senderId);
-                    break;
-                case 'file_start':
-                    startReceivingFile(data, senderId);
-                    break;
-                case 'file_end':
-                    completeReceivingFile(data, senderId);
-                    break;
-                case 'delivery_confirmation':
-                    updateMessageStatus(data.messageId, MESSAGE_STATUS.DELIVERED);
-                    break;
-                case 'read_confirmation':
-                    updateMessageStatus(data.messageId, MESSAGE_STATUS.READ);
-                    break;
-                case 'ping':
-                    if (connections[senderId]) {
-                        connections[senderId].send({
-                            type: 'pong',
-                            timestamp: Date.now(),
-                            username: myUsername
-                        });
-                    }
-                    break;
-            }
-        }
-        
-        function handleIncomingMessage(data, senderId) {
-            // ارسال تأییدیه تحویل به فرستنده
-            if (connections[senderId]) {
-                connections[senderId].send({
-                    type: 'delivery_confirmation',
-                    messageId: data.messageId,
-                    timestamp: Date.now(),
-                    sender: myId,
-                    senderName: myUsername
-                });
-            }
-            
-            data.status = MESSAGE_STATUS.DELIVERED;
-            
-            // ذخیره و نمایش پیام
-            setTimeout(() => {
-                saveMessageLocally(data, false);
-                
-                if (currentContact && currentContact.id === senderId) {
-                    if (data.type === 'image') {
-                        displayImageMessage(data, false);
-                    } else if (data.type === 'file') {
-                        displayFileMessage(data, false);
-                    } else {
-                        displayMessage(data, false);
-                    }
-                    
-                    setTimeout(() => {
-                        if (connections[senderId]) {
-                            connections[senderId].send({
-                                type: 'read_confirmation',
-                                messageId: data.messageId,
-                                timestamp: Date.now(),
-                                sender: myId,
-                                senderName: myUsername
-                            });
-                        }
-                    }, 1000);
-                }
-                
-                const contact = contacts[senderId];
-                if (contact) {
-                    updateContactLastMessage(senderId, 
-                        data.type === 'image' ? '📷 عکس' : 
-                        data.type === 'file' ? `📁 ${data.fileName}` : 
-                        data.content, 
-                        data.type
-                    );
-                }
-                renderContactsList();
-                
-                if (!currentContact || currentContact.id !== senderId) {
-                    const contact = contacts[senderId];
-                    showNotification(`${contact ? contact.username : senderId}: ${data.type === 'image' ? '📷 عکس جدید' : data.type === 'file' ? `📁 ${data.fileName}` : data.content.substring(0, 30)}`);
-                }
-            }, 100);
-        }
-        
-        function sendDeliveryConfirmations(contactId) {
-            const contact = contacts[contactId];
-            if (!contact || !contact.messages) return;
-            
-            const conn = connections[contactId];
-            if (!conn || !conn.open) return;
-            
-            contact.messages.forEach(msg => {
-                if (msg.sender !== myId && msg.status !== MESSAGE_STATUS.READ) {
-                    conn.send({
-                        type: 'read_confirmation',
-                        messageId: msg.messageId,
-                        timestamp: Date.now(),
-                        sender: myId,
-                        senderName: myUsername
-                    });
-                    msg.status = MESSAGE_STATUS.READ;
-                }
-            });
-            
-            saveContacts();
-        }
-        
-        function updateMessageStatus(messageId, status) {
-            const pending = pendingMessages.get(messageId);
-            if (pending) {
-                pending.delivered = true;
-                pendingMessages.delete(messageId);
-            }
-            
-            updateMessageStatusUI(messageId, status);
-            
-            if (currentContact && currentContact.messages) {
-                const msgIndex = currentContact.messages.findIndex(m => m.messageId === messageId);
-                if (msgIndex > -1) {
-                    currentContact.messages[msgIndex].status = status;
-                    saveContacts();
-                }
-            }
-        }
-        
-        function checkMessageDelivery(messageId) {
-            const pending = pendingMessages.get(messageId);
-            if (!pending) return;
-            
-            if (!pending.delivered && pending.retries < 3) {
-                pending.retries++;
-                setTimeout(() => checkMessageDelivery(messageId), 2000);
-            } else if (!pending.delivered) {
-                updateMessageStatusUI(messageId, MESSAGE_STATUS.SENT);
-                pendingMessages.delete(messageId);
-            }
-        }
-
-        // ==================== سیستم ارسال عکس ====================
-        function openImagePicker() {
-            document.getElementById('imageInput').click();
-        }
-        
-        function handleImageSelect(file) {
-            if (!file || !file.type.startsWith('image/')) {
-                showNotification('لطفاً یک فایل عکس انتخاب کنید');
-                return;
-            }
-            
-            if (file.size > 20 * 1024 * 1024) {
-                showNotification('حجم عکس باید کمتر از ۲۰ مگابایت باشد');
-                return;
-            }
-            
-            showLoading('در حال آماده‌سازی عکس...');
-            
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const base64String = e.target.result;
-                
-                let processedImage = base64String;
-                if (file.size > 2 * 1024 * 1024) {
-                    processedImage = await compressImage(base64String);
-                }
-                
-                hideLoading();
-                sendImage(processedImage, file.name);
-            };
-            
-            reader.onerror = () => {
-                hideLoading();
-                showNotification('خطا در خواندن فایل');
-            };
-            
-            reader.readAsDataURL(file);
-            document.getElementById('imageInput').value = '';
-        }
-        
-        async function compressImage(base64String) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    let width = img.width;
-                    let height = img.height;
-                    const maxDimension = 1600;
-                    
-                    if (width > maxDimension || height > maxDimension) {
-                        if (width > height) {
-                            height = Math.floor(height * maxDimension / width);
-                            width = maxDimension;
-                        } else {
-                            width = Math.floor(width * maxDimension / height);
-                            height = maxDimension;
-                        }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
-                    resolve(compressedBase64);
-                };
-                
-                img.src = base64String;
-            });
-        }
-        
-        function sendImage(base64String, fileName) {
-            if (!currentContact || !connections[currentContact.id]) {
-                showNotification('اتصال برقرار نیست');
-                return;
-            }
-            
-            const fileId = generateId();
-            const chunks = splitBase64IntoChunks(base64String, CHUNK_SIZE);
-            const totalChunks = chunks.length;
-            
-            const uploadInfo = {
-                fileId,
-                fileName,
-                chunks,
-                totalChunks,
-                sentChunks: 0,
-                base64String,
-                messageId: generateId(),
-                type: 'image'
-            };
-            
-            currentUploads.set(fileId, uploadInfo);
-            
-            // ارسال اطلاعات اولیه فایل
-            connections[currentContact.id].send({
-                type: 'file_start',
-                fileId,
-                fileName,
-                totalChunks,
-                fileType: 'image',
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                timestamp: Date.now(),
-                messageId: uploadInfo.messageId,
-                replyTo: replyingTo
-            });
-            
-            // نمایش پیام در حال ارسال
-            const messageData = {
-                type: 'image',
-                content: base64String,
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                timestamp: Date.now(),
-                messageId: uploadInfo.messageId,
-                status: MESSAGE_STATUS.SENDING,
-                replyTo: replyingTo
-            };
-            
-            saveMessageLocally(messageData);
-            displayUploadProgress(fileId, 0, totalChunks, false);
-            
-            // شروع ارسال تکه‌ها
-            sendChunks(fileId);
-            cancelReply();
-        }
-
-        // ==================== سیستم ارسال فایل ====================
-        function openFilePicker() {
-            document.getElementById('fileInput').click();
-        }
-        
-        function handleFileSelect(file) {
-            if (!file) return;
-            
-            if (file.size > 50 * 1024 * 1024) {
-                showNotification('حجم فایل باید کمتر از ۵۰ مگابایت باشد');
-                return;
-            }
-            
-            showLoading(`در حال آماده‌سازی ${file.name}...`);
-            
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                hideLoading();
-                
-                if (file.size < 2 * 1024 * 1024) {
-                    sendFileDirectly(e.target.result, file.name, file.type, file.size);
-                } else {
-                    sendFileChunked(e.target.result, file.name, file.type, file.size);
-                }
-            };
-            
-            reader.onerror = () => {
-                hideLoading();
-                showNotification('خطا در خواندن فایل');
-            };
-            
-            reader.readAsDataURL(file);
-            document.getElementById('fileInput').value = '';
-        }
-        
-        function sendFileDirectly(base64Data, fileName, fileType, fileSize) {
-            if (!currentContact || !connections[currentContact.id]) {
-                showNotification('اتصال برقرار نیست');
-                return;
-            }
-            
-            const messageId = generateId();
-            const messageData = {
-                type: 'file',
-                content: base64Data,
-                fileName: fileName,
-                fileType: fileType,
-                fileSize: formatFileSize(fileSize),
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                timestamp: Date.now(),
-                messageId: messageId,
-                status: MESSAGE_STATUS.SENDING,
-                replyTo: replyingTo
-            };
-            
-            saveMessageLocally(messageData);
-            displayFileMessage(messageData, true);
-            
-            connections[currentContact.id].send(messageData);
-            
-            pendingMessages.set(messageId, {
-                data: messageData,
-                retries: 0,
-                delivered: false
-            });
-            
-            checkMessageDelivery(messageId);
-            updateContactLastMessage(currentContact.id, `📁 ${fileName}`, 'file');
-            renderContactsList();
-            cancelReply();
-        }
-        
-        function sendFileChunked(base64Data, fileName, fileType, fileSize) {
-            const fileId = generateId();
-            const chunks = splitBase64IntoChunks(base64Data, CHUNK_SIZE);
-            const totalChunks = chunks.length;
-            
-            const uploadInfo = {
-                fileId,
-                fileName,
-                fileType,
-                fileSize: formatFileSize(fileSize),
-                chunks,
-                totalChunks,
-                sentChunks: 0,
-                base64Data,
-                messageId: generateId(),
-                type: 'file'
-            };
-            
-            currentUploads.set(fileId, uploadInfo);
-            
-            connections[currentContact.id].send({
-                type: 'file_start',
-                fileId,
-                fileName,
-                fileType,
-                fileSize: uploadInfo.fileSize,
-                totalChunks,
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                timestamp: Date.now(),
-                messageId: uploadInfo.messageId,
-                replyTo: replyingTo
-            });
-            
-            const messageData = {
-                type: 'file',
-                content: null,
-                fileName,
-                fileType,
-                fileSize: uploadInfo.fileSize,
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                timestamp: Date.now(),
-                messageId: uploadInfo.messageId,
-                status: MESSAGE_STATUS.SENDING,
-                replyTo: replyingTo
-            };
-            
-            saveMessageLocally(messageData);
-            displayUploadProgress(fileId, 0, totalChunks, true, fileName);
-            
-            sendChunks(fileId);
-            cancelReply();
-        }
-        
-        function sendChunks(fileId) {
-            const uploadInfo = currentUploads.get(fileId);
-            if (!uploadInfo) return;
-            
-            const conn = connections[currentContact.id];
-            if (!conn) {
-                currentUploads.delete(fileId);
-                return;
-            }
-            
-            const sendNextChunk = () => {
-                if (uploadInfo.sentChunks >= uploadInfo.totalChunks) {
-                    // ارسال پایان فایل
-                    conn.send({
-                        type: 'file_end',
-                        fileId,
-                        sender: myId,
-                        senderName: myUsername,
-                        timestamp: Date.now()
-                    });
-                    
-                    // بروزرسانی پیام به حالت کامل
-                    if (uploadInfo.type === 'image') {
-                        updateMessageToImage(uploadInfo);
-                    } else {
-                        updateMessageToFile(uploadInfo);
-                    }
-                    currentUploads.delete(fileId);
-                    return;
-                }
-                
-                conn.send({
-                    type: 'file_chunk',
-                    fileId,
-                    chunkIndex: uploadInfo.sentChunks,
-                    chunkData: uploadInfo.chunks[uploadInfo.sentChunks],
-                    sender: myId,
-                    senderName: myUsername,
-                    timestamp: Date.now()
-                });
-                
-                uploadInfo.sentChunks++;
-                
-                const progress = Math.round((uploadInfo.sentChunks / uploadInfo.totalChunks) * 100);
-                updateUploadProgress(fileId, progress, uploadInfo.type === 'file', uploadInfo.fileName);
-                
-                setTimeout(sendNextChunk, 10);
-            };
-            
-            sendNextChunk();
-        }
-        
-        function startReceivingFile(data, senderId) {
-            const { fileId, fileName, totalChunks, fileType, messageId, replyTo, fileSize } = data;
-            
-            receivingFiles.set(fileId, {
-                fileId,
-                fileName,
-                fileType,
-                fileSize,
-                totalChunks,
-                receivedChunks: 0,
-                chunks: new Array(totalChunks),
-                sender: senderId,
-                senderName: data.senderName,
-                senderColor: data.senderColor,
-                messageId,
-                replyTo,
-                startTime: Date.now(),
-                type: fileType === 'image' ? 'image' : 'file'
-            });
-            
-            displayDownloadProgress(fileId, 0, totalChunks, fileType === 'image', fileName);
-        }
-        
-        function handleFileChunk(data, senderId) {
-            const { fileId, chunkIndex, chunkData } = data;
-            const fileInfo = receivingFiles.get(fileId);
-            
-            if (!fileInfo) return;
-            
-            fileInfo.chunks[chunkIndex] = chunkData;
-            fileInfo.receivedChunks++;
-            
-            const progress = Math.round((fileInfo.receivedChunks / fileInfo.totalChunks) * 100);
-            updateDownloadProgress(fileId, progress, fileInfo.type === 'image', fileInfo.fileName);
-            
-            // اگر همه تکه‌ها دریافت شدند
-            if (fileInfo.receivedChunks === fileInfo.totalChunks) {
-                console.log(`✅ همه تکه‌های ${fileId} دریافت شد`);
-                setTimeout(() => {
-                    completeReceivingFile({ fileId }, senderId);
-                }, 100);
-            }
-        }
-        
-        function completeReceivingFile(data, senderId) {
-            const { fileId } = data;
-            const fileInfo = receivingFiles.get(fileId);
-            
-            if (!fileInfo) {
-                console.log(`❌ اطلاعات فایل ${fileId} یافت نشد`);
-                return;
-            }
-            
-            // بررسی کامل بودن دریافت
-            if (fileInfo.receivedChunks !== fileInfo.totalChunks) {
-                console.log(`⏳ منتظر دریافت باقی تکه‌ها: ${fileInfo.receivedChunks}/${fileInfo.totalChunks}`);
-                return;
-            }
-            
-            // ترکیب تمام تکه‌ها
-            const base64String = fileInfo.chunks.join('');
-            
-            // اعتبارسنجی داده
-            if (!base64String || base64String.length < 100) {
-                console.error('داده Base64 نامعتبر است');
-                showNotification('خطا در دریافت فایل');
-                receivingFiles.delete(fileId);
-                removeProgress(fileId);
-                return;
-            }
-            
-            receivingFiles.delete(fileId);
-            removeProgress(fileId);
-            
-            const messageData = {
-                type: fileInfo.type,
-                content: base64String,
-                sender: fileInfo.sender,
-                senderName: fileInfo.senderName,
-                senderColor: fileInfo.senderColor,
-                timestamp: Date.now(),
-                messageId: fileInfo.messageId,
-                status: MESSAGE_STATUS.DELIVERED,
-                replyTo: fileInfo.replyTo,
-                fileName: fileInfo.fileName,
-                fileType: fileInfo.fileType,
-                fileSize: fileInfo.fileSize
-            };
-            
-            saveMessageLocally(messageData, false);
-            
-            if (currentContact && currentContact.id === senderId) {
-                if (fileInfo.type === 'image') {
-                    displayImageMessage(messageData, false);
-                } else {
-                    displayFileMessage(messageData, false);
-                }
-                scrollToBottom();
-            }
-            
-            const contact = contacts[senderId];
-            if (contact) {
-                updateContactLastMessage(senderId, 
-                    fileInfo.type === 'image' ? '📷 عکس' : `📁 ${fileInfo.fileName}`, 
-                    fileInfo.type
-                );
-            }
-            renderContactsList();
-        }
-
-        // ==================== نمایش پیام‌ها و UI ====================
-        function loadChatMessages() {
-            const container = document.getElementById('messagesArea');
-            container.innerHTML = '';
-            
-            if (!currentContact || !currentContact.messages || currentContact.messages.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
-                        <p>شروع گفتگو با ${currentContact.username}</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            currentContact.messages.forEach(msg => {
-                if (msg.type === 'image') {
-                    displayImageMessage(msg, msg.sender === myId, true);
-                } else if (msg.type === 'file') {
-                    displayFileMessage(msg, msg.sender === myId, true);
-                } else {
-                    displayMessage(msg, msg.sender === myId, true);
-                }
-            });
-            
-            scrollToBottom();
-        }
-        
-        function displayMessage(messageData, isOutgoing, noAnimation = false) {
-            const container = document.getElementById('messagesArea');
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper ${isOutgoing ? 'outgoing' : 'incoming'}`;
-            if (noAnimation) wrapper.style.animation = 'none';
-            
-            wrapper.onclick = () => {
-                if (!isOutgoing) {
-                    setReply(messageData);
-                }
-            };
-            
-            const time = formatTime(messageData.timestamp);
-            const status = getStatusIcon(messageData.status);
-            
-            // تنظیم رنگ بر اساس فرستنده
-            const senderColor = messageData.senderColor || myColor;
-            const textColor = senderColor.text;
-            const bgColor = senderColor.bg;
-            
-            let replyHtml = '';
-            if (messageData.replyTo) {
-                replyHtml = `
-                    <div class="reply-preview" onclick="scrollToMessage('${messageData.replyTo.messageId}')">
-                        <div class="reply-sender" style="color: ${senderColor.bg}">
-                            ${messageData.replyTo.senderName || 'کاربر'}
-                        </div>
-                        <div class="reply-content">${messageData.replyTo.content}</div>
-                    </div>
-                `;
-            }
-            
-            wrapper.innerHTML = `
-                <div class="message ${isOutgoing ? 'outgoing' : 'incoming'}" 
-                     style="${isOutgoing ? `background: ${bgColor}; color: ${textColor}` : ''}">
-                    ${!isOutgoing ? `
-                        <div class="message-sender" style="color: ${bgColor}">
-                            ${messageData.senderName || 'کاربر'}
-                        </div>
-                    ` : ''}
-                    ${replyHtml}
-                    <div class="message-content">${escapeHtml(messageData.content)}</div>
-                    <div class="message-footer">
-                        <div class="message-time" style="${isOutgoing ? `color: ${textColor}` : ''}">${time}</div>
-                        ${isOutgoing ? `<div class="message-status">${status}</div>` : ''}
-                    </div>
-                </div>
-            `;
-            
-            container.appendChild(wrapper);
-            wrapper.setAttribute('data-message-id', messageData.messageId);
-            
-            if (!noAnimation) scrollToBottom();
-        }
-        
-        function displayImageMessage(messageData, isOutgoing, noAnimation = false) {
-            const container = document.getElementById('messagesArea');
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper ${isOutgoing ? 'outgoing' : 'incoming'}`;
-            if (noAnimation) wrapper.style.animation = 'none';
-            
-            wrapper.onclick = () => {
-                if (!isOutgoing) {
-                    setReply(messageData);
-                }
-            };
-            
-            const time = formatTime(messageData.timestamp);
-            const status = getStatusIcon(messageData.status);
-            
-            // تنظیم رنگ بر اساس فرستنده
-            const senderColor = messageData.senderColor || myColor;
-            const textColor = senderColor.text;
-            const bgColor = senderColor.bg;
-            
-            let replyHtml = '';
-            if (messageData.replyTo) {
-                replyHtml = `
-                    <div class="reply-preview" onclick="scrollToMessage('${messageData.replyTo.messageId}')">
-                        <div class="reply-sender" style="color: ${senderColor.bg}">
-                            ${messageData.replyTo.senderName || 'کاربر'}
-                        </div>
-                        <div class="reply-content">${messageData.replyTo.content}</div>
-                    </div>
-                `;
-            }
-            
-            wrapper.innerHTML = `
-                <div class="message ${isOutgoing ? 'outgoing' : 'incoming'}" 
-                     style="${isOutgoing ? `background: ${bgColor}; color: ${textColor}` : ''}">
-                    ${!isOutgoing ? `
-                        <div class="message-sender" style="color: ${bgColor}">
-                            ${messageData.senderName || 'کاربر'}
-                        </div>
-                    ` : ''}
-                    ${replyHtml}
-                    <div style="position: relative;">
-                        <img src="${messageData.content}" 
-                             style="max-width: 250px; border-radius: 8px; display: block; cursor: pointer;"
-                             onclick="showImage('${messageData.content.replace(/'/g, "\\'")}')"
-                             onload="this.style.opacity='1'"
-                             style="opacity:0;transition:opacity 0.3s">
-                        <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
-                            📷 عکس
-                        </div>
-                    </div>
-                    <div class="message-footer">
-                        <div class="message-time" style="${isOutgoing ? `color: ${textColor}` : ''}">${time}</div>
-                        ${isOutgoing ? `<div class="message-status">${status}</div>` : ''}
-                    </div>
-                </div>
-            `;
-            
-            container.appendChild(wrapper);
-            wrapper.setAttribute('data-message-id', messageData.messageId);
-            
-            if (!noAnimation) scrollToBottom();
-        }
-        
-        function displayFileMessage(messageData, isOutgoing, noAnimation = false) {
-            const container = document.getElementById('messagesArea');
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper ${isOutgoing ? 'outgoing' : 'incoming'}`;
-            if (noAnimation) wrapper.style.animation = 'none';
-            
-            const time = formatTime(messageData.timestamp);
-            const status = getStatusIcon(messageData.status);
-            const fileIcon = getFileIcon(messageData.fileType);
-            
-            // تنظیم رنگ بر اساس فرستنده
-            const senderColor = messageData.senderColor || myColor;
-            const textColor = senderColor.text;
-            const bgColor = senderColor.bg;
-            
-            let replyHtml = '';
-            if (messageData.replyTo) {
-                replyHtml = `
-                    <div class="reply-preview">
-                        <div class="reply-sender" style="color: ${senderColor.bg}">
-                            ${messageData.replyTo.senderName || 'کاربر'}
-                        </div>
-                        <div class="reply-content">${messageData.replyTo.content}</div>
-                    </div>
-                `;
-            }
-            
-            wrapper.innerHTML = `
-                <div class="message ${isOutgoing ? 'outgoing' : 'incoming'}" 
-                     style="${isOutgoing ? `background: ${bgColor}; color: ${textColor}` : ''}">
-                    ${!isOutgoing ? `
-                        <div class="message-sender" style="color: ${bgColor}">
-                            ${messageData.senderName || 'کاربر'}
-                        </div>
-                    ` : ''}
-                    ${replyHtml}
-                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px;">
-                        <div style="font-size: 24px;">${fileIcon}</div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 500; margin-bottom: 5px;">${messageData.fileName}</div>
-                            <div style="font-size: 12px; ${isOutgoing ? `color: ${textColor}` : 'color: var(--text-secondary)'}">
-                                ${messageData.fileSize} • ${messageData.fileType || 'فایل'}
-                            </div>
-                        </div>
-                        <button onclick="downloadFile('${messageData.content}', '${messageData.fileName}')" 
-                                style="background: ${isOutgoing ? textColor : 'var(--accent-green)'}; 
-                                       color: ${isOutgoing ? bgColor : 'white'}; 
-                                       border: none; border-radius: 8px; padding: 8px 12px; font-size: 12px; cursor: pointer;">
-                            دانلود
-                        </button>
-                    </div>
-                    <div class="message-footer">
-                        <div class="message-time" style="${isOutgoing ? `color: ${textColor}` : ''}">${time}</div>
-                        ${isOutgoing ? `<div class="message-status">${status}</div>` : ''}
-                    </div>
-                </div>
-            `;
-            
-            container.appendChild(wrapper);
-            wrapper.setAttribute('data-message-id', messageData.messageId);
-            
-            if (!noAnimation) scrollToBottom();
-        }
-        
-        function displayUploadProgress(fileId, progress, totalChunks, isFile = false, fileName = '') {
-            const container = document.getElementById('messagesArea');
-            
-            let progressEl = document.getElementById(`upload-${fileId}`);
-            if (!progressEl) {
-                progressEl = document.createElement('div');
-                progressEl.id = `upload-${fileId}`;
-                progressEl.className = 'message-wrapper outgoing';
-                const icon = isFile ? '📁' : '📷';
-                const text = isFile ? `در حال ارسال ${fileName}...` : 'در حال ارسال عکس...';
-                progressEl.innerHTML = `
-                    <div class="message outgoing" style="background: ${myColor.bg}; color: ${myColor.text}">
-                        <div class="message-content">
-                            <div style="margin-bottom: 8px;">${icon} ${text}</div>
-                            <div style="width: 200px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                                <div style="height: 100%; background: ${myColor.text}; width: ${progress}%; transition: width 0.3s;"></div>
-                            </div>
-                            <div style="font-size: 12px; color: ${myColor.text}; text-align: center; margin-top: 4px;">
-                                ${progress}%
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(progressEl);
-            } else {
-                const bar = progressEl.querySelector('div div');
-                const text = progressEl.querySelector('div:last-child');
-                if (bar) bar.style.width = `${progress}%`;
-                if (text) text.textContent = `${progress}%`;
-            }
-            
-            scrollToBottom();
-        }
-        
-        function displayDownloadProgress(fileId, progress, totalChunks, isFile = false, fileName = '') {
-            const container = document.getElementById('messagesArea');
-            
-            let progressEl = document.getElementById(`download-${fileId}`);
-            if (!progressEl) {
-                progressEl = document.createElement('div');
-                progressEl.id = `download-${fileId}`;
-                progressEl.className = 'message-wrapper incoming';
-                const icon = isFile ? '📁' : '📷';
-                const text = isFile ? `در حال دریافت ${fileName}...` : 'در حال دریافت عکس...';
-                progressEl.innerHTML = `
-                    <div class="message incoming">
-                        <div class="message-content">
-                            <div style="margin-bottom: 8px;">${icon} ${text}</div>
-                            <div style="width: 200px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                                <div style="height: 100%; background: var(--accent-green); width: ${progress}%; transition: width 0.3s;"></div>
-                            </div>
-                            <div style="font-size: 12px; color: rgba(255,255,255,0.7); text-align: center; margin-top: 4px;">
-                                ${progress}%
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(progressEl);
-            } else {
-                const bar = progressEl.querySelector('div div');
-                const text = progressEl.querySelector('div:last-child');
-                if (bar) bar.style.width = `${progress}%`;
-                if (text) text.textContent = `${progress}%`;
-            }
-            
-            scrollToBottom();
-        }
-        
-        function updateUploadProgress(fileId, progress, isFile = false, fileName = '') {
-            const progressEl = document.getElementById(`upload-${fileId}`);
-            if (progressEl) {
-                const bar = progressEl.querySelector('div div');
-                const text = progressEl.querySelector('div:last-child');
-                if (bar) bar.style.width = `${progress}%`;
-                if (text) text.textContent = `${progress}%`;
-            }
-        }
-        
-        function updateDownloadProgress(fileId, progress, isFile = false, fileName = '') {
-            const progressEl = document.getElementById(`download-${fileId}`);
-            if (progressEl) {
-                const bar = progressEl.querySelector('div div');
-                const text = progressEl.querySelector('div:last-child');
-                if (bar) bar.style.width = `${progress}%`;
-                if (text) text.textContent = `${progress}%`;
-            }
-        }
-        
-        function removeProgress(fileId) {
-            const uploadEl = document.getElementById(`upload-${fileId}`);
-            const downloadEl = document.getElementById(`download-${fileId}`);
-            if (uploadEl) uploadEl.remove();
-            if (downloadEl) downloadEl.remove();
-        }
-        
-        function updateMessageToImage(uploadInfo) {
-            const progressEl = document.getElementById(`upload-${uploadInfo.fileId}`);
-            if (progressEl) progressEl.remove();
-            
-            const messageData = {
-                type: 'image',
-                content: uploadInfo.base64String,
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                timestamp: Date.now(),
-                messageId: uploadInfo.messageId,
-                status: MESSAGE_STATUS.SENT
-            };
-            
-            displayImageMessage(messageData, true);
-            updateContactLastMessage(currentContact.id, '📷 عکس', 'image');
-            renderContactsList();
-        }
-        
-        function updateMessageToFile(uploadInfo) {
-            const progressEl = document.getElementById(`upload-${uploadInfo.fileId}`);
-            if (progressEl) progressEl.remove();
-            
-            const messageData = {
-                type: 'file',
-                content: uploadInfo.base64Data,
-                fileName: uploadInfo.fileName,
-                fileType: uploadInfo.fileType,
-                fileSize: uploadInfo.fileSize,
-                sender: myId,
-                senderName: myUsername,
-                senderColor: myColor,
-                timestamp: Date.now(),
-                messageId: uploadInfo.messageId,
-                status: MESSAGE_STATUS.SENT
-            };
-            
-            displayFileMessage(messageData, true);
-            updateContactLastMessage(currentContact.id, `📁 ${uploadInfo.fileName}`, 'file');
-            renderContactsList();
-        }
-        
-        function updateMessageStatusUI(messageId, status) {
-            const messages = document.querySelectorAll('.message-wrapper');
-            messages.forEach(wrapper => {
-                const messageDiv = wrapper.querySelector('.message');
-                if (messageDiv && wrapper.getAttribute('data-message-id') === messageId) {
-                    const statusEl = messageDiv.querySelector('.message-status');
-                    if (statusEl) {
-                        statusEl.innerHTML = getStatusIcon(status);
-                        statusEl.style.transform = 'scale(1.2)';
-                        setTimeout(() => {
-                            statusEl.style.transform = 'scale(1)';
-                        }, 300);
-                    }
-                }
-            });
-        }
-        
-        function getStatusIcon(status) {
-            switch (status) {
-                case MESSAGE_STATUS.SENDING:
-                    return '<span class="status-icon">↗</span>';
-                case MESSAGE_STATUS.SENT:
-                    return '<span class="status-icon sent">✓</span>';
-                case MESSAGE_STATUS.DELIVERED:
-                    return '<span class="status-icon delivered">✓✓</span>';
-                case MESSAGE_STATUS.READ:
-                    return '<span class="status-icon read">✓✓</span>';
-                default:
-                    return '<span class="status-icon">↗</span>';
-            }
-        }
-        
-        function getFileIcon(fileType) {
-            if (!fileType) return '📁';
-            if (fileType.includes('pdf')) return '📕';
-            if (fileType.includes('word') || fileType.includes('document')) return '📄';
-            if (fileType.includes('zip') || fileType.includes('rar') || fileType.includes('compressed')) return '📦';
-            if (fileType.includes('audio')) return '🎵';
-            if (fileType.includes('video')) return '🎬';
-            return '📁';
-        }
-        
-        function scrollToMessage(messageId) {
-            const messageEl = document.querySelector(`[data-message-id="${messageId}"]`);
-            if (messageEl) {
-                messageEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                messageEl.style.animation = 'none';
-                setTimeout(() => {
-                    messageEl.style.backgroundColor = 'rgba(0, 175, 156, 0.1)';
-                    setTimeout(() => {
-                        messageEl.style.backgroundColor = '';
-                    }, 1000);
-                }, 100);
-            }
-        }
-        
-        function showImage(base64String) {
-            const img = new Image();
-            img.src = base64String;
-            img.style.maxWidth = '90%';
-            img.style.maxHeight = '90%';
-            img.style.borderRadius = '8px';
-            
-            const overlay = document.createElement('div');
-            overlay.style.position = 'fixed';
-            overlay.style.top = '0';
-            overlay.style.left = '0';
-            overlay.style.right = '0';
-            overlay.style.bottom = '0';
-            overlay.style.background = 'rgba(0,0,0,0.9)';
-            overlay.style.display = 'flex';
-            overlay.style.alignItems = 'center';
-            overlay.style.justifyContent = 'center';
-            overlay.style.zIndex = '3000';
-            overlay.style.cursor = 'pointer';
-            
-            overlay.onclick = () => overlay.remove();
-            
-            overlay.appendChild(img);
-            document.body.appendChild(overlay);
-        }
-        
-        function downloadFile(base64Data, fileName) {
-            if (!base64Data) {
-                showNotification('فایل هنوز دانلود نشده است');
-                return;
-            }
-            
-            const link = document.createElement('a');
-            link.href = base64Data;
-            link.download = fileName;
-            link.click();
-        }
-
-        // ==================== Helper Functions ====================
-        function saveMessageLocally(messageData, isOutgoing = true) {
-            if (!currentContact) return;
-            
-            if (!currentContact.messages) currentContact.messages = [];
-            currentContact.messages.push(messageData);
-            
-            if (currentContact.messages.length > 1000) {
-                currentContact.messages = currentContact.messages.slice(-1000);
-            }
-            
-            saveContacts();
-        }
-        
-        function updateContactLastMessage(contactId, message, type) {
-            const contact = contacts[contactId];
-            if (contact) {
-                contact.lastMessage = type === 'image' ? '📷 عکس' : 
-                                     type === 'file' ? `📁 ${message.substring(0, 20)}` : 
-                                     message;
-                contact.lastMessageTime = Date.now();
-                saveContacts();
-            }
-        }
-        
-        function showNotification(text) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = text;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => notification.remove(), 3000);
-        }
-        
-        function showLoading(text) {
-            document.getElementById('loadingOverlay').classList.add('active');
-        }
-        
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('active');
-        }
-        
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            const newHeight = Math.min(Math.max(textarea.scrollHeight, 44), 100);
-            textarea.style.height = newHeight + 'px';
-            
-            const sendBtn = document.getElementById('sendBtn');
-            sendBtn.disabled = textarea.value.trim() === '' || 
-                !currentContact || 
-                !currentContact.isOnline;
-        }
-        
-        function scrollToBottom() {
-            const container = document.getElementById('messagesArea');
-            setTimeout(() => {
-                container.scrollTop = container.scrollHeight;
-            }, 100);
-        }
-        
         function formatTime(timestamp) {
             const date = new Date(timestamp);
-            return date.toLocaleTimeString('fa-IR', { 
-                hour: '2-digit', 
+            return date.toLocaleTimeString('fa-IR', {
+                hour: '2-digit',
                 minute: '2-digit',
                 hour12: false
             });
         }
-        
-        function generateId() {
-            return Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
-        
-        function splitBase64IntoChunks(base64String, chunkSize) {
-            const chunks = [];
-            for (let i = 0; i < base64String.length; i += chunkSize) {
-                chunks.push(base64String.substring(i, i + chunkSize));
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // ==================== سیستم لاگین ====================
+        function login() {
+            const usernameInput = document.getElementById('username');
+            const username = usernameInput.value.trim();
+            
+            if (!username || username.length < 2) {
+                showNotification('لطفاً نام کاربری معتبر وارد کنید (حداقل ۲ کاراکتر)', 'error');
+                return;
             }
-            return chunks;
+            
+            if (username.length > 20) {
+                showNotification('نام کاربری نباید بیشتر از ۲۰ کاراکتر باشد', 'error');
+                return;
+            }
+            
+            myUsername = username;
+            myId = generateId();
+            myColor = getRandomColor();
+            
+            // ذخیره در localStorage
+            localStorage.setItem('chat_username', username);
+            
+            // راه‌اندازی سیستم
+            initializePeer();
         }
-        
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+
+        // ==================== راه‌اندازی Peer ====================
+        function initializePeer() {
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال اتصال...';
+            
+            // استفاده از شناسه یکتا برای هر کاربر
+            const peerId = `${myUsername}_${Date.now()}`;
+            
+            peer = new Peer(peerId, {
+                host: '0.peerjs.com',
+                port: 443,
+                path: '/',
+                debug: 2
+            });
+            
+            peer.on('open', (id) => {
+                console.log('✅ سیستم راه‌اندازی شد:', id);
+                
+                // نمایش صفحه چت
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('chatContainer').style.display = 'flex';
+                
+                // تنظیم اطلاعات کاربر
+                document.getElementById('myUsername').textContent = myUsername;
+                document.getElementById('myAvatar').textContent = myUsername.charAt(0);
+                document.getElementById('myAvatar').style.background = myColor;
+                
+                // اتصال به کاربران آنلاین
+                discoverOnlineUsers();
+                
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span id="loginBtnText">ورود به چت روم</span>';
+                
+                showNotification(`خوش آمدید ${myUsername}!`, 'success');
+            });
+            
+            peer.on('connection', (conn) => {
+                console.log('🔗 اتصال جدید:', conn.peer);
+                setupConnection(conn);
+            });
+            
+            peer.on('error', (err) => {
+                console.error('خطا در Peer:', err);
+                showNotification('خطا در اتصال به سرور', 'error');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span id="loginBtnText">تلاش مجدد</span>';
+            });
+            
+            // گوش دادن به اتصالات باز
+            listenToExistingConnections();
         }
-        
+
+        // ==================== کشف کاربران آنلاین ====================
+        async function discoverOnlineUsers() {
+            try {
+                // ارسال پیام کشف به همه کاربران
+                broadcast({
+                    type: 'discover',
+                    sender: myId,
+                    username: myUsername,
+                    color: myColor,
+                    timestamp: Date.now()
+                });
+                
+                // دریافت پاسخ از کاربران آنلاین
+                setTimeout(() => {
+                    // نمایش کاربران آنلاین
+                    updateOnlineUsers();
+                }, 1000);
+            } catch (error) {
+                console.error('خطا در کشف کاربران:', error);
+            }
+        }
+
+        function broadcast(data) {
+            connections.forEach((conn, peerId) => {
+                if (conn.open) {
+                    conn.send(data);
+                }
+            });
+        }
+
+        // ==================== مدیریت اتصالات ====================
+        function setupConnection(conn) {
+            const peerId = conn.peer;
+            
+            conn.on('open', () => {
+                console.log('✅ اتصال برقرار شد با:', peerId);
+                
+                // ارسال اطلاعات کاربری
+                conn.send({
+                    type: 'user_info',
+                    id: myId,
+                    username: myUsername,
+                    color: myColor,
+                    timestamp: Date.now()
+                });
+                
+                // ذخیره اتصال
+                connections.set(peerId, conn);
+                
+                // بروزرسانی لیست کاربران
+                updateOnlineUsers();
+            });
+            
+            conn.on('data', (data) => {
+                handleIncomingData(data, peerId);
+            });
+            
+            conn.on('close', () => {
+                console.log('❌ اتصال بسته شد با:', peerId);
+                connections.delete(peerId);
+                updateOnlineUsers();
+            });
+            
+            conn.on('error', (err) => {
+                console.error('خطا در اتصال:', err);
+                connections.delete(peerId);
+                updateOnlineUsers();
+            });
+        }
+
+        function connectToUser(peerId, username, color) {
+            if (connections.has(peerId)) {
+                console.log('⚠️ اتصال از قبل برقرار است');
+                return;
+            }
+            
+            console.log('🔄 در حال اتصال به:', peerId);
+            
+            const conn = peer.connect(peerId, {
+                reliable: true,
+                serialization: 'json'
+            });
+            
+            setupConnection(conn);
+        }
+
+        function listenToExistingConnections() {
+            // بررسی اتصالات موجود در شبکه
+            // در یک محیط واقعی، این بخش باید با سرور پیاده‌سازی شود
+            // اما در این نمونه ساده، فقط به اتصالات مستقیم گوش می‌دهیم
+        }
+
+        // ==================== مدیریت پیام‌ها ====================
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            if (currentChat.type === 'public') {
+                // ارسال به چت عمومی
+                sendPublicMessage(message);
+            } else {
+                // ارسال به چت خصوصی
+                sendPrivateMessage(message, currentChat.id);
+            }
+            
+            input.value = '';
+            autoResize(input);
+        }
+
+        function sendPublicMessage(content) {
+            const messageId = generateId();
+            const messageData = {
+                type: 'message',
+                chatType: 'public',
+                messageId: messageId,
+                sender: myId,
+                senderUsername: myUsername,
+                senderColor: myColor,
+                content: content,
+                timestamp: Date.now(),
+                status: MESSAGE_STATUS.SENDING
+            };
+            
+            // نمایش پیام در UI
+            displayMessage(messageData, true);
+            
+            // ارسال به همه کاربران متصل
+            broadcast(messageData);
+            
+            // ذخیره در تاریخچه
+            saveToHistory(messageData);
+            
+            // به‌روزرسانی وضعیت
+            pendingMessages.set(messageId, {
+                data: messageData,
+                delivered: false
+            });
+        }
+
+        function sendPrivateMessage(content, targetPeerId) {
+            const conn = connections.get(targetPeerId);
+            if (!conn || !conn.open) {
+                showNotification('اتصال با کاربر برقرار نیست', 'error');
+                return;
+            }
+            
+            const messageId = generateId();
+            const messageData = {
+                type: 'message',
+                chatType: 'private',
+                messageId: messageId,
+                sender: myId,
+                senderUsername: myUsername,
+                senderColor: myColor,
+                content: content,
+                timestamp: Date.now(),
+                status: MESSAGE_STATUS.SENDING,
+                target: targetPeerId
+            };
+            
+            // نمایش پیام در UI
+            displayMessage(messageData, true);
+            
+            // ارسال به کاربر مورد نظر
+            conn.send(messageData);
+            
+            // ذخیره در تاریخچه
+            saveToHistory(messageData);
+            
+            // به‌روزرسانی وضعیت
+            pendingMessages.set(messageId, {
+                data: messageData,
+                delivered: false
+            });
+        }
+
+        function handleIncomingData(data, peerId) {
+            switch (data.type) {
+                case 'user_info':
+                    handleUserInfo(data, peerId);
+                    break;
+                case 'discover':
+                    handleDiscover(data, peerId);
+                    break;
+                case 'message':
+                    handleIncomingMessage(data, peerId);
+                    break;
+                case 'typing':
+                    handleTyping(data, peerId);
+                    break;
+                case 'message_status':
+                    handleMessageStatus(data);
+                    break;
+                case 'user_status':
+                    handleUserStatus(data, peerId);
+                    break;
+            }
+        }
+
+        function handleUserInfo(data, peerId) {
+            // ذخیره اطلاعات کاربر
+            users.set(peerId, {
+                id: data.id,
+                username: data.username,
+                color: data.color || getRandomColor(),
+                peerId: peerId,
+                isOnline: true,
+                lastSeen: Date.now()
+            });
+            
+            // بروزرسانی UI
+            updateOnlineUsers();
+            
+            // ارسال تأییدیه
+            const conn = connections.get(peerId);
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'user_info',
+                    id: myId,
+                    username: myUsername,
+                    color: myColor,
+                    timestamp: Date.now()
+                });
+            }
+        }
+
+        function handleDiscover(data, peerId) {
+            // پاسخ به پیام کشف
+            const conn = connections.get(peerId);
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'user_info',
+                    id: myId,
+                    username: myUsername,
+                    color: myColor,
+                    timestamp: Date.now()
+                });
+            }
+            
+            // اتصال به کاربر جدید
+            if (!connections.has(peerId)) {
+                connectToUser(peerId, data.username, data.color);
+            }
+        }
+
+        function handleIncomingMessage(data, peerId) {
+            // ارسال تأییدیه دریافت
+            const conn = connections.get(peerId);
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'message_status',
+                    messageId: data.messageId,
+                    status: MESSAGE_STATUS.DELIVERED,
+                    timestamp: Date.now()
+                });
+                
+                // ارسال تأییدیه خوانده شدن (بعد از 1 ثانیه)
+                setTimeout(() => {
+                    if (conn.open) {
+                        conn.send({
+                            type: 'message_status',
+                            messageId: data.messageId,
+                            status: MESSAGE_STATUS.READ,
+                            timestamp: Date.now()
+                        });
+                    }
+                }, 1000);
+            }
+            
+            // نمایش پیام
+            data.status = MESSAGE_STATUS.DELIVERED;
+            displayMessage(data, false);
+            
+            // ذخیره در تاریخچه
+            saveToHistory(data);
+            
+            // اعلان
+            if (currentChat.id !== peerId) {
+                showNotification(`پیام جدید از ${data.senderUsername}: ${data.content.substring(0, 30)}...`, 'info');
+            }
+        }
+
+        function handleTyping(data, peerId) {
+            if (currentChat.id === peerId) {
+                const typingIndicator = document.getElementById('typingIndicator');
+                const typingUser = document.getElementById('typingUser');
+                
+                typingUser.textContent = data.username;
+                typingIndicator.style.display = 'flex';
+                
+                // پنهان کردن بعد از 3 ثانیه
+                clearTimeout(typingTimeouts.get(peerId));
+                const timeout = setTimeout(() => {
+                    typingIndicator.style.display = 'none';
+                }, 3000);
+                typingTimeouts.set(peerId, timeout);
+            }
+        }
+
+        function handleMessageStatus(data) {
+            // به‌روزرسانی وضعیت پیام
+            updateMessageStatus(data.messageId, data.status);
+        }
+
+        function handleUserStatus(data, peerId) {
+            // به‌روزرسانی وضعیت کاربر
+            const user = users.get(peerId);
+            if (user) {
+                user.isOnline = data.isOnline;
+                user.lastSeen = data.timestamp;
+                updateOnlineUsers();
+            }
+        }
+
+        // ==================== UI Functions ====================
+        function showChatType(type) {
+            // به‌روزرسانی دکمه‌ها
+            document.querySelectorAll('.chat-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // نمایش/پنهان کردن بخش کاربران آنلاین
+            const onlineUsers = document.getElementById('onlineUsers');
+            const chatList = document.getElementById('chatList');
+            
+            if (type === 'public') {
+                onlineUsers.style.display = 'block';
+                currentChat = {
+                    type: 'public',
+                    id: 'public',
+                    name: 'چت عمومی',
+                    isGroup: true
+                };
+                
+                // بارگذاری تاریخچه چت عمومی
+                loadChatHistory();
+            } else {
+                onlineUsers.style.display = 'none';
+                // بارگذاری لیست چت‌های خصوصی
+                loadPrivateChats();
+            }
+            
+            // به‌روزرسانی هدر
+            updateChatHeader();
+        }
+
+        function updateChatHeader() {
+            const chatName = document.getElementById('currentChatName');
+            const chatStatus = document.getElementById('currentChatStatus');
+            
+            chatName.textContent = currentChat.name;
+            
+            if (currentChat.type === 'public') {
+                const onlineCount = Array.from(users.values()).filter(u => u.isOnline).length;
+                chatStatus.innerHTML = `<span id="onlineCount">${onlineCount}</span> کاربر آنلاین`;
+            } else {
+                const user = users.get(currentChat.id);
+                if (user) {
+                    chatStatus.textContent = user.isOnline ? 'آنلاین' : 'آفلاین';
+                } else {
+                    chatStatus.textContent = 'آفلاین';
+                }
+            }
+        }
+
+        function updateOnlineUsers() {
+            const onlineUsersContainer = document.getElementById('onlineUsers');
+            const onlineCount = document.getElementById('onlineCount');
+            const usersList = document.getElementById('usersList');
+            
+            if (!onlineUsersContainer || !usersList) return;
+            
+            // پاکسازی
+            onlineUsersContainer.innerHTML = '';
+            usersList.innerHTML = '';
+            
+            // اضافه کردن خود کاربر
+            const myself = {
+                username: myUsername,
+                color: myColor,
+                isOnline: true,
+                peerId: peer.id
+            };
+            
+            // نمایش در مدال
+            const myselfElement = createUserElement(myself, true);
+            usersList.appendChild(myselfElement);
+            
+            // شمارش کاربران آنلاین
+            let onlineCountValue = 0;
+            
+            // نمایش سایر کاربران
+            users.forEach((user, peerId) => {
+                if (peerId !== peer.id) {
+                    // نمایش در بخش کاربران آنلاین
+                    const userElement = createUserElement(user, false);
+                    onlineUsersContainer.appendChild(userElement);
+                    
+                    // نمایش در مدال
+                    const modalElement = createUserElement(user, false);
+                    usersList.appendChild(modalElement);
+                    
+                    if (user.isOnline) onlineCountValue++;
+                }
+            });
+            
+            // به‌روزرسانی شمارنده
+            if (onlineCount) {
+                onlineCount.textContent = onlineCountValue;
+            }
+            
+            // بروزرسانی لیست چت‌های خصوصی
+            updatePrivateChats();
+        }
+
+        function createUserElement(user, isModal = false) {
+            const element = document.createElement('div');
+            element.className = isModal ? 'online-user' : 'online-user';
+            
+            if (isModal) {
+                element.style.width = '100%';
+                element.style.marginBottom = '10px';
+            }
+            
+            element.onclick = () => {
+                if (!isModal) {
+                    // شروع چت خصوصی
+                    startPrivateChat(user.peerId, user.username);
+                }
+            };
+            
+            element.innerHTML = `
+                <div class="online-user-avatar" style="background: ${user.color}">
+                    ${user.username.charAt(0)}
+                </div>
+                <span>${user.username}</span>
+                <div class="status-dot ${user.isOnline ? '' : 'offline'}"></div>
+            `;
+            
+            return element;
+        }
+
+        function startPrivateChat(peerId, username) {
+            currentChat = {
+                type: 'private',
+                id: peerId,
+                name: username,
+                isGroup: false
+            };
+            
+            // به‌روزرسانی UI
+            updateChatHeader();
+            loadChatHistory();
+            
+            // نمایش در موبایل
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('mainChat').classList.add('active');
+            }
+        }
+
+        function updatePrivateChats() {
+            const chatList = document.getElementById('chatList');
+            if (!chatList) return;
+            
+            // فقط در حالت چت خصوصی لیست را نشان بده
+            if (document.querySelector('.chat-type-btn:nth-child(2)').classList.contains('active')) {
+                chatList.innerHTML = '';
+                
+                users.forEach((user, peerId) => {
+                    if (peerId !== peer.id) {
+                        const chatItem = document.createElement('div');
+                        chatItem.className = `chat-item ${currentChat.id === peerId ? 'active' : ''}`;
+                        chatItem.onclick = () => startPrivateChat(peerId, user.username);
+                        
+                        // پیدا کردن آخرین پیام
+                        const historyKey = `private_${peerId}`;
+                        const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+                        const lastMessage = history[history.length - 1];
+                        
+                        chatItem.innerHTML = `
+                            <div class="chat-avatar" style="background: ${user.color}">
+                                ${user.username.charAt(0)}
+                            </div>
+                            <div class="chat-info">
+                                <div class="chat-name">
+                                    ${user.username}
+                                    ${user.isOnline ? '<i class="fas fa-circle" style="color: #4ade80; font-size: 8px;"></i>' : ''}
+                                </div>
+                                <div class="chat-last-message">
+                                    ${lastMessage ? (lastMessage.content || '📷 عکس') : 'شروع گفتگو'}
+                                </div>
+                            </div>
+                            ${lastMessage ? `<div class="chat-time">${formatTime(lastMessage.timestamp)}</div>` : ''}
+                        `;
+                        
+                        chatList.appendChild(chatItem);
+                    }
+                });
+                
+                if (users.size <= 1) {
+                    chatList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-user-friends"></i>
+                            <p>هنوز چت خصوصی ندارید</p>
+                            <p style="font-size: 12px; margin-top: 10px;">از لیست کاربران آنلاین، کاربری را انتخاب کنید</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function loadPrivateChats() {
+            // فقط لیست چت‌های خصوصی را بارگذاری کن
+            updatePrivateChats();
+        }
+
+        // ==================== نمایش پیام‌ها ====================
+        function displayMessage(data, isOutgoing) {
+            const container = document.getElementById('messagesContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${isOutgoing ? 'outgoing' : 'incoming'}`;
+            
+            // تنظیم رنگ برای پیام‌های خروجی
+            if (isOutgoing) {
+                messageElement.style.background = myColor;
+                messageElement.style.color = 'white';
+            }
+            
+            const statusIcon = getStatusIcon(data.status);
+            
+            messageElement.innerHTML = `
+                ${!isOutgoing ? `
+                    <div class="message-header">
+                        <div class="message-sender" style="color: ${data.senderColor}">
+                            ${data.senderUsername}
+                        </div>
+                        <div class="message-time">${formatTime(data.timestamp)}</div>
+                    </div>
+                ` : ''}
+                <div class="message-content">${escapeHtml(data.content)}</div>
+                ${isOutgoing ? `
+                    <div class="message-status">
+                        <span class="message-time">${formatTime(data.timestamp)}</span>
+                        <div class="status-icon ${data.status}">${statusIcon}</div>
+                    </div>
+                ` : ''}
+            `;
+            
+            container.appendChild(messageElement);
+            
+            // اسکرول به پایین
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        function getStatusIcon(status) {
+            switch(status) {
+                case MESSAGE_STATUS.SENDING: return '↗';
+                case MESSAGE_STATUS.SENT: return '✓';
+                case MESSAGE_STATUS.DELIVERED: return '✓✓';
+                case MESSAGE_STATUS.READ: return '✓✓';
+                default: return '↗';
+            }
+        }
+
+        function updateMessageStatus(messageId, status) {
+            // پیدا کردن پیام و به‌روزرسانی وضعیت آن در UI
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => {
+                // در یک پیاده‌سازی کامل، باید messageId را ذخیره و بررسی کنیم
+            });
+        }
+
+        // ==================== مدیریت تاریخچه ====================
+        function saveToHistory(message) {
+            let historyKey;
+            
+            if (message.chatType === 'public') {
+                historyKey = 'public_chat';
+            } else {
+                // برای چت خصوصی، کلید را بر اساس دو کاربر بساز
+                const sortedIds = [myId, message.sender].sort();
+                historyKey = `private_${sortedIds[0]}_${sortedIds[1]}`;
+            }
+            
+            let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            history.push(message);
+            
+            // محدود کردن تاریخچه به 1000 پیام
+            if (history.length > 1000) {
+                history = history.slice(-1000);
+            }
+            
+            localStorage.setItem(historyKey, JSON.stringify(history));
+        }
+
+        function loadChatHistory() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+            
+            let historyKey;
+            let history = [];
+            
+            if (currentChat.type === 'public') {
+                historyKey = 'public_chat';
+            } else {
+                const sortedIds = [myId, currentChat.id].sort();
+                historyKey = `private_${sortedIds[0]}_${sortedIds[1]}`;
+            }
+            
+            history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+            
+            if (history.length === 0) {
+                const emptyState = document.getElementById('emptyState');
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            history.forEach(message => {
+                const isOutgoing = message.sender === myId;
+                displayMessage(message, isOutgoing);
+            });
+            
+            // اسکرول به پایین
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        // ==================== توابع کمکی ====================
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // ==================== مدیریت پاکسازی ====================
-        function showResetModal() {
-            document.getElementById('resetModal').classList.add('active');
-        }
-        
-        function closeResetModal() {
-            document.getElementById('resetModal').classList.remove('active');
-        }
-        
-        function resetAllData() {
-            showResetModal();
-        }
-        
-        function confirmResetAllData() {
-            // بستن همه اتصالات
-            Object.values(connections).forEach(conn => {
-                conn.close();
-            });
-            
-            // پاک کردن localStorage
-            localStorage.clear();
-            
-            // ریست متغیرها
-            peer = null;
-            myId = null;
-            myUsername = null;
-            myColor = null;
-            currentContact = null;
-            contacts = {};
-            connections = {};
-            pendingMessages.clear();
-            replyingTo = null;
-            currentUploads.clear();
-            receivingFiles.clear();
-            
-            // بستن مدال
-            closeResetModal();
-            
-            // رفتن به صفحه لاگین
-            showPage('loginPage');
-            
-            // ریست فرم
-            document.getElementById('usernameInput').value = '';
-            document.getElementById('loginBtn').disabled = false;
-            
-            showNotification('همه داده‌ها با موفقیت پاک شدند');
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            } else {
+                // ارسال وضعیت تایپ
+                if (!isTyping) {
+                    isTyping = true;
+                    broadcastTyping();
+                }
+                
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    isTyping = false;
+                }, 2000);
+            }
         }
 
-        // ==================== Event Listeners ====================
+        let typingTimeout;
+        function broadcastTyping() {
+            if (currentChat.type === 'private') {
+                const conn = connections.get(currentChat.id);
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'typing',
+                        username: myUsername,
+                        timestamp: Date.now()
+                    });
+                }
+            }
+        }
+
+        function attachImage() {
+            document.getElementById('imageInput').click();
+        }
+
+        function attachFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function sendEmoji() {
+            // در یک پیاده‌سازی کامل، پیکرگرام ایموجی اضافه می‌شود
+            showNotification('این ویژگی به زودی اضافه خواهد شد', 'info');
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showNotification('لطفاً یک فایل تصویری انتخاب کنید', 'error');
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) { // 10MB
+                showNotification('حجم عکس باید کمتر از ۱۰ مگابایت باشد', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // در یک پیاده‌سازی کامل، اینجا عکس ارسال می‌شود
+                showNotification('ارسال عکس به زودی اضافه خواهد شد', 'info');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 50 * 1024 * 1024) { // 50MB
+                showNotification('حجم فایل باید کمتر از ۵۰ مگابایت باشد', 'error');
+                return;
+            }
+            
+            showNotification('ارسال فایل به زودی اضافه خواهد شد', 'info');
+        }
+
+        function showUsersModal() {
+            openModal('usersModal');
+        }
+
+        function refreshConnections() {
+            discoverOnlineUsers();
+            showNotification('اتصالات بروزرسانی شد', 'success');
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const mainChat = document.getElementById('mainChat');
+            
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                mainChat.classList.add('active');
+            } else {
+                sidebar.classList.add('active');
+                mainChat.classList.remove('active');
+            }
+        }
+
+        // ==================== پاکسازی داده‌ها ====================
+        function resetAllData() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید همه داده‌ها را پاک کنید؟ این عمل غیرقابل بازگشت است.')) {
+                // بستن همه اتصالات
+                connections.forEach(conn => {
+                    conn.close();
+                });
+                connections.clear();
+                users.clear();
+                
+                // پاک کردن localStorage
+                localStorage.clear();
+                
+                // ریست متغیرها
+                myId = null;
+                myUsername = null;
+                myColor = null;
+                
+                // ریست فرم
+                document.getElementById('username').value = '';
+                
+                // بازگشت به صفحه لاگین
+                document.getElementById('loginPage').style.display = 'block';
+                document.getElementById('chatContainer').style.display = 'none';
+                
+                showNotification('همه داده‌ها با موفقیت پاک شدند', 'success');
+            }
+        }
+
+        // ==================== راه‌اندازی اولیه ====================
         document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('messageInput');
-            textarea.addEventListener('input', function() {
+            // بررسی کاربر ذخیره شده
+            const savedUsername = localStorage.getItem('chat_username');
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+            }
+            
+            // تنظیم event listener برای input
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', function() {
                 autoResize(this);
             });
             
-            textarea.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            document.getElementById('newContactModal').addEventListener('click', function(e) {
-                if (e.target === this) closeNewContactModal();
-            });
-            
-            document.getElementById('resetModal').addEventListener('click', function(e) {
-                if (e.target === this) closeResetModal();
-            });
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeNewContactModal();
-                    closeResetModal();
-                }
-            });
-            
-            document.getElementById('usernameInput').focus();
-            
-            window.addEventListener('resize', function() {
-                const activeElement = document.activeElement;
-                if (activeElement && (activeElement.id === 'messageInput' || activeElement.id === 'searchInput')) {
-                    setTimeout(scrollToBottom, 100);
-                }
-            });
+            // تنظیم focus روی input لاگین
+            document.getElementById('username').focus();
         });
+
+        // بهبود برای P2P: ارسال پیام‌های heartbeat
+        setInterval(() => {
+            broadcast({
+                type: 'user_status',
+                isOnline: true,
+                timestamp: Date.now()
+            });
+        }, 30000);
     </script>
 </body>
 </html>
