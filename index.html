@@ -1,3315 +1,1135 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>چت آرانا - شبکه توزیع‌شده</title>
-    <style>
-        /* ==================== RESET & BASE STYLES ==================== */
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: 'Vazir', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-        }
-
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
-
-        body { 
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
-            color: #e0e0e0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        /* ==================== LOGIN PAGE ==================== */
-        .login-page { 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 1000; 
-            padding: 20px;
-        }
-
-        .login-card { 
-            background: rgba(30, 30, 30, 0.95);
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
-            max-width: 500px; 
-            width: 90%; 
-            text-align: center; 
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        .login-input { 
-            width: 100%; 
-            padding: 15px 20px; 
-            margin: 10px 0; 
-            background: rgba(42, 42, 42, 0.8); 
-            border: 2px solid rgba(58, 58, 58, 0.8); 
-            border-radius: 12px; 
-            font-size: 16px; 
-            text-align: center; 
-            outline: none; 
-            transition: all 0.3s; 
-            color: #e0e0e0;
-        }
-
-        .login-input:focus {
-            border-color: #8a2be2;
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .login-btn { 
-            width: 100%; 
-            padding: 16px; 
-            margin: 20px 0 10px; 
-            background: linear-gradient(135deg, #8a2be2, #6a0dad);
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            font-size: 16px; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .login-btn:hover {
-            background: linear-gradient(135deg, #9a3bf2, #7a1dbd);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.4);
-        }
-
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* ==================== MAIN CONTAINER ==================== */
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            background: rgba(30, 30, 30, 0.95); 
-            border-radius: 20px; 
-            overflow: hidden; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7); 
-            height: 90vh; 
-            display: flex; 
-            flex-direction: column; 
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        /* ==================== CHAT HEADER ==================== */
-        .chat-header { 
-            background: linear-gradient(135deg, rgba(18, 18, 18, 0.95), rgba(25, 25, 25, 0.95));
-            color: #e0e0e0; 
-            padding: 15px 25px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            border-bottom: 1px solid rgba(42, 42, 42, 0.8);
-            position: relative;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: #e0e0e0;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .mobile-menu-btn:hover {
-            background: rgba(138, 43, 226, 0.1);
-        }
-
-        .header-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .network-status-display {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(42, 42, 42, 0.8);
-            border-radius: 15px;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            font-size: 14px;
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        .status-online {
-            background: #00ff88;
-            box-shadow: 0 0 10px #00ff88;
-        }
-
-        .status-offline {
-            background: #ff4444;
-            box-shadow: 0 0 10px #ff4444;
-        }
-
-        .status-scanning {
-            background: #ffaa00;
-            box-shadow: 0 0 10px #ffaa00;
-        }
-
-        /* ==================== MAIN LAYOUT ==================== */
-        .main-layout { 
-            display: flex; 
-            flex: 1; 
-            overflow: hidden; 
-            position: relative;
-        }
-
-        /* ==================== SIDEBAR ==================== */
-        .sidebar { 
-            width: 320px; 
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.95));
-            border-left: 1px solid rgba(42, 42, 42, 0.8); 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(42, 42, 42, 0.8);
-            background: rgba(30, 30, 30, 0.8);
-        }
-
-        .sidebar-section {
-            padding: 20px;
-            border-bottom: 1px solid rgba(42, 42, 42, 0.8);
-        }
-
-        .users-list { 
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .user-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            padding: 12px 15px; 
-            background: rgba(42, 42, 42, 0.6); 
-            border-radius: 12px; 
-            border: 2px solid transparent; 
-            transition: all 0.3s; 
-            cursor: pointer;
-            position: relative;
-        }
-
-        .user-item:hover {
-            background: rgba(58, 58, 58, 0.8);
-            transform: translateX(-5px);
-            border-color: rgba(138, 43, 226, 0.5);
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: white;
-            position: relative;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: #e0e0e0;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-role {
-            font-size: 11px;
-            color: #b0b0b0;
-        }
-
-        .user-badge {
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-
-        .admin-badge {
-            background: linear-gradient(135deg, #ffaa00, #ff8800);
-            color: #000;
-        }
-
-        .me-badge {
-            background: linear-gradient(135deg, #8a2be2, #6a0dad);
-            color: white;
-        }
-
-        .user-status-small {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            margin-left: 5px;
-        }
-
-        /* ==================== CHAT AREA ==================== */
-        .chat-area { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            background: rgba(26, 26, 26, 0.95);
-            position: relative;
-        }
-
-        .chat-title-bar {
-            padding: 15px 25px;
-            background: rgba(30, 30, 30, 0.8);
-            border-bottom: 1px solid rgba(42, 42, 42, 0.8);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #e0e0e0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .admin-status-display {
-            font-size: 12px;
-            padding: 5px 12px;
-            border-radius: 15px;
-            background: rgba(138, 43, 226, 0.1);
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            color: #8a2be2;
-        }
-
-        .emergency-alert {
-            background: linear-gradient(135deg, #ffaa00, #ff8800);
-            color: #000;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            margin: 5px 0;
-            animation: pulse 2s infinite;
-            border: 1px solid #ff8800;
-        }
-
-        /* ==================== MESSAGES CONTAINER ==================== */
-        .messages-container { 
-            flex: 1; 
-            padding: 25px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            background: rgba(20, 20, 20, 0.5);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #b0b0b0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        /* ==================== MESSAGE STYLES ==================== */
-        .message-container {
-            max-width: 70%;
-            padding: 12px 18px;
-            border-radius: 20px;
-            animation: messageAppear 0.3s ease;
-            word-break: break-word;
-            position: relative;
-            backdrop-filter: blur(10px);
-            border: 1px solid transparent;
-        }
-
-        .message-outgoing {
-            align-self: flex-end;
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(106, 13, 173, 0.1));
-            border-color: rgba(138, 43, 226, 0.3);
-            border-bottom-right-radius: 5px;
-        }
-
-        .message-incoming {
-            align-self: flex-start;
-            background: linear-gradient(135deg, rgba(42, 42, 42, 0.8), rgba(58, 58, 58, 0.6));
-            border-color: rgba(255, 255, 255, 0.1);
-            border-bottom-left-radius: 5px;
-        }
-
-        .message-system {
-            max-width: 90%;
-            margin: 10px auto;
-            background: rgba(138, 43, 226, 0.1);
-            border-color: rgba(138, 43, 226, 0.3);
-            text-align: center;
-            font-size: 13px;
-            color: #8a2be2;
-            font-weight: bold;
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-
-        .message-sender {
-            font-weight: bold;
-            color: inherit;
-            opacity: 0.9;
-        }
-
-        .message-time {
-            opacity: 0.7;
-            font-size: 11px;
-        }
-
-        .message-content {
-            line-height: 1.6;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .message-image {
-            max-width: 300px;
-            border-radius: 12px;
-            margin-top: 8px;
-            cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-        }
-
-        .message-image:hover {
-            transform: scale(1.02);
-            border-color: rgba(138, 43, 226, 0.5);
-        }
-
-        .message-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-            font-size: 11px;
-        }
-
-        .message-status {
-            font-size: 10px;
-            opacity: 0.8;
-        }
-
-        .message-date {
-            opacity: 0.6;
-        }
-
-        /* ==================== MESSAGE REACTIONS ==================== */
-        .reaction-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .reaction-btn {
-            padding: 4px 12px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .reaction-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .reaction-btn.liked {
-            background: rgba(138, 43, 226, 0.2);
-            border-color: #8a2be2;
-            color: #8a2be2;
-        }
-
-        .reaction-btn.disliked {
-            background: rgba(255, 68, 68, 0.2);
-            border-color: #ff4444;
-            color: #ff4444;
-        }
-
-        /* ==================== REPLY PANEL ==================== */
-        .reply-panel {
-            padding: 12px 20px;
-            background: rgba(42, 42, 42, 0.8);
-            border-top: 1px solid rgba(58, 58, 58, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            animation: slideUp 0.3s ease;
-        }
-
-        .reply-info {
-            flex: 1;
-            padding-left: 10px;
-        }
-
-        .reply-author {
-            font-size: 12px;
-            font-weight: bold;
-            color: #8a2be2;
-            margin-bottom: 2px;
-        }
-
-        .reply-content {
-            font-size: 13px;
-            color: #b0b0b0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .cancel-reply-btn {
-            background: none;
-            border: none;
-            color: #ff4444;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 0 5px;
-            transition: all 0.3s;
-        }
-
-        .cancel-reply-btn:hover {
-            color: #ff6666;
-            transform: scale(1.1);
-        }
-
-        /* ==================== INPUT AREA ==================== */
-        .input-area { 
-            padding: 20px 25px; 
-            background: rgba(30, 30, 30, 0.95); 
-            border-top: 1px solid rgba(42, 42, 42, 0.8); 
-            display: flex; 
-            gap: 15px; 
-            align-items: flex-end;
-            position: relative;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .message-input { 
-            width: 100%;
-            padding: 14px 18px; 
-            background: rgba(42, 42, 42, 0.8); 
-            border: 2px solid rgba(58, 58, 58, 0.8); 
-            color: #e0e0e0;
-            border-radius: 20px; 
-            font-size: 14px; 
-            resize: none; 
-            outline: none; 
-            transition: all 0.3s; 
-            max-height: 150px;
-            line-height: 1.5;
-        }
-
-        .message-input:focus {
-            border-color: #8a2be2;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
-        }
-
-        .input-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .action-btn {
-            padding: 8px 12px;
-            background: rgba(58, 58, 58, 0.6);
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            border-radius: 10px;
-            color: #e0e0e0;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 12px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .action-btn:hover {
-            background: rgba(138, 43, 226, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .send-btn { 
-            padding: 12px 30px; 
-            background: linear-gradient(135deg, #8a2be2, #6a0dad);
-            color: white; 
-            border: none; 
-            border-radius: 20px; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            font-weight: bold;
-            font-size: 14px;
-            letter-spacing: 1px;
-            min-width: 100px;
-        }
-
-        .send-btn:hover {
-            background: linear-gradient(135deg, #9a3bf2, #7a1dbd);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.4);
-        }
-
-        /* ==================== NETWORK INFO ==================== */
-        .network-info {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: rgba(30, 30, 30, 0.95);
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            border-radius: 15px;
-            padding: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .network-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .network-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #8a2be2;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .close-network-btn {
-            background: none;
-            border: none;
-            color: #b0b0b0;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-
-        .close-network-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ff4444;
-        }
-
-        .network-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .stat-item {
-            background: rgba(42, 42, 42, 0.6);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(138, 43, 226, 0.2);
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #8a2be2;
-            margin-bottom: 3px;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #b0b0b0;
-        }
-
-        .network-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .network-action-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .network-action-btn.primary {
-            background: linear-gradient(135deg, #8a2be2, #6a0dad);
-            color: white;
-        }
-
-        .network-action-btn.secondary {
-            background: rgba(42, 42, 42, 0.8);
-            color: #e0e0e0;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-        }
-
-        .network-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        /* ==================== NOTIFICATIONS ==================== */
-        .notification { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            background: rgba(42, 42, 42, 0.95); 
-            padding: 15px 25px; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            z-index: 1001; 
-            animation: notificationIn 0.3s ease; 
-            border-right: 4px solid #8a2be2; 
-            color: #e0e0e0;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            max-width: 400px;
-            backdrop-filter: blur(10px);
-        }
-
-        .notification-icon {
-            font-size: 20px;
-        }
-
-        .notification.success {
-            border-right-color: #00ff88;
-        }
-
-        .notification.error {
-            border-right-color: #ff4444;
-        }
-
-        .notification.warning {
-            border-right-color: #ffaa00;
-        }
-
-        .notification.info {
-            border-right-color: #8a2be2;
-        }
-
-        /* ==================== MESH NETWORK VISUALIZATION ==================== */
-        .mesh-visualization {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 200px;
-            height: 200px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .mesh-node {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.5s ease;
-        }
-
-        .mesh-connection {
-            position: absolute;
-            background: rgba(138, 43, 226, 0.3);
-            height: 2px;
-            transform-origin: 0 0;
-            transition: all 0.5s ease;
-        }
-
-        /* ==================== ANIMATIONS ==================== */
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes notificationIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes messageAppear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ==================== SCROLLBAR ==================== */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(42, 42, 42, 0.3);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #8a2be2, #6a0dad);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #9a3bf2, #7a1dbd);
-        }
-
-        /* ==================== LOADING ANIMATIONS ==================== */
-        .loading { 
-            display: inline-block; 
-            width: 20px; 
-            height: 20px; 
-            border: 3px solid rgba(138, 43, 226, 0.3); 
-            border-top-color: #8a2be2; 
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-        }
-
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        /* ==================== RESPONSIVE DESIGN ==================== */
-        @media (max-width: 768px) {
-            body {
-                padding: 0 !important;
-            }
-            
-            .container { 
-                max-width: 100% !important;
-                height: 100vh !important;
-                border-radius: 0 !important;
-                margin: 0 !important;
-                border: none;
-            }
-            
-            .chat-header {
-                padding: 12px 15px !important;
-                font-size: 14px !important;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .header-info {
-                flex-direction: column;
-                gap: 5px;
-                text-align: center;
-            }
-            
-            .network-status-display {
-                font-size: 12px;
-                padding: 6px 12px;
-            }
-            
-            .sidebar {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 100% !important;
-                height: 100vh;
-                z-index: 10000;
-                transition: right 0.3s ease;
-                border-left: none !important;
-                background: rgba(20, 20, 20, 0.98);
-                backdrop-filter: blur(20px);
-            }
-            
-            .sidebar.active {
-                right: 0;
-            }
-            
-            .mobile-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.7);
-                z-index: 9999;
-                backdrop-filter: blur(5px);
-            }
-            
-            .mobile-overlay.active {
-                display: block;
-            }
-            
-            .chat-area {
-                width: 100% !important;
-                height: 100% !important;
-            }
-            
-            .messages-container {
-                padding: 15px !important;
-                height: calc(100vh - 200px) !important;
-                padding-bottom: 120px !important;
-            }
-            
-            .message-container {
-                max-width: 85% !important;
-                padding: 10px 14px !important;
-            }
-            
-            .input-area {
-                position: fixed !important;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(30, 30, 30, 0.98) !important;
-                padding: 15px !important;
-                border-top: 1px solid rgba(42, 42, 42, 0.8);
-                z-index: 1000;
-                padding-bottom: max(15px, env(safe-area-inset-bottom)) !important;
-                backdrop-filter: blur(20px);
-            }
-            
-            .message-input {
-                max-height: 80px !important;
-                font-size: 16px !important;
-            }
-            
-            .send-btn {
-                padding: 12px 20px !important;
-                font-size: 14px !important;
-                min-width: 80px;
-            }
-            
-            .network-info {
-                left: 10px;
-                right: 10px;
-                bottom: 10px;
-                max-width: none;
-            }
-            
-            .notification {
-                top: 10px !important;
-                right: 10px !important;
-                left: 10px !important;
-                width: auto !important;
-                max-width: calc(100% - 20px) !important;
-            }
-            
-            .login-card {
-                width: 95% !important;
-                padding: 30px 20px !important;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .mobile-menu-btn {
-                display: none !important;
-            }
-            
-            .mobile-overlay {
-                display: none !important;
-            }
-        }
-
-        /* ==================== FULLSCREEN IMAGE ==================== */
-        .fullscreen-image {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.98);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(20px);
-        }
-
-        .fullscreen-image img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 12px;
-            border: 2px solid rgba(138, 43, 226, 0.5);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
-        }
-
-        .close-fullscreen-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-        }
-
-        .close-fullscreen-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: rotate(90deg);
-        }
-
-        /* ==================== EXPIRATION SETTINGS ==================== */
-        .expiration-panel {
-            background: rgba(42, 42, 42, 0.6);
-            border: 1px solid rgba(58, 58, 58, 0.8);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .expiration-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .expiration-option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: rgba(58, 58, 58, 0.4);
-            border: 2px solid transparent;
-        }
-
-        .expiration-option:hover {
-            background: rgba(58, 58, 58, 0.6);
-            transform: translateX(-5px);
-        }
-
-        .expiration-option.selected {
-            background: rgba(138, 43, 226, 0.2);
-            border-color: #8a2be2;
-        }
-
-        .expiration-radio {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid rgba(138, 43, 226, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .expiration-radio-inner {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #8a2be2;
-            display: none;
-        }
-
-        .expiration-option.selected .expiration-radio-inner {
-            display: block;
-        }
-
-        .expiration-text {
-            flex: 1;
-            font-size: 14px;
-            color: #e0e0e0;
-        }
-
-        /* ==================== CUSTOM CHECKBOXES ==================== */
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            user-select: none;
-            padding: 8px 0;
-        }
-
-        .custom-checkbox {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(138, 43, 226, 0.5);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .custom-checkbox.checked {
-            background: #8a2be2;
-            border-color: #8a2be2;
-        }
-
-        .checkbox-label {
-            font-size: 14px;
-            color: #e0e0e0;
-        }
-
-        /* ==================== TOOLTIPS ==================== */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            background: rgba(42, 42, 42, 0.95);
-            color: #e0e0e0;
-            text-align: center;
-            padding: 8px 12px;
-            border-radius: 8px;
-            position: absolute;
-            z-index: 1002;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            font-size: 12px;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            opacity: 0;
-            transition: opacity 0.3s;
-            backdrop-filter: blur(10px);
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* ==================== GRADIENTS ==================== */
-        .gradient-text {
-            background: linear-gradient(135deg, #8a2be2, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-    </style>
-</head>
-<body>
-    <!-- ==================== LOGIN PAGE ==================== -->
-    <div class="login-page" id="loginPage">
-        <div class="login-card">
-            <div style="font-size: 64px; margin-bottom: 20px; background: linear-gradient(135deg, #8a2be2, #00ff88); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">💬</div>
-            <h1 style="color: #e0e0e0; margin-bottom: 10px;">چت آرانا - شبکه توزیع‌شده</h1>
-            <p style="color: #b0b0b0; margin-bottom: 30px; font-size: 14px; line-height: 1.6;">چت امن با سیستم شبکه‌ای خودترمیم - حتی بدون مدیر اصلی نیز کار می‌کند</p>
-            
-            <input type="text" 
-                   class="login-input" 
-                   id="usernameInput" 
-                   placeholder="نام خود را وارد کنید (حداقل ۲ کاراکتر)"
-                   maxlength="20"
-                   autocomplete="off">
-            
-            <!-- تنظیمات حذف خودکار -->
-            <div class="expiration-panel">
-                <h4 style="color: #e0e0e0; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                    <span>⏰</span> تنظیمات حذف خودکار پیام‌ها
-                </h4>
-                <p style="color: #b0b0b0; font-size: 12px; line-height: 1.6; margin-bottom: 15px;">
-                    پیام‌ها پس از مدت زمان انتخابی به صورت خودکار حذف خواهند شد. (تنظیم مدیریتی)
-                </p>
-                
-                <div class="expiration-options" id="expirationOptions">
-                    <div class="expiration-option" onclick="selectExpiration(5)">
-                        <div class="expiration-radio">
-                            <div class="expiration-radio-inner"></div>
-                        </div>
-                        <span class="expiration-text">حذف پس از ۵ دقیقه</span>
-                    </div>
-                    
-                    <div class="expiration-option" onclick="selectExpiration(10)">
-                        <div class="expiration-radio">
-                            <div class="expiration-radio-inner"></div>
-                        </div>
-                        <span class="expiration-text">حذف پس از ۱۰ دقیقه</span>
-                    </div>
-                    
-                    <div class="expiration-option" onclick="selectExpiration(30)">
-                        <div class="expiration-radio">
-                            <div class="expiration-radio-inner"></div>
-                        </div>
-                        <span class="expiration-text">حذف پس از ۳۰ دقیقه</span>
-                    </div>
-                    
-                    <div class="expiration-option" onclick="selectExpiration(0)">
-                        <div class="expiration-radio">
-                            <div class="expiration-radio-inner"></div>
-                        </div>
-                        <span class="expiration-text">هرگز حذف نشود</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- تنظیمات شبکه -->
-            <div class="expiration-panel" style="margin-top: 20px;">
-                <h4 style="color: #e0e0e0; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                    <span>🌐</span> تنظیمات شبکه
-                </h4>
-                
-                <div class="checkbox-container">
-                    <div class="custom-checkbox" id="meshCheckbox" onclick="toggleMeshSetting()">
-                        <span style="color: white; font-size: 12px;">✓</span>
-                    </div>
-                    <span class="checkbox-label">فعال‌سازی شبکه مش (توصیه می‌شود)</span>
-                </div>
-                
-                <div style="color: #b0b0b0; font-size: 12px; line-height: 1.6; margin-top: 10px; padding: 10px; background: rgba(138, 43, 226, 0.1); border-radius: 8px; border: 1px solid rgba(138, 43, 226, 0.3);">
-                    <strong>💡 نکته:</strong> با فعال‌سازی شبکه مش، حتی اگر مدیر اصلی قطع شود، چت ادامه می‌یابد و کاربران می‌توانند به یکدیگر متصل شوند.
-                </div>
-            </div>
-            
-            <button class="login-btn" id="loginBtn" onclick="login()">
-                <span id="loginBtnText">🚀 ورود به چت</span>
-            </button>
-            
-            <div style="margin-top: 20px; padding: 15px; background: rgba(42, 42, 42, 0.5); border-radius: 10px; border: 1px solid rgba(138, 43, 226, 0.2);">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: #00ff88;"></div>
-                    <span style="font-size: 12px; color: #b0b0b0;">سیستم شبکه توزیع‌شده فعال است</span>
-                </div>
-                <div style="font-size: 11px; color: #888;">
-                    نسخه: 4.0 | پروتکل: Mesh P2P
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== MAIN CHAT CONTAINER ==================== -->
-    <div class="container" id="chatContainer" style="display: none;">
-        <!-- Chat Header -->
-        <div class="chat-header">
-            <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            
-            <div class="header-info">
-                <div class="network-status-display">
-                    <div class="status-indicator status-online" id="statusIndicator"></div>
-                    <span id="connectionStatus">در حال اتصال...</span>
-                    <span style="margin-right: 10px; color: #8a2be2;">•</span>
-                    <span id="onlineCount">0 کاربر</span>
-                </div>
-            </div>
-            
-            <button class="action-btn" onclick="toggleNetworkInfo()" style="display: flex; align-items: center; gap: 5px;">
-                <i class="fas fa-network-wired"></i>
-                <span id="meshCount">0</span>
-            </button>
-        </div>
+// ==================== سیستم دیباگ ====================
+const DEBUG = true;
+function debugLog(message, data = null) {
+    if (DEBUG) {
+        console.log(`🔧 ${message}`, data || '');
+    }
+}
+
+// ==================== متغیرهای اصلی ====================
+let peer = null;
+let myVisibleName = '';
+let myPeerId = '';
+let currentAdminId = '';
+let currentAdminName = '';
+let amIAdmin = false;
+let isMobile = window.innerWidth <= 768;
+
+// سیستم اتصالات
+let directConnections = new Map(); // اتصالات مستقیم (به مدیر)
+let meshConnections = new Map(); // اتصالات مش (به کاربران دیگر)
+let allUsers = new Map(); // تمام کاربران شناخته‌شده
+let userColors = new Map();
+
+// تاریخچه
+let messageHistory = [];
+const MAX_MESSAGES = 500;
+let messageExpirationMinutes = 5;
+
+// شبکه مش
+let isMeshEnabled = true;
+let MESH_MAX_CONNECTIONS = 4;
+let meshScanInterval = null;
+let meshHealthInterval = null;
+
+// ثابت‌ها
+const GLOBAL_ROOM = 'CHAT_ARANA_MESH';
+let wasConnectedToAdmin1 = false;
+
+// رنگ‌ها
+const USER_COLORS = [
+    '#8a2be2', '#00ff88', '#00ffff', '#ffaa00',
+    '#ff00ff', '#00ccff', '#ffff00', '#ff4444'
+];
+
+// ==================== راه‌اندازی اولیه ====================
+function initSystem() {
+    debugLog('سیستم در حال راه‌اندازی...');
+    loadSettings();
+    checkMobile();
+    setupEventListeners();
+}
+
+function loadSettings() {
+    const savedExpiration = localStorage.getItem('chat_expiration');
+    if (savedExpiration !== null) {
+        messageExpirationMinutes = parseInt(savedExpiration);
+    }
+    
+    const savedMesh = localStorage.getItem('chat_mesh_enabled');
+    if (savedMesh !== null) {
+        isMeshEnabled = savedMesh === 'true';
+    }
+    
+    debugLog('تنظیمات بارگذاری شد:', { expiration: messageExpirationMinutes, mesh: isMeshEnabled });
+}
+
+function setupEventListeners() {
+    document.getElementById('usernameInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') login();
+    });
+    
+    window.addEventListener('resize', checkMobile);
+    
+    // مدیریت حافظه
+    window.addEventListener('beforeunload', function(e) {
+        if (directConnections.size > 0 || meshConnections.size > 0) {
+            e.preventDefault();
+            e.returnValue = 'آیا مطمئن هستید که می‌خواهید خارج شوید؟';
+        }
+    });
+}
+
+// ==================== سیستم ورود ====================
+async function login() {
+    const usernameInput = document.getElementById('usernameInput');
+    myVisibleName = usernameInput.value.trim();
+    
+    if (!myVisibleName || myVisibleName.length < 2) {
+        showNotification('لطفاً نام معتبر وارد کنید (حداقل ۲ کاراکتر)', 'error');
+        return;
+    }
+    
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<div class="loading"></div> در حال راه‌اندازی...';
+    
+    try {
+        // ایجاد شناسه منحصربه‌فرد
+        myPeerId = generatePeerId();
+        debugLog('شناسه ایجاد شد:', myPeerId);
         
-        <!-- Main Layout -->
-        <div class="main-layout">
-            <!-- Mobile Overlay -->
-            <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
-            
-            <!-- Sidebar -->
-            <div class="sidebar" id="sidebar">
-                <div class="sidebar-header">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="color: #e0e0e0; font-size: 16px;">👥 کاربران شبکه</h3>
-                        <button onclick="toggleSidebar()" class="close-network-btn" style="display: none;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <button onclick="refreshConnections()" class="action-btn" style="flex: 1;">
-                            <i class="fas fa-sync-alt"></i>
-                            بروزرسانی
-                        </button>
-                        <button onclick="scanForPeers()" class="action-btn" style="flex: 1;">
-                            <i class="fas fa-search"></i>
-                            جستجو
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Users List -->
-                <div class="sidebar-section">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h4 style="color: #e0e0e0; font-size: 14px;">کاربران آنلاین</h4>
-                        <span style="background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold;" id="onlineCountSidebar">0</span>
-                    </div>
-                    <div class="users-list" id="publicUsersList">
-                        <!-- Users will be populated here -->
-                    </div>
-                </div>
-                
-                <!-- Network Info -->
-                <div class="sidebar-section">
-                    <h4 style="color: #e0e0e0; font-size: 14px; margin-bottom: 15px;">📊 اطلاعات شبکه</h4>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                        <div style="background: rgba(42, 42, 42, 0.6); padding: 10px; border-radius: 10px; text-align: center; border: 1px solid rgba(138, 43, 226, 0.2);">
-                            <div style="font-size: 18px; font-weight: bold; color: #8a2be2;" id="connectionsCount">0</div>
-                            <div style="font-size: 11px; color: #b0b0b0;">اتصال</div>
-                        </div>
-                        <div style="background: rgba(42, 42, 42, 0.6); padding: 10px; border-radius: 10px; text-align: center; border: 1px solid rgba(138, 43, 226, 0.2);">
-                            <div style="font-size: 18px; font-weight: bold; color: #00ff88;" id="messagesCount">0</div>
-                            <div style="font-size: 11px; color: #b0b0b0;">پیام</div>
-                        </div>
-                    </div>
-                    
-                    <div id="adminStatusDisplay" style="font-size: 12px; text-align: center; padding: 8px; background: rgba(138, 43, 226, 0.1); border-radius: 8px; border: 1px solid rgba(138, 43, 226, 0.3); margin-bottom: 10px;">
-                        بررسی وضعیت...
-                    </div>
-                    
-                    <div style="font-size: 11px; color: #b0b0b0; text-align: center; padding: 10px; background: rgba(42, 42, 42, 0.4); border-radius: 8px;">
-                        <div>🔗 شبکه مش: <span id="meshStatusText">غیرفعال</span></div>
-                        <div>⏰ حذف خودکار: <span id="expirationStatus">5 دقیقه</span></div>
-                    </div>
-                </div>
-                
-                <!-- Actions -->
-                <div style="margin-top: auto; padding: 20px; border-top: 1px solid rgba(42, 42, 42, 0.8);">
-                    <button onclick="clearLocalStorage()" class="action-btn" style="width: 100%; margin-bottom: 10px; background: rgba(255, 68, 68, 0.1); border-color: rgba(255, 68, 68, 0.3);">
-                        <i class="fas fa-trash-alt"></i>
-                        پاکسازی ذخیره‌سازی
-                    </button>
-                    <button onclick="leaveChat()" class="action-btn" style="width: 100%; background: rgba(255, 255, 255, 0.1);">
-                        <i class="fas fa-sign-out-alt"></i>
-                        خروج از چت
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Chat Area -->
-            <div class="chat-area">
-                <!-- Chat Title Bar -->
-                <div class="chat-title-bar">
-                    <div class="chat-title">
-                        <span>💬 چت عمومی</span>
-                        <div class="admin-status-display" id="adminStatusBar">
-                            بررسی وضعیت مدیریت...
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="clearChat()" class="action-btn">
-                            <i class="fas fa-eraser"></i>
-                            پاک کردن
-                        </button>
-                        <button onclick="exportChat()" class="action-btn">
-                            <i class="fas fa-download"></i>
-                            ذخیره
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Reply Panel -->
-                <div class="reply-panel" id="replyPanel" style="display: none;">
-                    <div style="font-size: 18px; color: #8a2be2;">↩️</div>
-                    <div class="reply-info">
-                        <div class="reply-author" id="replyAuthor"></div>
-                        <div class="reply-content" id="replyContent"></div>
-                    </div>
-                    <button class="cancel-reply-btn" onclick="cancelReply()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <!-- Messages Container -->
-                <div class="messages-container" id="messagesContainer">
-                    <div class="empty-state" id="emptyState">
-                        <div class="empty-state-icon">💬</div>
-                        <h3 style="color: #e0e0e0; margin-bottom: 10px;">خوش آمدید!</h3>
-                        <p style="color: #b0b0b0; margin-bottom: 5px; font-size: 14px;">هنوز پیامی ارسال نشده است</p>
-                        <p style="color: #888; font-size: 12px;">اولین پیام را شما ارسال کنید</p>
-                    </div>
-                </div>
-                
-                <!-- Input Area -->
-                <div class="input-area">
-                    <div class="input-wrapper">
-                        <div class="input-actions">
-                            <button onclick="toggleEmojiPicker()" class="action-btn">
-                                😀
-                            </button>
-                            <label for="fileInput" class="action-btn">
-                                <i class="fas fa-image"></i>
-                                تصویر
-                                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                            </label>
-                            <button onclick="toggleMeshInfo()" class="action-btn">
-                                <i class="fas fa-network-wired"></i>
-                            </button>
-                        </div>
-                        
-                        <textarea id="messageInput" 
-                                  class="message-input" 
-                                  placeholder="پیام خود را بنویسید... (برای ارسال Enter، برای خط جدید Shift+Enter)"
-                                  rows="1"
-                                  onkeydown="handleKeyPress(event)"
-                                  oninput="autoResize(this)"></textarea>
-                    </div>
-                    
-                    <button onclick="sendMessage()" id="sendBtn" class="send-btn">ارسال</button>
-                </div>
-            </div>
-        </div>
+        // ایجاد Peer
+        peer = new Peer(myPeerId, {
+            host: '0.peerjs.com',
+            port: 443,
+            path: '/',
+            debug: 2, // حالت دیباگ برای پیگیری
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' }
+                ]
+            }
+        });
         
-        <!-- Network Info Panel -->
-        <div class="network-info" id="networkInfo" style="display: none;">
-            <div class="network-header">
-                <div class="network-title">
-                    <i class="fas fa-network-wired"></i>
-                    اطلاعات شبکه توزیع‌شده
-                </div>
-                <button class="close-network-btn" onclick="toggleNetworkInfo()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+        // رویدادهای Peer
+        peer.on('open', async (id) => {
+            debugLog('Peer باز شد:', id);
             
-            <div class="network-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="statConnections">0</div>
-                    <div class="stat-label">اتصال مستقیم</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statUsers">0</div>
-                    <div class="stat-label">کاربران شبکه</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statAdmin">غیرفعال</div>
-                    <div class="stat-label">وضعیت مدیریت</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statMesh">غیرفعال</div>
-                    <div class="stat-label">شبکه مش</div>
-                </div>
-            </div>
-            
-            <div id="networkDetails" style="font-size: 12px; color: #b0b0b0; line-height: 1.6; margin-bottom: 15px; padding: 10px; background: rgba(42, 42, 42, 0.4); border-radius: 8px;">
-                در حال بررسی وضعیت شبکه...
-            </div>
-            
-            <div class="network-actions">
-                <button onclick="refreshConnections()" class="network-action-btn primary">
-                    <i class="fas fa-sync-alt"></i>
-                    بروزرسانی شبکه
-                </button>
-                <button onclick="toggleMeshNetwork()" class="network-action-btn secondary" id="toggleMeshBtn">
-                    <i class="fas fa-network-wired"></i>
-                    فعال‌سازی مش
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== EMOJI PICKER ==================== -->
-    <div id="emojiPicker" style="display: none; position: fixed; bottom: 120px; right: 25px; background: rgba(42, 42, 42, 0.95); border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); padding: 15px; z-index: 1002; border: 1px solid rgba(138, 43, 226, 0.3); max-width: 300px; max-height: 300px; overflow-y: auto; backdrop-filter: blur(10px);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-            <div style="font-weight: bold; color: #e0e0e0; font-size: 14px;">ایموجی‌ها</div>
-            <button onclick="toggleEmojiPicker()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #e0e0e0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">×</button>
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
-            <!-- Emojis will be inserted here -->
-        </div>
-    </div>
-
-    <!-- ==================== FULLSCREEN IMAGE VIEWER ==================== -->
-    <div id="fullscreenImage" class="fullscreen-image" style="display: none;">
-        <img id="fullscreenImageSrc" src="" alt="تصویر">
-        <button class="close-fullscreen-btn" onclick="closeFullscreenImage()">×</button>
-    </div>
-
-    <!-- Mesh Visualization (Hidden by default) -->
-    <div class="mesh-visualization" id="meshVisualization" style="display: none;"></div>
-
-    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-    <script>
-        // ==================== متغیرهای اصلی سیستم ====================
-        let peer = null;
-        let myVisibleName = '';
-        let myPeerId = '';
-        let currentAdminId = '';
-        let currentAdminName = 'admin1';
-        let amIAdmin = false;
-        let isMobile = window.innerWidth <= 768;
-        let isMeshEnabled = true; // فعال‌سازی شبکه مش به صورت پیش‌فرض
-
-        // سیستم اتصالات
-        let connections = new Map(); // اتصالات مستقیم
-        let meshConnections = new Map(); // اتصالات مش
-        let users = new Map(); // اطلاعات کاربران
-        let incomingImages = new Map(); // تصاویر در حال دریافت
-        let userColors = new Map(); // رنگ‌های کاربران
-
-        // تاریخچه پیام‌ها
-        let messageHistory = [];
-        const MAX_MESSAGES = 1000;
-        const MAX_MESH_CONNECTIONS = 5; // حداکثر اتصالات مش
-
-        // تنظیمات سیستم
-        let messageExpirationMinutes = 5;
-        let expirationInterval = null;
-        let replyingTo = null;
-
-        // ثابت‌ها
-        const GLOBAL_ROOM = 'CHAT_ARANA_MESH_V4';
-        const ADMIN_NAMES = ['admin1', 'admin2'];
-        let wasConnectedToAdmin1 = false;
-
-        // تایمرها
-        let heartbeatInterval = null;
-        let reconnectInterval = null;
-        let adminCheckInterval = null;
-        let autoSyncInterval = null;
-        let meshMaintenanceInterval = null;
-        let electionTimeout = null;
-
-        // سیستم انتخابات و مدیریت
-        let electionInProgress = false;
-        let electionCandidates = new Map();
-        let myJoinTime = Date.now();
-
-        // رنگ‌های کاربران
-        const USER_COLORS = [
-            '#8a2be2', '#00ff88', '#00ffff', '#ffaa00',
-            '#ff00ff', '#00ccff', '#ffff00', '#ff4444',
-            '#aa00ff', '#00ffaa', '#ff8800', '#0088ff'
-        ];
-
-        // ==================== سیستم راه‌اندازی ====================
-        function initSystem() {
-            loadExpirationSetting();
-            loadMeshSetting();
-            checkMobile();
-            setupEventListeners();
-            console.log('✅ سیستم توزیع‌شده راه‌اندازی شد');
-        }
-
-        function setupEventListeners() {
-            // ورود با Enter
-            document.getElementById('usernameInput').addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') login();
-            });
-
-            // مدیریت اندازه صفحه
-            window.addEventListener('resize', checkMobile);
-            window.addEventListener('orientationchange', function() {
-                setTimeout(checkMobile, 100);
-            });
-
-            // جلوگیری از خروج تصادفی
-            window.addEventListener('beforeunload', function(e) {
-                if (connections.size > 0 || meshConnections.size > 0) {
-                    e.preventDefault();
-                    e.returnValue = 'آیا مطمئن هستید که می‌خواهید خارج شوید؟';
-                }
-            });
-
-            // کلیک خارج از ایموجی پیکر
-            document.addEventListener('click', function(event) {
-                const emojiPicker = document.getElementById('emojiPicker');
-                if (emojiPicker.style.display === 'block' && 
-                    !emojiPicker.contains(event.target)) {
-                    emojiPicker.style.display = 'none';
-                }
-            });
-        }
-
-        // ==================== سیستم شبکه مش ====================
-        function toggleMeshSetting() {
-            const checkbox = document.getElementById('meshCheckbox');
-            isMeshEnabled = !checkbox.classList.contains('checked');
-            
-            if (isMeshEnabled) {
-                checkbox.classList.add('checked');
-                checkbox.innerHTML = '<span style="color: white; font-size: 12px;">✓</span>';
-            } else {
-                checkbox.classList.remove('checked');
-                checkbox.innerHTML = '';
-            }
-            
-            localStorage.setItem('chat_mesh_enabled', isMeshEnabled);
-        }
-
-        function loadMeshSetting() {
-            const saved = localStorage.getItem('chat_mesh_enabled');
-            if (saved !== null) {
-                isMeshEnabled = saved === 'true';
-                const checkbox = document.getElementById('meshCheckbox');
-                if (isMeshEnabled) {
-                    checkbox.classList.add('checked');
-                    checkbox.innerHTML = '<span style="color: white; font-size: 12px;">✓</span>';
-                }
-            }
-        }
-
-        function enableMeshNetwork() {
-            if (!isMeshEnabled) return;
-            
-            console.log('🌐 فعال‌سازی شبکه مش...');
-            
-            // اتصال به کاربران تصادفی
-            connectToRandomPeers();
-            
-            // شروع نگهداری شبکه
-            startMeshMaintenance();
-            
-            // به‌روزرسانی وضعیت
-            updateMeshStatus();
-            
-            showNotification('🌐 شبکه مش فعال شد', 'success');
-        }
-
-        function connectToRandomPeers() {
-            const onlineUsers = Array.from(users.values())
-                .filter(user => 
-                    user.isOnline && 
-                    user.peerId !== myPeerId && 
-                    !meshConnections.has(user.peerId) &&
-                    !connections.has(user.peerId)
-                );
-            
-            if (onlineUsers.length === 0) return;
-            
-            // انتخاب تصادفی حداکثر ۳ کاربر
-            const shuffleArray = array => array.sort(() => Math.random() - 0.5);
-            const selectedPeers = shuffleArray(onlineUsers)
-                .slice(0, Math.min(3, onlineUsers.length));
-            
-            selectedPeers.forEach(user => {
-                if (meshConnections.size < MAX_MESH_CONNECTIONS) {
-                    connectToPeerAsMesh(user.peerId);
-                }
-            });
-        }
-
-        function connectToPeerAsMesh(peerId) {
-            if (meshConnections.has(peerId) || peerId === myPeerId) return;
-            
-            console.log(`🔗 در حال اتصال به ${peerId} در شبکه مش...`);
-            
-            const conn = peer.connect(peerId, {
-                reliable: true,
-                metadata: {
-                    type: 'mesh_connection',
-                    visibleName: myVisibleName,
-                    peerId: myPeerId,
-                    isAdmin: amIAdmin,
-                    currentAdmin: currentAdminId,
-                    joinTime: myJoinTime
-                }
-            });
-            
-            conn.on('open', () => {
-                console.log(`✅ متصل شدیم به ${peerId} در شبکه مش`);
-                meshConnections.set(peerId, conn);
-                setupMeshConnectionListeners(conn, peerId);
-                
-                // تبادل اطلاعات
-                conn.send({
-                    type: 'mesh_handshake',
-                    peerId: myPeerId,
-                    visibleName: myVisibleName,
-                    isAdmin: amIAdmin,
-                    currentAdmin: currentAdminId,
-                    knownPeers: Array.from(users.keys()),
-                    timestamp: Date.now(),
-                    joinTime: myJoinTime
-                });
-                
-                updateMeshStatus();
-            });
-            
-            conn.on('error', (err) => {
-                console.error(`❌ خطا در اتصال مش به ${peerId}:`, err);
-                meshConnections.delete(peerId);
-                updateMeshStatus();
-            });
-        }
-
-        function setupMeshConnectionListeners(conn, peerId) {
-            conn.on('data', (data) => {
-                handleMeshData(data, peerId);
-            });
-            
-            conn.on('close', () => {
-                console.log(`🔌 اتصال مش با ${peerId} بسته شد`);
-                meshConnections.delete(peerId);
-                
-                // اگر اتصال مدیر قطع شد
-                if (peerId === currentAdminId && !amIAdmin) {
-                    showNotification('اتصال با مدیر قطع شد', 'warning');
-                    startAdminElection();
-                }
-                
-                updateMeshStatus();
-            });
-            
-            conn.on('error', (err) => {
-                console.error(`⚠️ خطا در اتصال مش ${peerId}:`, err);
-                meshConnections.delete(peerId);
-                updateMeshStatus();
-            });
-        }
-
-        function handleMeshData(data, fromPeerId) {
-            switch(data.type) {
-                case 'mesh_handshake':
-                    handleMeshHandshake(data, fromPeerId);
-                    break;
-                case 'mesh_message':
-                    handleMeshMessage(data, fromPeerId);
-                    break;
-                case 'mesh_broadcast':
-                    handleMeshBroadcast(data, fromPeerId);
-                    break;
-                case 'admin_search':
-                    handleAdminSearch(data, fromPeerId);
-                    break;
-                case 'admin_found':
-                    handleAdminFound(data, fromPeerId);
-                    break;
-                case 'election_start':
-                    handleElectionStart(data, fromPeerId);
-                    break;
-                case 'election_vote':
-                    handleElectionVote(data, fromPeerId);
-                    break;
-                case 'election_result':
-                    handleElectionResult(data, fromPeerId);
-                    break;
-                case 'sync_request':
-                    handleSyncRequest(data, fromPeerId);
-                    break;
-                case 'user_discovery':
-                    handleUserDiscovery(data, fromPeerId);
-                    break;
-            }
-        }
-
-        function handleMeshHandshake(data, fromPeerId) {
-            // اضافه کردن کاربر جدید
-            if (!users.has(data.peerId)) {
-                users.set(data.peerId, {
-                    peerId: data.peerId,
-                    visibleName: data.visibleName,
-                    isAdmin: data.isAdmin || false,
-                    isOnline: true,
-                    lastSeen: Date.now(),
-                    joinTime: data.joinTime || Date.now(),
-                    isMe: data.peerId === myPeerId
-                });
-            }
-            
-            // به‌روزرسانی مدیر فعلی
-            if (data.currentAdmin && !currentAdminId) {
-                currentAdminId = data.currentAdmin;
-                currentAdminName = users.get(data.currentAdmin)?.visibleName || 'emergency_admin';
-                showNotification(`👑 مدیر شبکه: ${currentAdminName}`, 'info');
-            }
-            
-            // اتصال به peerهای جدید
-            data.knownPeers?.forEach(peerId => {
-                if (peerId !== myPeerId && 
-                    !meshConnections.has(peerId) && 
-                    !connections.has(peerId) &&
-                    meshConnections.size < MAX_MESH_CONNECTIONS) {
-                    
-                    setTimeout(() => connectToPeerAsMesh(peerId), Math.random() * 3000);
-                }
-            });
-            
-            updateUsersList();
-            updateMeshStatus();
-        }
-
-        function broadcastToMesh(data, excludePeers = []) {
-            if (!isMeshEnabled) return;
-            
-            meshConnections.forEach((conn, peerId) => {
-                if (conn.open && !excludePeers.includes(peerId)) {
-                    try {
-                        conn.send(data);
-                    } catch (error) {
-                        console.error('خطا در ارسال به مش:', peerId, error);
-                        meshConnections.delete(peerId);
-                    }
-                }
-            });
-        }
-
-        function startMeshMaintenance() {
-            if (meshMaintenanceInterval) clearInterval(meshMaintenanceInterval);
-            
-            meshMaintenanceInterval = setInterval(() => {
-                // حذف اتصالات مرده
-                meshConnections.forEach((conn, peerId) => {
-                    if (!conn.open) {
-                        meshConnections.delete(peerId);
-                    }
-                });
-                
-                // ایجاد اتصالات جدید اگر نیاز است
-                if (meshConnections.size < 2) {
-                    connectToRandomPeers();
-                }
-                
-                // ارسال heartbeat
-                broadcastToMesh({
-                    type: 'mesh_heartbeat',
-                    peerId: myPeerId,
-                    timestamp: Date.now()
-                });
-                
-                updateMeshStatus();
-            }, 15000);
-        }
-
-        // ==================== سیستم انتخابات مدیر ====================
-        function startAdminElection() {
-            if (electionInProgress || amIAdmin) return;
-            
-            electionInProgress = true;
-            showNotification('👑 شروع انتخابات مدیر جدید...', 'info');
-            
-            // معرفی خود به عنوان کاندید
-            electionCandidates.set(myPeerId, {
+            // اضافه کردن خود به لیست کاربران
+            allUsers.set(myPeerId, {
                 peerId: myPeerId,
                 visibleName: myVisibleName,
-                joinTime: myJoinTime,
-                voteCount: 1,
-                isAdminCandidate: true
-            });
-            
-            // اطلاع به شبکه
-            broadcastToMesh({
-                type: 'election_start',
-                candidate: {
-                    peerId: myPeerId,
-                    visibleName: myVisibleName,
-                    joinTime: myJoinTime
-                },
-                timestamp: Date.now()
-            });
-            
-            // زمان‌بندی پایان انتخابات
-            electionTimeout = setTimeout(() => {
-                finishElection();
-            }, 10000);
-        }
-
-        function handleElectionStart(data, fromPeerId) {
-            if (!electionInProgress && !amIAdmin) {
-                startAdminElection();
-            }
-            
-            // رأی دادن به قدیمی‌ترین کاندید
-            const candidate = data.candidate;
-            if (!electionCandidates.has(candidate.peerId)) {
-                electionCandidates.set(candidate.peerId, {
-                    ...candidate,
-                    voteCount: 0
-                });
-            }
-            
-            // اگر من قدیمی‌تر هستم، خودم را معرفی کن
-            if (myJoinTime < candidate.joinTime) {
-                electionCandidates.set(myPeerId, {
-                    peerId: myPeerId,
-                    visibleName: myVisibleName,
-                    joinTime: myJoinTime,
-                    voteCount: 1,
-                    isAdminCandidate: true
-                });
-                
-                broadcastToMesh({
-                    type: 'election_start',
-                    candidate: {
-                        peerId: myPeerId,
-                        visibleName: myVisibleName,
-                        joinTime: myJoinTime
-                    },
-                    timestamp: Date.now()
-                });
-            }
-            
-            // رأی به قدیمی‌ترین کاندید
-            let oldestCandidate = null;
-            electionCandidates.forEach(candidate => {
-                if (!oldestCandidate || candidate.joinTime < oldestCandidate.joinTime) {
-                    oldestCandidate = candidate;
-                }
-            });
-            
-            if (oldestCandidate) {
-                broadcastToMesh({
-                    type: 'election_vote',
-                    candidateId: oldestCandidate.peerId,
-                    voterId: myPeerId,
-                    timestamp: Date.now()
-                });
-            }
-        }
-
-        function handleElectionVote(data, fromPeerId) {
-            const candidate = electionCandidates.get(data.candidateId);
-            if (candidate) {
-                candidate.voteCount = (candidate.voteCount || 0) + 1;
-            }
-        }
-
-        function finishElection() {
-            if (!electionInProgress) return;
-            
-            // پیدا کردن برنده
-            let winner = null;
-            let maxVotes = 0;
-            
-            electionCandidates.forEach(candidate => {
-                if (candidate.voteCount > maxVotes || 
-                    (candidate.voteCount === maxVotes && candidate.joinTime < (winner?.joinTime || Infinity))) {
-                    winner = candidate;
-                    maxVotes = candidate.voteCount;
-                }
-            });
-            
-            if (winner) {
-                // اعلام نتایج
-                broadcastToMesh({
-                    type: 'election_result',
-                    winner: winner,
-                    timestamp: Date.now()
-                });
-                
-                if (winner.peerId === myPeerId) {
-                    // من برنده شدم
-                    becomeEmergencyAdmin();
-                } else {
-                    // فرد دیگری برنده شد
-                    currentAdminId = winner.peerId;
-                    currentAdminName = winner.visibleName;
-                    showNotification(`👑 ${winner.visibleName} مدیر جدید شد`, 'success');
-                    
-                    // اتصال به مدیر جدید
-                    if (!meshConnections.has(winner.peerId)) {
-                        connectToPeerAsMesh(winner.peerId);
-                    }
-                }
-            }
-            
-            // پاکسازی
-            electionInProgress = false;
-            electionCandidates.clear();
-            clearTimeout(electionTimeout);
-            
-            updateAdminStatusDisplay();
-        }
-
-        function handleElectionResult(data, fromPeerId) {
-            const winner = data.winner;
-            
-            if (!winner) return;
-            
-            // توقف انتخابات
-            electionInProgress = false;
-            electionCandidates.clear();
-            clearTimeout(electionTimeout);
-            
-            // به‌روزرسانی مدیر
-            currentAdminId = winner.peerId;
-            currentAdminName = winner.visibleName;
-            
-            if (winner.peerId === myPeerId) {
-                becomeEmergencyAdmin();
-            } else {
-                showNotification(`👑 ${winner.visibleName} مدیر جدید شبکه شد`, 'info');
-                
-                // اتصال به مدیر جدید
-                if (!meshConnections.has(winner.peerId)) {
-                    connectToPeerAsMesh(winner.peerId);
-                }
-            }
-            
-            updateAdminStatusDisplay();
-        }
-
-        function becomeEmergencyAdmin() {
-            if (amIAdmin) return;
-            
-            showNotification('👑 شما مدیر اضطراری شبکه شدید!', 'success');
-            
-            amIAdmin = true;
-            currentAdminName = 'emergency_admin';
-            currentAdminId = myPeerId;
-            
-            // اطلاع به شبکه
-            broadcastToMesh({
-                type: 'new_admin',
-                adminId: myPeerId,
-                adminName: myVisibleName,
-                timestamp: Date.now(),
-                message: `${myVisibleName} مدیر جدید شبکه شد`
-            });
-            
-            // راه‌اندازی سیستم مدیریت
-            loadMessageHistory();
-            startExpirationSystem();
-            startHeartbeatSystem();
-            
-            updateUI();
-            updateAdminStatusDisplay();
-            
-            // پیام سیستم
-            const systemMessage = {
-                type: 'system_message',
-                content: `👑 ${myVisibleName} به عنوان مدیر اضطراری انتخاب شد`,
-                timestamp: Date.now(),
-                messageId: generateMessageId(),
-                isSystem: true
-            };
-            
-            addToHistory(systemMessage);
-            broadcastToAll(systemMessage);
-            displayMessage(systemMessage, false, 'public');
-        }
-
-        // ==================== سیستم جستجوی مدیر ====================
-        function searchForAdmin() {
-            if (amIAdmin || currentAdminId) return;
-            
-            showNotification('🔍 در حال جستجوی مدیر در شبکه...', 'info');
-            
-            broadcastToMesh({
-                type: 'admin_search',
-                searcherId: myPeerId,
-                timestamp: Date.now()
-            });
-            
-            // اگر بعد از ۱۰ ثانیه مدیر پیدا نشد، انتخابات شروع کن
-            setTimeout(() => {
-                if (!currentAdminId && !electionInProgress) {
-                    showNotification('👑 مدیر یافت نشد، شروع انتخابات...', 'warning');
-                    startAdminElection();
-                }
-            }, 10000);
-        }
-
-        function handleAdminSearch(data, fromPeerId) {
-            // اگر من مدیر هستم یا مدیر را می‌شناسم
-            if (amIAdmin) {
-                const conn = meshConnections.get(fromPeerId);
-                if (conn && conn.open) {
-                    conn.send({
-                        type: 'admin_found',
-                        adminId: myPeerId,
-                        adminName: myVisibleName,
-                        searcherId: data.searcherId,
-                        timestamp: Date.now()
-                    });
-                }
-            } else if (currentAdminId && meshConnections.has(currentAdminId)) {
-                const conn = meshConnections.get(fromPeerId);
-                if (conn && conn.open) {
-                    conn.send({
-                        type: 'admin_found',
-                        adminId: currentAdminId,
-                        adminName: users.get(currentAdminId)?.visibleName || 'مدیر',
-                        searcherId: data.searcherId,
-                        timestamp: Date.now()
-                    });
-                }
-            } else {
-                // مدیر نمی‌شناسم، فوروارد کن
-                broadcastToMesh(data, [fromPeerId]);
-            }
-        }
-
-        function handleAdminFound(data, fromPeerId) {
-            if (data.searcherId === myPeerId) {
-                // مدیر پیدا شد!
-                currentAdminId = data.adminId;
-                currentAdminName = data.adminName;
-                
-                showNotification(`✅ مدیر پیدا شد: ${data.adminName}`, 'success');
-                
-                // اتصال به مدیر
-                if (!meshConnections.has(data.adminId)) {
-                    connectToPeerAsMesh(data.adminId);
-                }
-                
-                updateAdminStatusDisplay();
-            }
-        }
-
-        // ==================== توابع کمکی ====================
-        function generatePeerId() {
-            const randomStr = Math.random().toString(36).substr(2, 8);
-            return `${GLOBAL_ROOM}_${Date.now()}_${randomStr}`;
-        }
-
-        function generateMessageId() {
-            return `${myPeerId}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            
-            let icon = 'ℹ️';
-            if (type === 'success') icon = '✅';
-            if (type === 'error') icon = '❌';
-            if (type === 'warning') icon = '⚠️';
-            if (type === 'info') icon = '💡';
-            
-            notification.innerHTML = `
-                <span class="notification-icon">${icon}</span>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, 4000);
-        }
-
-        function getUserColor(peerId) {
-            if (!userColors.has(peerId)) {
-                const hash = peerId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                const colorIndex = hash % USER_COLORS.length;
-                userColors.set(peerId, USER_COLORS[colorIndex]);
-            }
-            return userColors.get(peerId);
-        }
-
-        function formatTime(timestamp) {
-            return new Date(timestamp).toLocaleTimeString('fa-IR', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function formatDate(timestamp) {
-            return new Date(timestamp).toLocaleDateString('fa-IR');
-        }
-
-        // ==================== سیستم ورود ====================
-        async function login() {
-            const usernameInput = document.getElementById('usernameInput');
-            myVisibleName = usernameInput.value.trim();
-            
-            if (!myVisibleName || myVisibleName.length < 2) {
-                showNotification('لطفاً نام معتبر وارد کنید (حداقل ۲ کاراکتر)', 'error');
-                return;
-            }
-            
-            const loginBtn = document.getElementById('loginBtn');
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<div class="loading"></div> در حال راه‌اندازی شبکه...';
-            
-            // پاکسازی اولیه
-            clearStorageOnStart();
-            
-            try {
-                // تولید ID منحصربه‌فرد
-                myPeerId = generatePeerId();
-                myJoinTime = Date.now();
-                
-                // ایجاد Peer
-                peer = new Peer(myPeerId, {
-                    host: '0.peerjs.com',
-                    port: 443,
-                    path: '/',
-                    debug: 0,
-                    config: {
-                        iceServers: [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:global.stun.twilio.com:3478' }
-                        ]
-                    }
-                });
-                
-                peer.on('open', async (id) => {
-                    console.log('✅ Peer ایجاد شد:', id);
-                    
-                    // تنظیم به عنوان کاربر عادی
-                    setupAsMember();
-                    
-                    // تلاش برای اتصال به مدیر اصلی
-                    await tryConnectToPrimaryAdmin();
-                    
-                    // فعال‌سازی شبکه مش
-                    if (isMeshEnabled) {
-                        enableMeshNetwork();
-                    }
-                    
-                    showNotification('شبکه توزیع‌شده راه‌اندازی شد', 'success');
-                });
-                
-                peer.on('error', (err) => {
-                    console.error('خطا در Peer:', err);
-                    showNotification('خطا در اتصال به شبکه', 'error');
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<span id="loginBtnText">🚀 ورود به چت</span>';
-                });
-                
-                // گوش دادن به اتصالات ورودی
-                peer.on('connection', (conn) => {
-                    handleIncomingConnection(conn);
-                });
-                
-            } catch (error) {
-                console.error('خطا در ورود:', error);
-                showNotification('خطا در راه‌اندازی سیستم', 'error');
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<span id="loginBtnText">🚀 ورود به چت</span>';
-            }
-        }
-
-        async function tryConnectToPrimaryAdmin() {
-            showNotification('🔍 در حال جستجوی مدیر اصلی...', 'info');
-            
-            // تلاش برای اتصال به admin1
-            const admin1Connected = await testConnectionToAdmin('admin1');
-            
-            if (admin1Connected) {
-                wasConnectedToAdmin1 = true;
-                currentAdminName = 'admin1';
-                await connectToAdmin();
-                return true;
-            }
-            
-            // تلاش برای اتصال به admin2
-            const admin2Connected = await testConnectionToAdmin('admin2');
-            
-            if (admin2Connected) {
-                currentAdminName = 'admin2';
-                await connectToAdmin();
-                return true;
-            }
-            
-            // هیچ مدری آنلاین نیست
-            showNotification('⚠️ مدیر آنلاین یافت نشد', 'warning');
-            
-            // اگر شبکه مش فعال است، جستجوی مدیر در شبکه
-            if (isMeshEnabled) {
-                searchForAdmin();
-            }
-            
-            return false;
-        }
-
-        async function testConnectionToAdmin(adminName) {
-            return new Promise((resolve) => {
-                const testPeer = new Peer(`test_${Date.now()}`, {
-                    host: '0.peerjs.com',
-                    port: 443,
-                    path: '/',
-                    debug: 0
-                });
-                
-                testPeer.on('open', () => {
-                    const adminPeerId = `${GLOBAL_ROOM}_${adminName}`;
-                    const conn = testPeer.connect(adminPeerId, {
-                        reliable: true,
-                        metadata: { type: 'admin_test' }
-                    });
-                    
-                    const timeout = setTimeout(() => {
-                        conn.close();
-                        testPeer.destroy();
-                        resolve(false);
-                    }, 3000);
-                    
-                    conn.on('open', () => {
-                        clearTimeout(timeout);
-                        conn.close();
-                        testPeer.destroy();
-                        resolve(true);
-                    });
-                    
-                    conn.on('error', () => {
-                        clearTimeout(timeout);
-                        conn.close();
-                        testPeer.destroy();
-                        resolve(false);
-                    });
-                });
-                
-                testPeer.on('error', () => {
-                    testPeer.destroy();
-                    resolve(false);
-                });
-            });
-        }
-
-        async function connectToAdmin() {
-            const adminPeerId = `${GLOBAL_ROOM}_${currentAdminName}`;
-            
-            const conn = peer.connect(adminPeerId, {
-                reliable: true,
-                metadata: {
-                    type: 'member_connection',
-                    visibleName: myVisibleName,
-                    peerId: myPeerId,
-                    isNewUser: true,
-                    expiration: messageExpirationMinutes
-                }
-            });
-            
-            conn.on('open', () => {
-                console.log(`✅ به ${currentAdminName} متصل شدیم`);
-                currentAdminId = adminPeerId;
-                connections.set(currentAdminId, conn);
-                setupConnectionListeners(conn, currentAdminId);
-                
-                // ثبت‌نام
-                conn.send({
-                    type: 'register',
-                    peerId: myPeerId,
-                    visibleName: myVisibleName,
-                    expiration: messageExpirationMinutes,
-                    timestamp: Date.now(),
-                    joinTime: myJoinTime
-                });
-                
-                showNotification(`به ${currentAdminName} متصل شدید`, 'success');
-                updateConnectionStatus(true);
-            });
-            
-            conn.on('error', (err) => {
-                console.error(`❌ خطا در اتصال به ${currentAdminName}:`, err);
-                updateConnectionStatus(false);
-                
-                // اگر شبکه مش فعال است، جستجوی مدیر جدید
-                if (isMeshEnabled) {
-                    searchForAdmin();
-                }
-            });
-        }
-
-        // ==================== مدیریت اتصالات ====================
-        function handleIncomingConnection(conn) {
-            console.log('🔗 درخواست اتصال از:', conn.peer);
-            
-            const peerId = conn.peer;
-            const metadata = conn.metadata;
-            
-            if (metadata?.type === 'mesh_connection') {
-                // اتصال مش
-                meshConnections.set(peerId, conn);
-                setupMeshConnectionListeners(conn, peerId);
-            } else {
-                // اتصال عادی
-                connections.set(peerId, conn);
-                setupConnectionListeners(conn, peerId);
-            }
-        }
-
-        function setupConnectionListeners(conn, peerId) {
-            conn.on('data', (data) => {
-                handleIncomingData(data, peerId);
-            });
-            
-            conn.on('close', () => {
-                console.log('❌ اتصال بسته شد با:', peerId);
-                connections.delete(peerId);
-                
-                if (peerId === currentAdminId && !amIAdmin) {
-                    showNotification('اتصال با مدیر قطع شد', 'warning');
-                    updateConnectionStatus(false);
-                    
-                    if (isMeshEnabled) {
-                        searchForAdmin();
-                    }
-                }
-                
-                updateUsersList();
-            });
-            
-            conn.on('error', (err) => {
-                console.error('خطا در اتصال:', peerId, err);
-                connections.delete(peerId);
-            });
-        }
-
-        // ==================== پردازش داده‌ها ====================
-        function handleIncomingData(data, fromPeerId) {
-            switch(data.type) {
-                case 'register':
-                    handleUserRegistration(data, fromPeerId);
-                    break;
-                case 'public_message':
-                    handlePublicMessage(data, fromPeerId);
-                    break;
-                case 'user_list':
-                    handleUserList(data, fromPeerId);
-                    break;
-                case 'heartbeat':
-                    handleHeartbeat(data, fromPeerId);
-                    break;
-                case 'message_history_chunk':
-                    handleMessageHistoryChunk(data, fromPeerId);
-                    break;
-                case 'message_reaction':
-                    handleMessageReaction(data, fromPeerId);
-                    break;
-                case 'expired_messages':
-                    handleExpiredMessages(data, fromPeerId);
-                    break;
-                case 'system_message':
-                    handleSystemMessage(data, fromPeerId);
-                    break;
-                case 'admin_info':
-                    handleAdminInfo(data, fromPeerId);
-                    break;
-            }
-        }
-
-        function handleUserRegistration(data, fromPeerId) {
-            const userInfo = {
-                peerId: data.peerId,
-                visibleName: data.visibleName,
                 isAdmin: false,
                 isOnline: true,
                 lastSeen: Date.now(),
-                joinTime: data.joinTime || Date.now(),
-                isMe: data.peerId === myPeerId
-            };
+                isMe: true,
+                joinTime: Date.now()
+            });
             
-            users.set(data.peerId, userInfo);
+            showChatPage();
             
-            // ارسال لیست کاربران
-            const conn = connections.get(fromPeerId);
-            if (conn && conn.open) {
-                conn.send({
-                    type: 'user_list',
-                    users: Array.from(users.values()).filter(u => u.isOnline),
-                    timestamp: Date.now()
-                });
-                
-                // ارسال تاریخچه
-                sendMessageHistoryToUser(data.peerId);
+            // راه‌اندازی اتصالات
+            setupIncomingConnections();
+            
+            // تلاش برای یافتن مدیر
+            await findAndConnectToAdmin();
+            
+            // راه‌اندازی شبکه مش
+            if (isMeshEnabled) {
+                setupMeshNetwork();
             }
             
-            // اطلاع به شبکه مش
-            broadcastToMesh({
-                type: 'user_discovery',
-                user: userInfo,
+            showNotification('شبکه توزیع‌شده راه‌اندازی شد!', 'success');
+            updateUI();
+        });
+        
+        peer.on('error', (err) => {
+            console.error('خطای Peer:', err);
+            showNotification(`خطا در اتصال: ${err.type}`, 'error');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<span>🚀 ورود به چت</span>';
+        });
+        
+    } catch (error) {
+        console.error('خطا در ورود:', error);
+        showNotification('خطا در راه‌اندازی سیستم', 'error');
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = '<span>🚀 ورود به چت</span>';
+    }
+}
+
+// ==================== سیستم مدیریت ====================
+async function findAndConnectToAdmin() {
+    debugLog('جستجوی مدیر...');
+    showNotification('🔍 در حال جستجوی مدیر...', 'info');
+    
+    // اول admin1 را چک کن
+    const admin1Id = `${GLOBAL_ROOM}_admin1`;
+    const admin2Id = `${GLOBAL_ROOM}_admin2`;
+    
+    const admin1Exists = await testConnection(admin1Id);
+    
+    if (admin1Exists) {
+        debugLog('admin1 پیدا شد');
+        currentAdminName = 'admin1';
+        currentAdminId = admin1Id;
+        wasConnectedToAdmin1 = true;
+        await connectToAdmin();
+        return true;
+    }
+    
+    // سپس admin2 را چک کن
+    const admin2Exists = await testConnection(admin2Id);
+    
+    if (admin2Exists) {
+        debugLog('admin2 پیدا شد');
+        currentAdminName = 'admin2';
+        currentAdminId = admin2Id;
+        await connectToAdmin();
+        return true;
+    }
+    
+    debugLog('هیچ مدری پیدا نشد');
+    showNotification('⚠️ مدیر آنلاین یافت نشد', 'warning');
+    
+    // اگر شبکه مش فعال است، جستجو در شبکه
+    if (isMeshEnabled) {
+        searchForAdminInMesh();
+    }
+    
+    return false;
+}
+
+async function testConnection(peerId) {
+    return new Promise((resolve) => {
+        const testPeer = new Peer(`test_${Date.now()}`, {
+            host: '0.peerjs.com',
+            port: 443,
+            path: '/'
+        });
+        
+        const timeout = setTimeout(() => {
+            testPeer.destroy();
+            resolve(false);
+        }, 3000);
+        
+        testPeer.on('open', () => {
+            const conn = testPeer.connect(peerId, {
+                reliable: true,
+                metadata: { type: 'connection_test' }
+            });
+            
+            conn.on('open', () => {
+                clearTimeout(timeout);
+                conn.close();
+                testPeer.destroy();
+                resolve(true);
+            });
+            
+            conn.on('error', () => {
+                clearTimeout(timeout);
+                testPeer.destroy();
+                resolve(false);
+            });
+        });
+        
+        testPeer.on('error', () => {
+            clearTimeout(timeout);
+            resolve(false);
+        });
+    });
+}
+
+async function connectToAdmin() {
+    debugLog(`اتصال به مدیر: ${currentAdminName}`);
+    
+    const conn = peer.connect(currentAdminId, {
+        reliable: true,
+        metadata: {
+            type: 'member_connection',
+            visibleName: myVisibleName,
+            peerId: myPeerId,
+            timestamp: Date.now()
+        }
+    });
+    
+    conn.on('open', () => {
+        debugLog(`✅ به ${currentAdminName} متصل شدیم`);
+        directConnections.set(currentAdminId, conn);
+        setupConnectionListeners(conn, currentAdminId);
+        
+        // ثبت‌نام
+        conn.send({
+            type: 'register',
+            peerId: myPeerId,
+            visibleName: myVisibleName,
+            timestamp: Date.now(),
+            joinTime: Date.now()
+        });
+        
+        showNotification(`به ${currentAdminName} متصل شدید`, 'success');
+        updateConnectionStatus();
+    });
+    
+    conn.on('error', (err) => {
+        debugLog(`❌ خطا در اتصال به مدیر:`, err);
+        directConnections.delete(currentAdminId);
+        updateConnectionStatus();
+        
+        // جستجوی مدیر جدید
+        setTimeout(() => findAndConnectToAdmin(), 3000);
+    });
+}
+
+// ==================== شبکه مش ====================
+function setupMeshNetwork() {
+    debugLog('راه‌اندازی شبکه مش...');
+    
+    // شروع اسکن برای کاربران
+    startMeshScanning();
+    
+    // شروع نظارت بر سلامت شبکه
+    startMeshHealthCheck();
+    
+    // به‌روزرسانی وضعیت
+    updateMeshStatus();
+    
+    showNotification('🌐 شبکه مش فعال شد', 'info');
+}
+
+function startMeshScanning() {
+    if (meshScanInterval) clearInterval(meshScanInterval);
+    
+    meshScanInterval = setInterval(() => {
+        // اگر اتصالات کم داریم، کاربران جدید جستجو کن
+        if (meshConnections.size < MESH_MAX_CONNECTIONS) {
+            discoverNewPeers();
+        }
+        
+        // پاکسازی اتصالات مرده
+        cleanupDeadConnections();
+        
+        // به‌روزرسانی UI
+        updateMeshStatus();
+    }, 10000); // هر 10 ثانیه
+}
+
+function discoverNewPeers() {
+    debugLog('جستجوی کاربران جدید...');
+    
+    // اگر مدیر داریم، از او لیست کاربران را بگیر
+    if (currentAdminId && directConnections.has(currentAdminId)) {
+        const adminConn = directConnections.get(currentAdminId);
+        if (adminConn.open) {
+            adminConn.send({
+                type: 'get_users',
                 timestamp: Date.now()
             });
-            
-            showNotification(`کاربر جدید: ${data.visibleName}`, 'success');
-            updateUsersList();
         }
+    }
+    
+    // در شبکه مش جستجو کن
+    broadcastToMesh({
+        type: 'peer_discovery',
+        peerId: myPeerId,
+        visibleName: myVisibleName,
+        timestamp: Date.now()
+    });
+    
+    // به کاربران شناخته‌شده متصل شو
+    connectToKnownPeers();
+}
 
-        function handlePublicMessage(data, fromPeerId) {
-            addToHistory(data);
-            
-            if (amIAdmin) {
-                // فوروارد به همه
-                broadcastToAll(data, [fromPeerId, myPeerId]);
-                broadcastToMesh(data, [fromPeerId, myPeerId]);
-            }
-            
-            displayMessage(data, data.senderId === myPeerId, 'public');
+function connectToKnownPeers() {
+    const onlineUsers = Array.from(allUsers.values())
+        .filter(user => 
+            user.isOnline && 
+            user.peerId !== myPeerId && 
+            !meshConnections.has(user.peerId) &&
+            !directConnections.has(user.peerId)
+        );
+    
+    if (onlineUsers.length === 0) {
+        debugLog('هیچ کاربر آنلاینی برای اتصال وجود ندارد');
+        return;
+    }
+    
+    // انتخاب تصادفی حداکثر 2 کاربر
+    const shuffled = [...onlineUsers].sort(() => Math.random() - 0.5);
+    const toConnect = shuffled.slice(0, Math.min(2, MESH_MAX_CONNECTIONS - meshConnections.size));
+    
+    toConnect.forEach(user => {
+        if (meshConnections.size < MESH_MAX_CONNECTIONS) {
+            connectToMeshPeer(user.peerId);
         }
+    });
+}
 
-        function handleMeshMessage(data, fromPeerId) {
-            // جلوگیری از حلقه
-            if (data.senderId === myPeerId || data.hops?.includes(myPeerId)) return;
-            
-            data.hops = data.hops || [];
-            data.hops.push(fromPeerId);
-            
-            // اگر مدیر هستم، پردازش کن
-            if (amIAdmin && data.type === 'public_message') {
-                handlePublicMessage(data, fromPeerId);
-            } else if (!amIAdmin && data.targetAdmin === currentAdminId) {
-                // ارسال به مدیر
-                const adminConn = connections.get(currentAdminId) || meshConnections.get(currentAdminId);
-                if (adminConn && adminConn.open) {
-                    adminConn.send(data);
-                }
-            } else {
-                // فوروارد در شبکه مش
-                forwardInMesh(data, fromPeerId);
-            }
+function connectToMeshPeer(peerId) {
+    if (meshConnections.has(peerId) || peerId === myPeerId) {
+        return;
+    }
+    
+    debugLog(`تلاش برای اتصال مش به ${peerId}`);
+    
+    const conn = peer.connect(peerId, {
+        reliable: true,
+        metadata: {
+            type: 'mesh_connection',
+            visibleName: myVisibleName,
+            peerId: myPeerId,
+            timestamp: Date.now()
         }
+    });
+    
+    conn.on('open', () => {
+        debugLog(`✅ اتصال مش به ${peerId} برقرار شد`);
+        meshConnections.set(peerId, conn);
+        setupMeshConnectionListeners(conn, peerId);
+        
+        // تبادل اطلاعات
+        conn.send({
+            type: 'mesh_handshake',
+            peerId: myPeerId,
+            visibleName: myVisibleName,
+            timestamp: Date.now(),
+            knownUsers: Array.from(allUsers.keys())
+        });
+        
+        updateMeshStatus();
+    });
+    
+    conn.on('error', (err) => {
+        debugLog(`❌ خطا در اتصال مش به ${peerId}:`, err);
+        meshConnections.delete(peerId);
+        updateMeshStatus();
+    });
+}
 
-        function handleMeshBroadcast(data, fromPeerId) {
-            // فوروارد پیام در شبکه مش
-            broadcastToMesh(data, [fromPeerId]);
+function setupMeshConnectionListeners(conn, peerId) {
+    conn.on('data', (data) => {
+        handleMeshData(data, peerId);
+    });
+    
+    conn.on('close', () => {
+        debugLog(`اتصال مش با ${peerId} بسته شد`);
+        meshConnections.delete(peerId);
+        updateMeshStatus();
+    });
+    
+    conn.on('error', (err) => {
+        debugLog(`خطا در اتصال مش ${peerId}:`, err);
+        meshConnections.delete(peerId);
+        updateMeshStatus();
+    });
+}
+
+function cleanupDeadConnections() {
+    meshConnections.forEach((conn, peerId) => {
+        if (!conn.open) {
+            meshConnections.delete(peerId);
         }
+    });
+}
 
-        function forwardInMesh(data, excludePeerId) {
-            meshConnections.forEach((conn, peerId) => {
-                if (peerId !== excludePeerId && 
-                    peerId !== data.senderId && 
-                    !data.hops?.includes(peerId)) {
-                    
-                    if (conn.open) {
-                        conn.send(data);
-                    }
-                }
-            });
-        }
-
-        // ==================== توابع UI ====================
-        function showChatPage() {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('chatContainer').style.display = 'flex';
-            initEmojiPicker();
-            updateUI();
-        }
-
-        function updateUI() {
-            // به‌روزرسانی تعداد کاربران
-            const onlineCount = Array.from(users.values()).filter(u => u.isOnline).length;
-            document.getElementById('onlineCount').textContent = `${onlineCount} کاربر`;
-            document.getElementById('onlineCountSidebar').textContent = onlineCount;
-            
-            // به‌روزرسانی اتصالات
-            const totalConnections = connections.size + meshConnections.size;
-            document.getElementById('connectionsCount').textContent = totalConnections;
-            document.getElementById('meshCount').textContent = meshConnections.size;
-            document.getElementById('statConnections').textContent = totalConnections;
-            
-            // به‌روزرسانی پیام‌ها
-            document.getElementById('messagesCount').textContent = messageHistory.length;
-            
-            // به‌روزرسانی وضعیت شبکه
-            updateMeshStatus();
-            updateAdminStatusDisplay();
-            updateConnectionStatus(true);
-        }
-
-        function updateMeshStatus() {
-            const meshStatusText = document.getElementById('meshStatusText');
-            const statMesh = document.getElementById('statMesh');
-            
-            if (isMeshEnabled) {
-                const meshCount = meshConnections.size;
-                const status = meshCount >= 2 ? 'قوی' : meshCount === 1 ? 'متوسط' : 'ضعیف';
-                const statusClass = meshCount >= 2 ? 'status-online' : meshCount === 1 ? 'status-scanning' : 'status-offline';
-                
-                if (meshStatusText) meshStatusText.textContent = `${status} (${meshCount})`;
-                if (statMesh) statMesh.textContent = `${status} (${meshCount})`;
-                
-                // به‌روزرسانی نشانگر وضعیت
-                const statusIndicator = document.getElementById('statusIndicator');
-                if (statusIndicator) {
-                    statusIndicator.className = `status-indicator ${statusClass}`;
-                }
-            } else {
-                if (meshStatusText) meshStatusText.textContent = 'غیرفعال';
-                if (statMesh) statMesh.textContent = 'غیرفعال';
-            }
-        }
-
-        function updateAdminStatusDisplay() {
-            const adminStatusBar = document.getElementById('adminStatusBar');
-            const adminStatusDisplay = document.getElementById('adminStatusDisplay');
-            const statAdmin = document.getElementById('statAdmin');
-            
-            if (amIAdmin) {
-                const text = currentAdminName === 'admin1' ? '👑 مدیریت اصلی' : '⚠️ مدیریت اضطراری';
-                if (adminStatusBar) adminStatusBar.textContent = text;
-                if (adminStatusDisplay) adminStatusDisplay.innerHTML = `<span style="color: #00ff88;">${text}</span>`;
-                if (statAdmin) statAdmin.textContent = 'فعال';
-            } else if (currentAdminId) {
-                const adminName = users.get(currentAdminId)?.visibleName || currentAdminName;
-                if (adminStatusBar) adminStatusBar.textContent = `مدیریت: ${adminName}`;
-                if (adminStatusDisplay) adminStatusDisplay.innerHTML = `<span style="color: #8a2be2;">مدیریت: ${adminName}</span>`;
-                if (statAdmin) statAdmin.textContent = 'متصل';
-            } else {
-                if (adminStatusBar) adminStatusBar.textContent = '🔍 در جستجوی مدیر...';
-                if (adminStatusDisplay) adminStatusDisplay.innerHTML = '<span style="color: #ffaa00;">در جستجوی مدیر...</span>';
-                if (statAdmin) statAdmin.textContent = 'جستجو';
-            }
-        }
-
-        function updateConnectionStatus(connected) {
-            const statusIndicator = document.getElementById('statusIndicator');
-            const connectionStatus = document.getElementById('connectionStatus');
-            
-            if (connected) {
-                const meshCount = meshConnections.size;
-                if (meshCount >= 2) {
-                    connectionStatus.textContent = '🌐 شبکه قوی';
-                } else if (meshCount === 1) {
-                    connectionStatus.textContent = '🔵 شبکه متوسط';
-                } else if (connections.size > 0) {
-                    connectionStatus.textContent = '🟢 متصل';
-                } else {
-                    connectionStatus.textContent = '🟡 در حال اتصال...';
-                }
-            } else {
-                connectionStatus.textContent = '🔴 قطع';
-            }
-        }
-
-        function updateUsersList() {
-            const container = document.getElementById('publicUsersList');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            // دسته‌بندی کاربران
-            const onlineUsers = [];
-            const offlineUsers = [];
-            
-            users.forEach((user, peerId) => {
-                if (user.isMe) return;
-                
-                if (user.isOnline) {
-                    onlineUsers.push({...user, peerId});
-                } else {
-                    offlineUsers.push({...user, peerId});
-                }
-            });
-            
-            // نمایش کاربران آنلاین
-            onlineUsers.forEach(user => {
-                const userEl = createUserElement(user);
-                container.appendChild(userEl);
-            });
-            
-            // نمایش کاربران آفلاین (اگر وجود دارند)
-            if (offlineUsers.length > 0) {
-                const separator = document.createElement('div');
-                separator.style.cssText = `
-                    padding: 10px 0 5px 0;
-                    font-size: 12px;
-                    color: #888;
-                    border-top: 1px solid rgba(42, 42, 42, 0.8);
-                    margin-top: 10px;
-                `;
-                separator.textContent = `آفلاین (${offlineUsers.length})`;
-                container.appendChild(separator);
-                
-                offlineUsers.forEach(user => {
-                    const userEl = createUserElement(user);
-                    userEl.style.opacity = '0.6';
-                    container.appendChild(userEl);
-                });
-            }
-            
-            // نمایش خود کاربر
-            const me = users.get(myPeerId);
-            if (me) {
-                const meEl = createUserElement(me);
-                meEl.style.background = 'rgba(138, 43, 226, 0.15)';
-                meEl.style.border = '2px solid rgba(138, 43, 226, 0.5)';
-                container.insertBefore(meEl, container.firstChild);
-            }
-            
-            // اگر کاربری وجود ندارد
-            if (users.size <= 1) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px; color: #b0b0b0;">
-                        <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;">👤</div>
-                        <p>کاربر دیگری در شبکه وجود ندارد</p>
-                        <p style="font-size: 12px; margin-top: 10px;">منتظر کاربران جدید باشید یا از دکمه جستجو استفاده کنید</p>
-                    </div>
-                `;
-            }
-        }
-
-        function createUserElement(user) {
-            const userEl = document.createElement('div');
-            userEl.className = 'user-item';
-            userEl.dataset.peerId = user.peerId;
-            
-            const userColor = getUserColor(user.peerId);
-            const isConnected = meshConnections.has(user.peerId) || connections.has(user.peerId);
-            const statusClass = user.isOnline ? 'status-online' : 'status-offline';
-            
-            userEl.innerHTML = `
-                <div class="user-avatar" style="background: ${user.isAdmin ? 'linear-gradient(135deg, #ffaa00, #ff8800)' : `linear-gradient(135deg, ${userColor}, ${userColor}80)`};">
-                    ${user.visibleName.charAt(0).toUpperCase()}
-                    ${isConnected ? '<div style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; background: #00ff88; border: 2px solid #1a1a1a;"></div>' : ''}
-                </div>
-                <div class="user-info">
-                    <div class="user-name">
-                        ${user.visibleName}
-                        <div class="user-status-small ${statusClass}"></div>
-                        ${user.isAdmin ? '<span class="user-badge admin-badge">مدیر</span>' : ''}
-                        ${user.peerId === myPeerId ? '<span class="user-badge me-badge">شما</span>' : ''}
-                    </div>
-                    <div class="user-role">
-                        ${user.isAdmin ? 'مدیر شبکه' : 'کاربر عادی'}
-                        ${user.joinTime ? ` • عضو از ${formatTime(user.joinTime)}` : ''}
-                    </div>
-                </div>
-            `;
-            
-            return userEl;
-        }
-
-        // ==================== مدیریت پیام‌ها ====================
-        function displayMessage(data, isOutgoing, chatType) {
-            const container = document.getElementById('messagesContainer');
-            const emptyState = document.getElementById('emptyState');
-            
-            if (emptyState) {
-                emptyState.style.display = 'none';
-            }
-            
-            const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 100;
-            
-            const messageEl = document.createElement('div');
-            messageEl.id = `msg_${data.messageId}`;
-            messageEl.className = `message-container ${isOutgoing ? 'message-outgoing' : 'message-incoming'} ${data.isSystem ? 'message-system' : ''}`;
-            messageEl.dataset.senderId = data.senderId;
-            messageEl.dataset.timestamp = data.timestamp;
-            
-            if (data.isSystem) {
-                messageEl.innerHTML = `
-                    <div class="message-content">${data.content}</div>
-                    <div class="message-footer">
-                        <div class="message-time">${formatTime(data.timestamp)}</div>
-                    </div>
-                `;
-            } else {
-                const userColor = getUserColor(data.senderId);
-                const statusIcon = isOutgoing ? getStatusIcon(data.status) : '';
-                
-                let contentHtml = '';
-                if (data.type === 'image') {
-                    contentHtml = `
-                        <img src="${data.content}" 
-                             class="message-image" 
-                             onclick="viewImageFullscreen(this)" 
-                             loading="lazy"
-                             alt="تصویر">
-                        ${data.fileName ? `<div style="font-size: 10px; color: #888; margin-top: 4px;">${data.fileName}</div>` : ''}
-                    `;
-                } else {
-                    contentHtml = `<div class="message-content">${data.content}</div>`;
-                }
-                
-                let replySection = '';
-                if (data.replyTo) {
-                    replySection = `
-                        <div class="reply-container" style="margin-bottom: 8px; padding: 8px; background: rgba(42, 42, 42, 0.5); border-radius: 8px; border-right: 3px solid ${userColor};">
-                            <div style="font-size: 11px; color: ${userColor}; font-weight: bold; margin-bottom: 2px;">
-                                در پاسخ به ${data.replyTo.author}
-                            </div>
-                            <div style="font-size: 12px; color: #b0b0b0; overflow: hidden; text-overflow: ellipsis;">
-                                ${data.replyTo.content}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                const likes = data.likes || [];
-                const dislikes = data.dislikes || [];
-                
-                messageEl.innerHTML = `
-                    <div class="message-header">
-                        <div class="message-sender" style="color: ${userColor};">${data.senderName}</div>
-                        <div class="message-time">
-                            ${formatTime(data.timestamp)}
-                            ${statusIcon}
-                        </div>
-                    </div>
-                    ${replySection}
-                    ${contentHtml}
-                    <div class="reaction-buttons">
-                        <div class="reaction-btn like-btn ${likes.includes(myPeerId) ? 'liked' : ''}" 
-                             onclick="addReaction('${data.messageId}', 'like'); event.stopPropagation();">
-                            👍 ${likes.length}
-                        </div>
-                        <div class="reaction-btn dislike-btn ${dislikes.includes(myPeerId) ? 'disliked' : ''}" 
-                             onclick="addReaction('${data.messageId}', 'dislike'); event.stopPropagation();">
-                            👎 ${dislikes.length}
-                        </div>
-                    </div>
-                    <div class="message-footer">
-                        <div class="message-date">${formatDate(data.timestamp)}</div>
-                        <div class="message-status">${statusIcon}</div>
-                    </div>
-                `;
-                
-                if (data.type !== 'image' && !data.isSystem) {
-                    messageEl.onclick = () => replyToMessage(data.messageId, data.senderName, data.content);
-                }
-            }
-            
-            container.appendChild(messageEl);
-            
-            // محدود کردن تعداد پیام‌های نمایش داده شده
-            const allMessages = container.querySelectorAll('.message-container');
-            if (allMessages.length > 200) {
-                for (let i = 0; i < allMessages.length - 200; i++) {
-                    allMessages[i].remove();
-                }
-            }
-            
-            if (shouldScroll) {
-                scrollToBottom();
-            }
-        }
-
-        function getStatusIcon(status) {
-            switch(status) {
-                case 'sending': return '🕐';
-                case 'delivered': return '✓✓';
-                case 'read': return '👁️✓';
-                case 'failed': return '❌';
-                default: return '';
-            }
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const content = input.value.trim();
-            
-            if (!content) {
-                showNotification('پیام نمی‌تواند خالی باشد', 'warning');
-                return;
-            }
-            
-            const messageData = {
-                type: 'public_message',
-                content: content,
-                senderId: myPeerId,
-                senderName: myVisibleName,
-                timestamp: Date.now(),
-                messageId: generateMessageId(),
-                status: 'sending',
-                replyTo: replyingTo ? {
-                    messageId: replyingTo.messageId,
-                    author: replyingTo.author,
-                    content: replyingTo.content
-                } : null,
-                likes: [],
-                dislikes: []
-            };
-            
-            displayMessage(messageData, true, 'public');
-            
-            if (amIAdmin) {
-                // اگر مدیر هستم، مستقیماً ذخیره و ارسال کن
-                addToHistory(messageData);
-                broadcastToAll(messageData, [myPeerId]);
-                broadcastToMesh(messageData, [myPeerId]);
-                updateMessageStatus(messageData.messageId, 'delivered');
-            } else if (currentAdminId) {
-                // اگر مدیر دارم، به مدیر ارسال کن
-                const adminConn = connections.get(currentAdminId) || meshConnections.get(currentAdminId);
-                if (adminConn && adminConn.open) {
-                    adminConn.send(messageData);
-                } else {
-                    // از طریق شبکه مش ارسال کن
-                    sendViaMesh(messageData);
-                }
-            } else {
-                // مدیر ندارم، از طریق شبکه مش ارسال کن
-                sendViaMesh(messageData);
-            }
-            
-            cancelReply();
-            input.value = '';
-            autoResize(input);
-            
-            if (isMobile) {
-                input.blur();
-            }
-        }
-
-        function sendViaMesh(messageData) {
-            if (!isMeshEnabled || meshConnections.size === 0) {
-                showNotification('اتصال به شبکه برقرار نیست', 'error');
-                updateMessageStatus(messageData.messageId, 'failed');
-                return;
-            }
-            
-            // علامت‌گذاری برای ارسال در شبکه مش
-            messageData.viaMesh = true;
-            messageData.targetAdmin = currentAdminId;
-            
-            broadcastToMesh(messageData);
-            updateMessageStatus(messageData.messageId, 'sending');
-        }
-
-        // ==================== توابع کمکی ====================
-        function clearStorageOnStart() {
+function broadcastToMesh(data, excludePeers = []) {
+    let sentCount = 0;
+    
+    meshConnections.forEach((conn, peerId) => {
+        if (conn.open && !excludePeers.includes(peerId)) {
             try {
-                localStorage.removeItem('chat_message_history');
-                console.log('✅ کش پاک شد');
+                conn.send(data);
+                sentCount++;
             } catch (error) {
-                console.error('خطا در پاک کردن کش:', error);
+                debugLog(`خطا در ارسال به ${peerId}:`, error);
+                meshConnections.delete(peerId);
             }
         }
+    });
+    
+    debugLog(`پیام به ${sentCount} کاربر ارسال شد`);
+    return sentCount > 0;
+}
 
-        function loadExpirationSetting() {
-            const saved = localStorage.getItem('chat_expiration');
-            if (saved !== null) {
-                messageExpirationMinutes = parseInt(saved);
-            }
-            selectExpiration(messageExpirationMinutes);
-        }
-
-        function selectExpiration(minutes) {
-            messageExpirationMinutes = minutes;
-            localStorage.setItem('chat_expiration', minutes);
+// ==================== پردازش داده‌ها ====================
+function setupIncomingConnections() {
+    peer.on('connection', (conn) => {
+        debugLog('درخواست اتصال دریافتی از:', conn.peer);
+        
+        const metadata = conn.metadata || {};
+        const peerId = conn.peer;
+        
+        if (metadata.type === 'mesh_connection') {
+            // اتصال مش
+            meshConnections.set(peerId, conn);
+            setupMeshConnectionListeners(conn, peerId);
             
-            // به‌روزرسانی UI
-            const options = document.querySelectorAll('.expiration-option');
-            options.forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            const selectedOption = document.querySelector(`[onclick="selectExpiration(${minutes})"]`);
-            if (selectedOption) {
-                selectedOption.classList.add('selected');
-            }
-            
-            document.getElementById('expirationStatus').textContent = 
-                minutes === 0 ? 'غیرفعال' : `${minutes} دقیقه`;
-            
-            if (amIAdmin) {
-                startExpirationSystem();
-            }
-        }
-
-        function loadMessageHistory() {
-            try {
-                const saved = localStorage.getItem('chat_message_history');
-                if (saved) {
-                    messageHistory = JSON.parse(saved);
-                    messageHistory.forEach(msg => {
-                        displayMessage(msg, msg.senderId === myPeerId, 'public');
-                    });
-                }
-            } catch (e) {
-                messageHistory = [];
-            }
-        }
-
-        function saveMessageHistory() {
-            try {
-                const toSave = messageHistory.slice(-MAX_MESSAGES);
-                localStorage.setItem('chat_message_history', JSON.stringify(toSave));
-            } catch (e) {
-                console.error('خطا در ذخیره تاریخچه:', e);
-            }
-        }
-
-        function addToHistory(message) {
-            messageHistory.push(message);
-            
-            if (messageHistory.length > MAX_MESSAGES) {
-                messageHistory.shift();
-            }
-            
-            if (amIAdmin) {
-                saveMessageHistory();
-            }
-        }
-
-        // ==================== توابع شبکه ====================
-        function refreshConnections() {
-            showNotification('🔄 در حال بروزرسانی اتصالات...', 'info');
-            
-            // بستن اتصالات مرده
-            meshConnections.forEach((conn, peerId) => {
-                if (!conn.open) {
-                    meshConnections.delete(peerId);
-                }
-            });
-            
-            // ایجاد اتصالات جدید
-            connectToRandomPeers();
-            
-            // به‌روزرسانی UI
-            updateUI();
-            
-            if (isMobile) {
-                toggleSidebar();
-            }
-        }
-
-        function scanForPeers() {
-            showNotification('🔍 در حال جستجوی کاربران جدید...', 'info');
-            
-            broadcastToMesh({
-                type: 'user_discovery',
+            // ارسال پاسخ
+            conn.send({
+                type: 'mesh_welcome',
                 peerId: myPeerId,
+                visibleName: myVisibleName,
                 timestamp: Date.now()
             });
+        } else {
+            // اتصال مستقیم
+            directConnections.set(peerId, conn);
+            setupConnectionListeners(conn, peerId);
+        }
+    });
+}
+
+function setupConnectionListeners(conn, peerId) {
+    conn.on('open', () => {
+        debugLog(`اتصال با ${peerId} باز شد`);
+    });
+    
+    conn.on('data', (data) => {
+        handleIncomingData(data, peerId);
+    });
+    
+    conn.on('close', () => {
+        debugLog(`اتصال با ${peerId} بسته شد`);
+        directConnections.delete(peerId);
+        
+        if (peerId === currentAdminId) {
+            showNotification('اتصال با مدیر قطع شد', 'warning');
+            findAndConnectToAdmin();
+        }
+    });
+    
+    conn.on('error', (err) => {
+        debugLog(`خطا در اتصال ${peerId}:`, err);
+        directConnections.delete(peerId);
+    });
+}
+
+function handleIncomingData(data, fromPeerId) {
+    debugLog('داده دریافتی:', { type: data.type, from: fromPeerId });
+    
+    switch(data.type) {
+        case 'register':
+            handleUserRegistration(data, fromPeerId);
+            break;
+        case 'user_list':
+            handleUserList(data, fromPeerId);
+            break;
+        case 'public_message':
+            handlePublicMessage(data, fromPeerId);
+            break;
+        case 'system_message':
+            handleSystemMessage(data, fromPeerId);
+            break;
+        case 'get_users':
+            handleGetUsers(data, fromPeerId);
+            break;
+        case 'admin_info':
+            handleAdminInfo(data, fromPeerId);
+            break;
+    }
+}
+
+function handleMeshData(data, fromPeerId) {
+    debugLog('داده مش دریافتی:', { type: data.type, from: fromPeerId });
+    
+    switch(data.type) {
+        case 'mesh_handshake':
+            handleMeshHandshake(data, fromPeerId);
+            break;
+        case 'mesh_welcome':
+            handleMeshWelcome(data, fromPeerId);
+            break;
+        case 'peer_discovery':
+            handlePeerDiscovery(data, fromPeerId);
+            break;
+        case 'mesh_message':
+            handleMeshMessage(data, fromPeerId);
+            break;
+        case 'admin_search':
+            handleAdminSearch(data, fromPeerId);
+            break;
+        case 'admin_found':
+            handleAdminFound(data, fromPeerId);
+            break;
+    }
+}
+
+// ==================== پردازش رویدادها ====================
+function handleUserRegistration(data, fromPeerId) {
+    const userInfo = {
+        peerId: data.peerId,
+        visibleName: data.visibleName,
+        isAdmin: false,
+        isOnline: true,
+        lastSeen: Date.now(),
+        joinTime: data.joinTime || Date.now(),
+        isMe: data.peerId === myPeerId
+    };
+    
+    allUsers.set(data.peerId, userInfo);
+    
+    // ارسال پاسخ
+    const conn = directConnections.get(fromPeerId);
+    if (conn && conn.open) {
+        conn.send({
+            type: 'user_list',
+            users: Array.from(allUsers.values()).filter(u => u.isOnline),
+            timestamp: Date.now()
+        });
+    }
+    
+    // اطلاع به شبکه مش
+    broadcastToMesh({
+        type: 'user_discovery',
+        user: userInfo,
+        timestamp: Date.now()
+    });
+    
+    showNotification(`کاربر جدید: ${data.visibleName}`, 'info');
+    updateUsersList();
+}
+
+function handleUserList(data, fromPeerId) {
+    data.users.forEach(user => {
+        if (!allUsers.has(user.peerId)) {
+            allUsers.set(user.peerId, user);
+        }
+    });
+    
+    updateUsersList();
+}
+
+function handlePublicMessage(data, fromPeerId) {
+    // نمایش پیام
+    displayMessage(data, data.senderId === myPeerId);
+    
+    // اگر مدیر هستم، به دیگران فوروارد کن
+    if (amIAdmin) {
+        broadcastToAll(data, [fromPeerId, myPeerId]);
+        broadcastToMesh(data, [fromPeerId, myPeerId]);
+    }
+}
+
+function handleMeshHandshake(data, fromPeerId) {
+    // اضافه کردن کاربر
+    if (!allUsers.has(data.peerId)) {
+        allUsers.set(data.peerId, {
+            peerId: data.peerId,
+            visibleName: data.visibleName,
+            isAdmin: false,
+            isOnline: true,
+            lastSeen: Date.now(),
+            joinTime: Date.now(),
+            isMe: false
+        });
+    }
+    
+    // اتصال به کاربران شناخته‌شده
+    data.knownUsers?.forEach(peerId => {
+        if (peerId !== myPeerId && 
+            !meshConnections.has(peerId) && 
+            !directConnections.has(peerId) &&
+            meshConnections.size < MESH_MAX_CONNECTIONS) {
             
-            // جستجوی مدیر
-            if (!currentAdminId) {
-                searchForAdmin();
-            }
+            setTimeout(() => connectToMeshPeer(peerId), Math.random() * 2000);
         }
+    });
+    
+    updateUsersList();
+}
 
-        function toggleNetworkInfo() {
-            const networkInfo = document.getElementById('networkInfo');
-            if (networkInfo.style.display === 'none') {
-                networkInfo.style.display = 'block';
-                updateNetworkInfo();
-            } else {
-                networkInfo.style.display = 'none';
-            }
+function handleMeshWelcome(data, fromPeerId) {
+    debugLog('خوش آمدگویی از:', data.visibleName);
+    
+    if (!allUsers.has(data.peerId)) {
+        allUsers.set(data.peerId, {
+            peerId: data.peerId,
+            visibleName: data.visibleName,
+            isAdmin: false,
+            isOnline: true,
+            lastSeen: Date.now(),
+            joinTime: Date.now(),
+            isMe: false
+        });
+    }
+    
+    updateUsersList();
+}
+
+function handlePeerDiscovery(data, fromPeerId) {
+    // پاسخ با اطلاعات خود
+    const conn = meshConnections.get(fromPeerId);
+    if (conn && conn.open) {
+        conn.send({
+            type: 'mesh_welcome',
+            peerId: myPeerId,
+            visibleName: myVisibleName,
+            timestamp: Date.now()
+        });
+    }
+    
+    // اگر کاربر را نمی‌شناسم، اضافه کن
+    if (!allUsers.has(data.peerId)) {
+        allUsers.set(data.peerId, {
+            peerId: data.peerId,
+            visibleName: data.visibleName,
+            isAdmin: false,
+            isOnline: true,
+            lastSeen: Date.now(),
+            joinTime: Date.now(),
+            isMe: false
+        });
+        
+        updateUsersList();
+    }
+}
+
+// ==================== سیستم جستجوی مدیر در شبکه مش ====================
+function searchForAdminInMesh() {
+    debugLog('جستجوی مدیر در شبکه مش...');
+    
+    broadcastToMesh({
+        type: 'admin_search',
+        searcherId: myPeerId,
+        timestamp: Date.now()
+    });
+    
+    // اگر بعد از 10 ثانیه مدیر پیدا نشد، انتخابات شروع کن
+    setTimeout(() => {
+        if (!currentAdminId && !amIAdmin) {
+            startElection();
         }
+    }, 10000);
+}
 
-        function updateNetworkInfo() {
-            const networkDetails = document.getElementById('networkDetails');
-            const connectionsText = `اتصالات مستقیم: ${connections.size}`;
-            const meshText = `اتصالات مش: ${meshConnections.size}`;
-            const usersText = `کاربران شناخته‌شده: ${users.size}`;
-            const adminText = currentAdminId ? 
-                `مدیر فعلی: ${users.get(currentAdminId)?.visibleName || currentAdminName}` : 
-                'مدیر: در حال جستجو';
-            
-            networkDetails.innerHTML = `
-                <div style="margin-bottom: 5px;">${connectionsText}</div>
-                <div style="margin-bottom: 5px;">${meshText}</div>
-                <div style="margin-bottom: 5px;">${usersText}</div>
-                <div>${adminText}</div>
-                ${isMeshEnabled ? 
-                    '<div style="margin-top: 10px; color: #00ff88; font-weight: bold;">✓ شبکه مش فعال است</div>' : 
-                    '<div style="margin-top: 10px; color: #ffaa00; font-weight: bold;">⚠ شبکه مش غیرفعال است</div>'
-                }
-            `;
-        }
-
-        function toggleMeshNetwork() {
-            isMeshEnabled = !isMeshEnabled;
-            localStorage.setItem('chat_mesh_enabled', isMeshEnabled);
-            
-            if (isMeshEnabled) {
-                enableMeshNetwork();
-                showNotification('🌐 شبکه مش فعال شد', 'success');
-                document.getElementById('toggleMeshBtn').innerHTML = '<i class="fas fa-network-wired"></i> غیرفعال‌سازی مش';
-            } else {
-                // بستن اتصالات مش
-                meshConnections.forEach(conn => conn.close());
-                meshConnections.clear();
-                showNotification('🌐 شبکه مش غیرفعال شد', 'warning');
-                document.getElementById('toggleMeshBtn').innerHTML = '<i class="fas fa-network-wired"></i> فعال‌سازی مش';
-            }
-            
-            updateMeshStatus();
-        }
-
-        // ==================== توابع UI کمکی ====================
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileOverlay');
-            if (sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            } else {
-                sidebar.classList.add('active');
-                overlay.classList.add('active');
-            }
-        }
-
-        function checkMobile() {
-            isMobile = window.innerWidth <= 768;
-            if (isMobile) {
-                document.body.style.padding = "0";
-            } else {
-                document.body.style.padding = "20px";
-            }
-        }
-
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, isMobile ? 80 : 150) + 'px';
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
-        }
-
-        function replyToMessage(messageId, author, content) {
-            replyingTo = {
-                messageId,
-                author,
-                content: content.length > 100 ? content.substring(0, 100) + '...' : content
-            };
-            
-            document.getElementById('replyPanel').style.display = 'flex';
-            document.getElementById('replyAuthor').textContent = `در پاسخ به ${author}`;
-            document.getElementById('replyContent').textContent = content;
-            
-            document.getElementById('messageInput').focus();
-        }
-
-        function cancelReply() {
-            replyingTo = null;
-            document.getElementById('replyPanel').style.display = 'none';
-        }
-
-        function scrollToBottom() {
-            setTimeout(() => {
-                const container = document.getElementById('messagesContainer');
-                if (container) {
-                    container.scrollTop = container.scrollHeight + 100;
-                }
-            }, 100);
-        }
-
-        function clearChat() {
-            if (confirm('آیا می‌خواهید تاریخچه نمایشی پاک شود؟')) {
-                const container = document.getElementById('messagesContainer');
-                container.innerHTML = '';
-                document.getElementById('emptyState').style.display = 'block';
-                showNotification('تاریخچه نمایشی پاک شد', 'success');
-            }
-        }
-
-        function clearLocalStorage() {
-            if (confirm('⚠️ آیا می‌خواهید ذخیره‌سازی محلی پاک شود؟')) {
-                try {
-                    localStorage.clear();
-                    messageHistory = [];
-                    showNotification('✅ ذخیره‌سازی پاک شد', 'success');
-                    updateUI();
-                } catch (error) {
-                    showNotification('❌ خطا در پاکسازی', 'error');
-                }
-            }
-        }
-
-        function leaveChat() {
-            if (confirm('آیا می‌خواهید از چت خارج شوید؟')) {
-                // بستن همه اتصالات
-                connections.forEach(conn => conn.close());
-                meshConnections.forEach(conn => conn.close());
-                connections.clear();
-                meshConnections.clear();
-                
-                // توقف تایمرها
-                clearInterval(heartbeatInterval);
-                clearInterval(reconnectInterval);
-                clearInterval(adminCheckInterval);
-                clearInterval(autoSyncInterval);
-                clearInterval(meshMaintenanceInterval);
-                clearTimeout(electionTimeout);
-                
-                // بازگشت به صفحه ورود
-                document.getElementById('loginPage').style.display = 'flex';
-                document.getElementById('chatContainer').style.display = 'none';
-                
-                showNotification('از چت خارج شدید', 'info');
-            }
-        }
-
-        function exportChat() {
-            const chatData = {
-                messages: messageHistory,
-                users: Array.from(users.values()),
-                exportTime: Date.now(),
-                version: '4.0'
-            };
-            
-            const dataStr = JSON.stringify(chatData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `chat_export_${Date.now()}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showNotification('💾 چت ذخیره شد', 'success');
-        }
-
-        function initEmojiPicker() {
-            const emojis = ['😀', '😂', '😍', '😎', '😭', '😡', '👍', '👎', '❤️', '🔥', '🎉', '💯', '🤔', '👏', '🙏', '😊', '😢', '😴', '😮', '🤗'];
-            const picker = document.getElementById('emojiPicker');
-            const container = picker.querySelector('div:nth-child(2)');
-            
-            emojis.forEach(emoji => {
-                const span = document.createElement('span');
-                span.textContent = emoji;
-                span.style.cssText = `
-                    cursor: pointer;
-                    font-size: 24px;
-                    padding: 5px;
-                    transition: all 0.2s;
-                    border-radius: 8px;
-                    display: inline-block;
-                `;
-                span.onmouseover = () => {
-                    span.style.transform = 'scale(1.2)';
-                    span.style.background = 'rgba(138, 43, 226, 0.2)';
-                };
-                span.onmouseout = () => {
-                    span.style.transform = 'scale(1)';
-                    span.style.background = 'transparent';
-                };
-                span.onclick = () => {
-                    const input = document.getElementById('messageInput');
-                    input.value += emoji;
-                    input.focus();
-                    autoResize(input);
-                    toggleEmojiPicker();
-                };
-                container.appendChild(span);
+function handleAdminSearch(data, fromPeerId) {
+    // اگر من مدیر هستم یا مدیر را می‌شناسم
+    if (amIAdmin) {
+        const conn = meshConnections.get(fromPeerId);
+        if (conn && conn.open) {
+            conn.send({
+                type: 'admin_found',
+                adminId: myPeerId,
+                adminName: myVisibleName,
+                timestamp: Date.now()
             });
         }
-
-        function toggleEmojiPicker() {
-            const picker = document.getElementById('emojiPicker');
-            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+    } else if (currentAdminId) {
+        const conn = meshConnections.get(fromPeerId);
+        if (conn && conn.open) {
+            conn.send({
+                type: 'admin_found',
+                adminId: currentAdminId,
+                adminName: allUsers.get(currentAdminId)?.visibleName || 'مدیر',
+                timestamp: Date.now()
+            });
         }
+    } else {
+        // مدیر نمی‌شناسم، فوروارد کن
+        broadcastToMesh(data, [fromPeerId]);
+    }
+}
 
-        function viewImageFullscreen(imgElement) {
-            const fullscreenDiv = document.getElementById('fullscreenImage');
-            const fullscreenImg = document.getElementById('fullscreenImageSrc');
-            
-            fullscreenImg.src = imgElement.src;
-            fullscreenDiv.style.display = 'flex';
+function handleAdminFound(data, fromPeerId) {
+    if (!currentAdminId) {
+        currentAdminId = data.adminId;
+        currentAdminName = data.adminName;
+        
+        showNotification(`✅ مدیر پیدا شد: ${data.adminName}`, 'success');
+        
+        // اتصال به مدیر
+        if (!meshConnections.has(data.adminId) && !directConnections.has(data.adminId)) {
+            connectToAdmin();
         }
+        
+        updateAdminStatus();
+    }
+}
 
-        function closeFullscreenImage() {
-            document.getElementById('fullscreenImage').style.display = 'none';
+// ==================== سیستم انتخابات ====================
+function startElection() {
+    debugLog('شروع انتخابات...');
+    showNotification('👑 شروع انتخابات مدیر جدید...', 'info');
+    
+    // تبدیل به مدیر اضطراری
+    becomeEmergencyAdmin();
+}
+
+function becomeEmergencyAdmin() {
+    if (amIAdmin) return;
+    
+    debugLog('تبدیل به مدیر اضطراری...');
+    
+    amIAdmin = true;
+    currentAdminName = 'emergency_admin';
+    currentAdminId = myPeerId;
+    
+    // اطلاع به شبکه
+    broadcastToMesh({
+        type: 'new_admin',
+        adminId: myPeerId,
+        adminName: myVisibleName,
+        timestamp: Date.now()
+    });
+    
+    showNotification('👑 شما مدیر اضطراری شدید!', 'success');
+    updateAdminStatus();
+    
+    // پیام سیستم
+    const systemMsg = {
+        type: 'system_message',
+        content: `👑 ${myVisibleName} به عنوان مدیر اضطراری انتخاب شد`,
+        timestamp: Date.now(),
+        messageId: generateMessageId(),
+        isSystem: true
+    };
+    
+    displayMessage(systemMsg, false);
+    addToHistory(systemMsg);
+}
+
+// ==================== UI Functions ====================
+function showChatPage() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('chatContainer').style.display = 'flex';
+    updateUI();
+}
+
+function updateUI() {
+    updateUsersList();
+    updateConnectionStatus();
+    updateMeshStatus();
+    updateAdminStatus();
+}
+
+function updateUsersList() {
+    const container = document.getElementById('publicUsersList');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    // تعداد کاربران آنلاین
+    const onlineCount = Array.from(allUsers.values()).filter(u => u.isOnline).length;
+    document.getElementById('onlineCount').textContent = `${onlineCount} کاربر`;
+    
+    // نمایش کاربران
+    allUsers.forEach((user, peerId) => {
+        const userEl = createUserElement(user);
+        container.appendChild(userEl);
+    });
+    
+    if (allUsers.size === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;">هیچ کاربری یافت نشد</div>';
+    }
+}
+
+function createUserElement(user) {
+    const el = document.createElement('div');
+    el.className = 'user-item';
+    
+    const isConnected = meshConnections.has(user.peerId) || directConnections.has(user.peerId);
+    const isMe = user.peerId === myPeerId;
+    const color = getUserColor(user.peerId);
+    
+    el.innerHTML = `
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: ${color}; 
+                    display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+            ${user.visibleName.charAt(0)}
+        </div>
+        <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; 
+                            background: ${user.isOnline ? '#00ff88' : '#ff4444'};"></div>
+                <span style="font-weight: 500;">${user.visibleName}</span>
+                ${isMe ? '<span style="background: #8a2be2; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px;">شما</span>' : ''}
+                ${user.isAdmin ? '<span style="background: #ffaa00; color: black; padding: 2px 8px; border-radius: 10px; font-size: 11px;">مدیر</span>' : ''}
+            </div>
+            <div style="font-size: 12px; color: #aaa; margin-top: 4px;">
+                ${isConnected ? '✅ متصل' : '🔗 در دسترس'}
+            </div>
+        </div>
+    `;
+    
+    return el;
+}
+
+function updateConnectionStatus() {
+    const indicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('connectionStatus');
+    
+    if (!indicator || !statusText) return;
+    
+    const totalConnections = directConnections.size + meshConnections.size;
+    
+    if (totalConnections > 0) {
+        indicator.className = 'status-indicator status-online';
+        statusText.textContent = `🟢 متصل (${totalConnections} اتصال)`;
+    } else {
+        indicator.className = 'status-indicator status-offline';
+        statusText.textContent = '🔴 قطع';
+    }
+}
+
+function updateMeshStatus() {
+    const meshCount = document.getElementById('meshCount');
+    const meshStatusText = document.getElementById('meshStatusText');
+    
+    if (!meshCount || !meshStatusText) return;
+    
+    const count = meshConnections.size;
+    meshCount.textContent = count;
+    
+    if (isMeshEnabled) {
+        if (count >= 3) {
+            meshStatusText.textContent = '🌐 قوی';
+        } else if (count >= 1) {
+            meshStatusText.textContent = '🔵 متوسط';
+        } else {
+            meshStatusText.textContent = '🟡 ضعیف';
         }
+    } else {
+        meshStatusText.textContent = 'غیرفعال';
+    }
+}
 
-        // ==================== راه‌اندازی سیستم ====================
-        document.addEventListener('DOMContentLoaded', initSystem);
-    </script>
-</body>
-</html>
+function updateAdminStatus() {
+    const adminStatus = document.getElementById('adminStatusDisplay');
+    if (!adminStatus) return;
+    
+    if (amIAdmin) {
+        adminStatus.innerHTML = '<span style="color: #00ff88;">👑 شما مدیر هستید</span>';
+    } else if (currentAdminId) {
+        adminStatus.innerHTML = `<span style="color: #8a2be2;">مدیر: ${currentAdminName}</span>`;
+    } else {
+        adminStatus.innerHTML = '<span style="color: #ffaa00;">🔍 در جستجوی مدیر...</span>';
+    }
+}
+
+// ==================== ارسال پیام ====================
+function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const content = input.value.trim();
+    
+    if (!content) return;
+    
+    const messageData = {
+        type: 'public_message',
+        content: content,
+        senderId: myPeerId,
+        senderName: myVisibleName,
+        timestamp: Date.now(),
+        messageId: generateMessageId(),
+        status: 'sending',
+        likes: [],
+        dislikes: []
+    };
+    
+    displayMessage(messageData, true);
+    
+    // اگر مدیر هستم
+    if (amIAdmin) {
+        addToHistory(messageData);
+        broadcastToAll(messageData, [myPeerId]);
+        broadcastToMesh(messageData, [myPeerId]);
+        updateMessageStatus(messageData.messageId, 'delivered');
+    } 
+    // اگر به مدیر وصل هستم
+    else if (currentAdminId && directConnections.has(currentAdminId)) {
+        const adminConn = directConnections.get(currentAdminId);
+        if (adminConn.open) {
+            adminConn.send(messageData);
+        } else {
+            sendViaMesh(messageData);
+        }
+    }
+    // در غیر این صورت از طریق مش ارسال کن
+    else {
+        sendViaMesh(messageData);
+    }
+    
+    input.value = '';
+    autoResize(input);
+}
+
+function sendViaMesh(messageData) {
+    if (!isMeshEnabled || meshConnections.size === 0) {
+        showNotification('⚠️ شبکه مش فعال نیست یا هیچ اتصالی وجود ندارد', 'warning');
+        updateMessageStatus(messageData.messageId, 'failed');
+        return;
+    }
+    
+    // علامت‌گذاری برای ارسال در شبکه مش
+    messageData.viaMesh = true;
+    
+    const sent = broadcastToMesh(messageData);
+    if (sent) {
+        updateMessageStatus(messageData.messageId, 'delivered');
+    } else {
+        updateMessageStatus(messageData.messageId, 'failed');
+    }
+}
+
+function broadcastToAll(data, excludePeers = []) {
+    directConnections.forEach((conn, peerId) => {
+        if (conn.open && !excludePeers.includes(peerId)) {
+            try {
+                conn.send(data);
+            } catch (error) {
+                console.error('خطا در ارسال:', error);
+            }
+        }
+    });
+}
+
+// ==================== توابع کمکی ====================
+function generatePeerId() {
+    const randomStr = Math.random().toString(36).substring(2, 10);
+    return `${GLOBAL_ROOM}_${Date.now()}_${randomStr}`;
+}
+
+function generateMessageId() {
+    return `${myPeerId}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    let icon = '💡';
+    if (type === 'success') icon = '✅';
+    if (type === 'error') icon = '❌';
+    if (type === 'warning') icon = '⚠️';
+    
+    notification.innerHTML = `
+        <span class="notification-icon">${icon}</span>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
+}
+
+function getUserColor(peerId) {
+    if (!userColors.has(peerId)) {
+        const hash = peerId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const colorIndex = hash % USER_COLORS.length;
+        userColors.set(peerId, USER_COLORS[colorIndex]);
+    }
+    return userColors.get(peerId);
+}
+
+function addToHistory(message) {
+    messageHistory.push(message);
+    if (messageHistory.length > MAX_MESSAGES) {
+        messageHistory.shift();
+    }
+    if (amIAdmin) {
+        localStorage.setItem('chat_message_history', JSON.stringify(messageHistory));
+    }
+}
+
+function displayMessage(data, isOutgoing) {
+    const container = document.getElementById('messagesContainer');
+    const emptyState = document.getElementById('emptyState');
+    
+    if (emptyState) emptyState.style.display = 'none';
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = `message ${isOutgoing ? 'outgoing' : 'incoming'}`;
+    
+    const time = new Date(data.timestamp).toLocaleTimeString('fa-IR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    messageEl.innerHTML = `
+        <div class="message-header">
+            <span class="message-sender">${data.senderName}</span>
+            <span class="message-time">${time}</span>
+        </div>
+        <div class="message-content">${data.content}</div>
+    `;
+    
+    container.appendChild(messageEl);
+    container.scrollTop = container.scrollHeight;
+}
+
+function updateMessageStatus(messageId, status) {
+    const messageEl = document.getElementById(`msg_${messageId}`);
+    if (messageEl) {
+        const statusEl = messageEl.querySelector('.message-status');
+        if (statusEl) {
+            statusEl.textContent = status === 'delivered' ? '✓✓' : status === 'failed' ? '✗' : '🕐';
+        }
+    }
+}
+
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    if (sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    } else {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+    }
+}
+
+function checkMobile() {
+    isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        document.body.style.padding = '0';
+    } else {
+        document.body.style.padding = '20px';
+    }
+}
+
+function refreshConnections() {
+    showNotification('🔄 بروزرسانی اتصالات...', 'info');
+    discoverNewPeers();
+    updateUI();
+}
+
+function clearLocalStorage() {
+    if (confirm('آیا می‌خواهید ذخیره‌سازی پاک شود؟')) {
+        localStorage.clear();
+        showNotification('ذخیره‌سازی پاک شد', 'success');
+    }
+}
+
+function leaveChat() {
+    if (confirm('آیا می‌خواهید از چت خارج شوید؟')) {
+        // بستن اتصالات
+        directConnections.forEach(conn => conn.close());
+        meshConnections.forEach(conn => conn.close());
+        
+        // بازگشت به صفحه ورود
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('chatContainer').style.display = 'none';
+        
+        showNotification('از چت خارج شدید', 'info');
+    }
+}
+
+// ==================== شروع سیستم ====================
+document.addEventListener('DOMContentLoaded', initSystem);
