@@ -71,7 +71,7 @@
             
             .messages-container {
                 padding: 15px !important;
-                height: calc(100% - 160px) !important; /* افزایش ارتفاع */
+                height: calc(100% - 160px) !important;
                 max-height: none !important;
                 overflow-y: auto;
                 display: flex;
@@ -1062,9 +1062,8 @@
         let myVisibleName = '';
         let myPeerId = '';
         let currentAdminId = '';
-        let currentAdminName = '';
+        let currentAdminName = 'admin1'; // همیشه با admin1 شروع کن
         let amIAdmin = false;
-        let adminElectionInProgress = false;
         let isMobile = window.innerWidth <= 768;
         
         let connections = new Map(); // اتصالات به کاربران دیگر
@@ -1078,19 +1077,18 @@
         const MAX_MESSAGES = 1000;
         
         // تنظیمات حذف خودکار (دقیقه - 0 به معنای هرگز)
-        let messageExpirationMinutes = 5; // مقدار پیش‌فرض
+        let messageExpirationMinutes = 5;
         let expirationInterval = null;
         
         // متغیرهای سیستم ریپلای
-        let replyingTo = null; // {messageId, author, content}
+        let replyingTo = null;
         
-        const GLOBAL_ROOM = 'GLOBAL_CHAT_MOBILE_V2';
+        const GLOBAL_ROOM = 'GLOBAL_CHAT_MOBILE_V3';
         const ADMIN_NAMES = Array.from({length: 100}, (_, i) => `admin${i+1}`);
-        let currentAdminIndex = 0;
         let isEmergencyMode = false;
+        let wasConnectedToAdmin1 = false; // آیا قبلاً به admin1 وصل بودیم؟
         
         let heartbeatInterval = null;
-        let electionTimeout = null;
         let reconnectInterval = null;
         let adminCheckInterval = null;
         let autoSyncInterval = null;
@@ -1100,6 +1098,38 @@
             '#8a2be2', '#00ff88', '#00ffff', '#ffaa00', '#ff00ff',
             '#00ccff', '#ffff00', '#ff4444', '#aa00ff', '#00ffaa'
         ];
+        
+        // ==================== پاک کردن کش و استوریج در شروع ====================
+        function clearStorageOnStart() {
+            try {
+                // پاک کردن localStorage
+                localStorage.clear();
+                console.log('✅ کش و استوریج مرورگر پاک شد');
+                
+                // پاک کردن sessionStorage
+                sessionStorage.clear();
+                
+                // پاک کردن IndexedDB اگر استفاده شده باشد
+                if (window.indexedDB) {
+                    indexedDB.databases().then(dbs => {
+                        dbs.forEach(db => {
+                            if (db.name) {
+                                indexedDB.deleteDatabase(db.name);
+                            }
+                        });
+                    });
+                }
+                
+                // پاک کردن cache storage
+                if ('caches' in window) {
+                    caches.keys().then(keys => {
+                        keys.forEach(key => caches.delete(key));
+                    });
+                }
+            } catch (error) {
+                console.error('خطا در پاک کردن استوریج:', error);
+            }
+        }
         
         // ==================== تشخیص موبایل و تنظیمات ====================
         function checkMobile() {
@@ -1310,18 +1340,6 @@
             updateStorageInfo();
         }
         
-        function removeUserMessagesFromHistory(userPeerId) {
-            const initialLength = messageHistory.length;
-            messageHistory = messageHistory.filter(msg => msg.senderId !== userPeerId);
-            
-            if (amIAdmin) {
-                saveMessageHistory();
-            }
-            
-            const removedCount = initialLength - messageHistory.length;
-            return removedCount;
-        }
-        
         function saveMessageHistory() {
             try {
                 const toSave = messageHistory.slice(-MAX_MESSAGES);
@@ -1488,52 +1506,7 @@
             }
         }
         
-        // ==================== سیستم لاگین ====================
-        async function login() {
-            const usernameInput = document.getElementById('usernameInput');
-            myVisibleName = usernameInput.value.trim();
-            
-            if (!myVisibleName || myVisibleName.length < 2) {
-                showNotification('لطفاً نام معتبر وارد کنید (حداقل ۲ کاراکتر)', 'error');
-                return;
-            }
-            
-            localStorage.setItem('chat_username', myVisibleName);
-            
-            const loginBtn = document.getElementById('loginBtn');
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<div class="loading"></div> در حال اتصال...';
-            
-            showNotification('🔍 در حال اتصال به شبکه...', 'info');
-            
-            await startAdminElection();
-        }
-        
-        // ==================== سیستم انتخاب مدیریت جدید ====================
-        async function startAdminElection() {
-            showNotification('👑 جستجوی مدیریت فعال...', 'info');
-            adminElectionInProgress = true;
-            
-            // جستجوی مدیریت‌های موجود به ترتیب admin1 تا admin100
-            for (let i = 0; i < ADMIN_NAMES.length; i++) {
-                const adminName = ADMIN_NAMES[i];
-                const adminExists = await testConnectionToAdmin(adminName);
-                
-                if (adminExists) {
-                    currentAdminIndex = i;
-                    currentAdminName = adminName;
-                    showNotification(`✅ مدیریت ${adminName} پیدا شد`, 'success');
-                    amIAdmin = false;
-                    await joinAsMember();
-                    return;
-                }
-            }
-            
-            // اگر هیچ مدیری پیدا نشد، خودمان مدیر شویم
-            showNotification('⚡ در حال رقابت برای مدیریت...', 'warning');
-            await competeForAdmin();
-        }
-        
+        // ==================== تست اتصال به مدیر ====================
         async function testConnectionToAdmin(adminName) {
             return new Promise((resolve) => {
                 const testPeer = new Peer(`test_${Date.now()}`, {
@@ -1579,51 +1552,43 @@
             });
         }
         
-        function getRandomDelay(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        
-        async function competeForAdmin() {
-            const delay = getRandomDelay(1000, 3000);
-            showNotification(`⏳ تأخیر تصادفی: ${delay/1000} ثانیه...`, 'info');
+        // ==================== سیستم لاگین ====================
+        async function login() {
+            const usernameInput = document.getElementById('usernameInput');
+            myVisibleName = usernameInput.value.trim();
             
-            await new Promise(resolve => setTimeout(resolve, delay));
-            
-            // دوباره چک کن شاید مدیر جدیدی آمده
-            const adminExists = await testConnectionToAdmin(ADMIN_NAMES[0]);
-            
-            if (adminExists) {
-                showNotification('✅ مدیریت جدیدی پیدا شد - تبدیل به عضو', 'success');
-                amIAdmin = false;
-                await joinAsMember();
+            if (!myVisibleName || myVisibleName.length < 2) {
+                showNotification('لطفاً نام معتبر وارد کنید (حداقل ۲ کاراکتر)', 'error');
                 return;
             }
             
-            // پیدا کردن اولین نام مدیریت آزاد
-            let availableAdminName = null;
-            for (let i = 0; i < ADMIN_NAMES.length; i++) {
-                const adminName = ADMIN_NAMES[i];
-                const exists = await testConnectionToAdmin(adminName);
-                if (!exists) {
-                    availableAdminName = adminName;
-                    currentAdminIndex = i;
-                    break;
-                }
-            }
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<div class="loading"></div> در حال اتصال...';
             
-            if (availableAdminName) {
-                showNotification(`👑 ادعای مدیریت ${availableAdminName}...`, 'warning');
-                await claimAdmin(availableAdminName);
+            showNotification('🔍 در حال جستجوی ادمین1...', 'info');
+            
+            // ابتدا سعی کن به admin1 وصل شوی
+            const admin1Exists = await testConnectionToAdmin('admin1');
+            
+            if (admin1Exists) {
+                // admin1 وجود دارد، به عنوان عضو به آن متصل شو
+                showNotification('✅ ادمین1 پیدا شد، در حال اتصال...', 'success');
+                wasConnectedToAdmin1 = true;
+                currentAdminName = 'admin1';
+                await joinAsMember();
             } else {
-                showNotification('❌ هیچ نام مدیریتی آزاد نیست', 'error');
-                setTimeout(() => competeForAdmin(), 5000);
+                // admin1 وجود ندارد، خودت admin1 شو
+                showNotification('⚠️ ادمین1 یافت نشد، در حال ثبت‌نام به عنوان ادمین1...', 'warning');
+                await becomeAdmin1();
             }
         }
         
-        async function claimAdmin(adminName) {
-            myPeerId = `${GLOBAL_ROOM}_${adminName}`;
+        // ==================== تبدیل به ادمین1 ====================
+        async function becomeAdmin1() {
+            currentAdminName = 'admin1';
+            myPeerId = `${GLOBAL_ROOM}_admin1`;
             currentAdminId = myPeerId;
-            currentAdminName = adminName;
             
             try {
                 peer = new Peer(myPeerId, {
@@ -1641,35 +1606,130 @@
                 });
                 
                 peer.on('open', (id) => {
-                    console.log('✅ مدیریت ایجاد شد:', id);
+                    console.log('✅ شما ادمین1 شدید:', id);
                     amIAdmin = true;
-                    adminElectionInProgress = false;
+                    wasConnectedToAdmin1 = false; // خودمان ادمین1 هستیم
                     
                     setupAsAdmin();
                 });
                 
                 peer.on('error', (err) => {
-                    console.error('خطا در ایجاد مدیریت:', err);
+                    console.error('خطا در ثبت‌نام به عنوان ادمین1:', err);
                     
                     if (err.type === 'unavailable-id') {
-                        showNotification('⚡ مدیریت دیگری وجود دارد - تبدیل به عضو', 'info');
-                        amIAdmin = false;
-                        joinAsMember();
+                        showNotification('⚡ ادمین1 دیگری وجود دارد! تلاش برای اتصال مجدد...', 'info');
+                        setTimeout(() => login(), 2000);
                     } else {
-                        showNotification('خطا در ایجاد مدیریت، تلاش مجدد...', 'error');
-                        setTimeout(() => retryAdmin(), 3000);
+                        showNotification('خطا در ثبت‌نام، تلاش مجدد...', 'error');
+                        setTimeout(() => becomeAdmin1(), 3000);
                     }
                 });
                 
             } catch (error) {
-                console.error('خطا در claimAdmin:', error);
-                retryAdmin();
+                console.error('خطا در becomeAdmin1:', error);
+                setTimeout(() => becomeAdmin1(), 2000);
             }
         }
         
-        function retryAdmin() {
-            showNotification('🔄 تلاش مجدد برای اتصال...', 'info');
-            setTimeout(() => startAdminElection(), 3000);
+        // ==================== جستجوی ادمین پشتیبان ====================
+        async function findBackupAdmin() {
+            if (amIAdmin) return; // اگر خودمان ادمین هستیم، نیازی به جستجو نیست
+            
+            showNotification('🔍 جستجوی ادمین پشتیبان...', 'info');
+            
+            // از ادمین2 شروع کن تا ادمین100
+            for (let i = 2; i <= 100; i++) {
+                const adminName = `admin${i}`;
+                const adminExists = await testConnectionToAdmin(adminName);
+                
+                if (adminExists) {
+                    showNotification(`✅ ${adminName} پیدا شد، در حال اتصال...`, 'success');
+                    currentAdminName = adminName;
+                    isEmergencyMode = true;
+                    
+                    // اتصال فعلی را ببند
+                    if (connections.has(currentAdminId)) {
+                        connections.get(currentAdminId).close();
+                        connections.delete(currentAdminId);
+                    }
+                    
+                    // به ادمین پشتیبان متصل شو
+                    connectToAdmin();
+                    return true;
+                }
+            }
+            
+            // هیچ ادمین پشتیبانی پیدا نشد
+            showNotification('⚠️ هیچ ادمین پشتیبانی یافت نشد', 'warning');
+            return false;
+        }
+        
+        // ==================== تبدیل به ادمین پشتیبان ====================
+        async function becomeBackupAdmin() {
+            if (amIAdmin) return;
+            
+            // اولین ادمین آزاد را پیدا کن
+            for (let i = 2; i <= 100; i++) {
+                const adminName = `admin${i}`;
+                const adminExists = await testConnectionToAdmin(adminName);
+                
+                if (!adminExists) {
+                    showNotification(`👑 ثبت‌نام به عنوان ${adminName}...`, 'warning');
+                    
+                    myPeerId = `${GLOBAL_ROOM}_${adminName}`;
+                    currentAdminId = myPeerId;
+                    currentAdminName = adminName;
+                    
+                    try {
+                        // Peer قبلی را ببند
+                        if (peer) {
+                            peer.destroy();
+                        }
+                        
+                        peer = new Peer(myPeerId, {
+                            host: '0.peerjs.com',
+                            port: 443,
+                            path: '/',
+                            debug: 0,
+                            config: {
+                                'iceServers': [
+                                    { urls: 'stun:stun.l.google.com:19302' },
+                                    { urls: 'stun:stun1.l.google.com:19302' },
+                                    { urls: 'stun:stun2.l.google.com:19302' }
+                                ]
+                            }
+                        });
+                        
+                        peer.on('open', (id) => {
+                            console.log(`✅ شما ${adminName} شدید:`, id);
+                            amIAdmin = true;
+                            isEmergencyMode = true;
+                            
+                            setupAsAdmin();
+                        });
+                        
+                        peer.on('error', (err) => {
+                            console.error(`خطا در ثبت‌نام به عنوان ${adminName}:`, err);
+                            
+                            if (err.type === 'unavailable-id') {
+                                // این ادمین قبلاً گرفته شده، به ادمین بعدی برو
+                                becomeBackupAdmin();
+                            } else {
+                                setTimeout(() => becomeBackupAdmin(), 3000);
+                            }
+                        });
+                        
+                        return;
+                        
+                    } catch (error) {
+                        console.error('خطا در becomeBackupAdmin:', error);
+                        setTimeout(() => becomeBackupAdmin(), 3000);
+                    }
+                    break;
+                }
+            }
+            
+            showNotification('❌ هیچ ادمین پشتیبانی آزاد نیست', 'error');
         }
         
         async function joinAsMember() {
@@ -1690,7 +1750,6 @@
                 
                 peer.on('open', (id) => {
                     console.log('✅ عضو ایجاد شد:', id);
-                    adminElectionInProgress = false;
                     setupAsMember();
                 });
                 
@@ -1727,16 +1786,33 @@
                     
                     if (!adminConnected) {
                         console.log('مدیریت قطع شده است، جستجوی مدیر جدید...');
-                        showNotification('👑 مدیر قطع شده، جستجوی مدیر جدید...', 'warning');
-                        clearInterval(adminCheckInterval);
-                        startAdminElection();
+                        
+                        if (wasConnectedToAdmin1) {
+                            // اگر قبلاً به admin1 وصل بودیم و الان قطع شده، ادمین پشتیبان پیدا کن
+                            showNotification('👑 ادمین1 قطع شد، جستجوی ادمین پشتیبان...', 'warning');
+                            const foundBackup = await findBackupAdmin();
+                            
+                            if (!foundBackup) {
+                                // اگر ادمین پشتیبانی نبود، خودت تبدیل به ادمین پشتیبان شو
+                                showNotification('👑 تبدیل به ادمین پشتیبان...', 'warning');
+                                becomeBackupAdmin();
+                            }
+                        } else {
+                            // اگر به ادمین پشتیبان وصل بودیم و قطع شد، دوباره جستجو کن
+                            showNotification('👑 ادمین قطع شد، جستجوی مجدد...', 'warning');
+                            const foundBackup = await findBackupAdmin();
+                            
+                            if (!foundBackup) {
+                                becomeBackupAdmin();
+                            }
+                        }
                     }
                 }
             }, 30000); // هر 30 ثانیه
         }
         
         function handleAdmin1Returned() {
-            if (!amIAdmin) return;
+            if (!amIAdmin || currentAdminName === 'admin1') return;
             
             // اطلاع به همه کاربران که admin1 برگشته
             broadcastToAll({
@@ -1761,8 +1837,14 @@
             // تبدیل خودمان به عضو و اتصال به admin1
             amIAdmin = false;
             currentAdminName = 'admin1';
-            currentAdminIndex = 0;
-            connectToAdmin();
+            wasConnectedToAdmin1 = true;
+            
+            // Peer قبلی را ببند و جدید ایجاد کن
+            if (peer) {
+                peer.destroy();
+            }
+            
+            joinAsMember();
             
             showNotification('✅ مدیریت به admin1 منتقل شد', 'success');
             updateUI();
@@ -1792,7 +1874,7 @@
             startAdminMonitoring();
             startAutoSync();
             
-            showNotification(`شما مدیریت شبکه شدید! (${currentAdminName})`, 'success');
+            showNotification(`شما ${currentAdminName} شدید!`, 'success');
             updateUI();
             
             // نمایش وضعیت اضطراری اگر admin1 نیستیم
@@ -1800,7 +1882,7 @@
                 isEmergencyMode = true;
                 const systemMessage = {
                     type: 'system_message',
-                    content: `⚠️ شبکه در حالت اضطراری - مدیریت موقت: ${myVisibleName} (${currentAdminName})`,
+                    content: `⚠️ شبکه در حالت اضطراری - مدیریت پشتیبان: ${myVisibleName} (${currentAdminName})`,
                     timestamp: Date.now(),
                     messageId: generateMessageId(),
                     isSystem: true
@@ -1813,7 +1895,7 @@
                 isEmergencyMode = false;
                 const systemMessage = {
                     type: 'system_message',
-                    content: `👑 ${myVisibleName} به عنوان مدیریت اصلی انتخاب شد`,
+                    content: `👑 ${myVisibleName} به عنوان مدیریت اصلی (admin1) انتخاب شد`,
                     timestamp: Date.now(),
                     messageId: generateMessageId(),
                     isSystem: true
@@ -1846,7 +1928,7 @@
             startAdminMonitoring();
             startAutoSync();
             
-            showNotification(`به شبکه جهانی متصل شدید`, 'success');
+            showNotification(`به ${currentAdminName} متصل شدید`, 'success');
             updateUI();
         }
         
@@ -1925,7 +2007,7 @@
         }
         
         function connectToAdmin() {
-            showNotification(`در حال اتصال به مدیریت ${currentAdminName}...`, 'info');
+            showNotification(`در حال اتصال به ${currentAdminName}...`, 'info');
             
             const adminPeerId = `${GLOBAL_ROOM}_${currentAdminName}`;
             const conn = peer.connect(adminPeerId, {
@@ -1940,7 +2022,7 @@
             });
             
             conn.on('open', () => {
-                console.log('✅ به مدیریت متصل شدیم');
+                console.log(`✅ به ${currentAdminName} متصل شدیم`);
                 currentAdminId = adminPeerId;
                 connections.set(currentAdminId, conn);
                 setupConnectionListeners(conn, currentAdminId);
@@ -1953,13 +2035,13 @@
                     timestamp: Date.now()
                 });
                 
-                showNotification(`به مدیریت ${currentAdminName} متصل شدید`, 'success');
+                showNotification(`به ${currentAdminName} متصل شدید`, 'success');
                 updateConnectionStatus(true);
                 updateAdminStatusDisplay();
             });
             
             conn.on('error', (err) => {
-                console.error('خطا در اتصال به مدیریت:', err);
+                console.error(`خطا در اتصال به ${currentAdminName}:`, err);
                 updateConnectionStatus(false);
                 
                 setTimeout(() => {
@@ -1980,7 +2062,7 @@
                 connections.delete(peerId);
                 
                 if (peerId === currentAdminId && !amIAdmin) {
-                    showNotification('اتصال با مدیریت قطع شد', 'warning');
+                    showNotification(`اتصال با ${currentAdminName} قطع شد`, 'warning');
                     updateConnectionStatus(false);
                 }
                 
@@ -1993,7 +2075,7 @@
                 connections.delete(peerId);
                 
                 if (peerId === currentAdminId && !amIAdmin) {
-                    showNotification('خطا در اتصال با مدیریت', 'error');
+                    showNotification(`خطا در اتصال با ${currentAdminName}`, 'error');
                     updateConnectionStatus(false);
                 }
                 
@@ -2253,6 +2335,7 @@
             currentAdminId = data.adminId;
             currentAdminName = data.adminRole || data.adminName;
             isEmergencyMode = data.isEmergency || false;
+            wasConnectedToAdmin1 = (currentAdminName === 'admin1');
             
             updateNetworkStatus();
             updateAdminStatusDisplay();
@@ -2270,7 +2353,7 @@
             
             // اتصال به admin1
             currentAdminName = 'admin1';
-            currentAdminIndex = 0;
+            wasConnectedToAdmin1 = true;
             connectToAdmin();
         }
         
@@ -2527,7 +2610,7 @@
                 } else {
                     adminStatusDisplay.innerHTML = `
                         <div class="emergency-alert">
-                            ⚠️ شبکه در حالت اضطراری - مدیریت موقت: ${currentAdminName}
+                            ⚠️ شبکه در حالت اضطراری - مدیریت پشتیبان: ${currentAdminName}
                         </div>
                     `;
                 }
@@ -2537,7 +2620,7 @@
                 } else {
                     adminStatusDisplay.innerHTML = `
                         <div class="emergency-alert">
-                            ⚠️ شبکه در حالت اضطراری - مدیریت موقت: ${currentAdminName}
+                            ⚠️ شبکه در حالت اضطراری - مدیریت پشتیبان: ${currentAdminName}
                         </div>
                     `;
                 }
@@ -2989,7 +3072,6 @@
                 
                 if (heartbeatInterval) clearInterval(heartbeatInterval);
                 if (reconnectInterval) clearInterval(reconnectInterval);
-                if (electionTimeout) clearTimeout(electionTimeout);
                 if (expirationInterval) clearInterval(expirationInterval);
                 if (adminCheckInterval) clearInterval(adminCheckInterval);
                 if (autoSyncInterval) clearInterval(autoSyncInterval);
@@ -3003,14 +3085,17 @@
         
         // ==================== راه‌اندازی اولیه ====================
         document.addEventListener('DOMContentLoaded', function() {
-            const savedUsername = localStorage.getItem('chat_username');
-            if (savedUsername) {
-                document.getElementById('usernameInput').value = savedUsername;
-            }
+            // پاک کردن کش و استوریج در شروع برنامه
+            clearStorageOnStart();
             
+            // بارگذاری تنظیمات
             loadExpirationSetting();
             checkMobile();
             
+            // تنظیم فوکوس روی ورودی نام
+            document.getElementById('usernameInput').focus();
+            
+            // رویدادهای کلیک
             document.addEventListener('click', function(event) {
                 const emojiPicker = document.getElementById('emojiPicker');
                 if (emojiPicker.style.display === 'block' && 
@@ -3019,6 +3104,7 @@
                 }
             });
             
+            // جلوگیری از اسکرول در موبایل
             document.addEventListener('touchmove', function(event) {
                 const emojiPicker = document.getElementById('emojiPicker');
                 if (emojiPicker.style.display === 'block' && 
@@ -3027,8 +3113,10 @@
                 }
             }, { passive: false });
             
+            // تنظیم مجدد هنگام تغییر اندازه
             window.addEventListener('resize', adjustForMobile);
             
+            // تنظیم فوکوس روی اینپوت در موبایل
             const messageInput = document.getElementById('messageInput');
             if (messageInput) {
                 messageInput.addEventListener('focus', function() {
@@ -3039,9 +3127,6 @@
                     }
                 });
             }
-            
-            // تنظیم فوکوس روی ورودی نام هنگام بارگذاری
-            document.getElementById('usernameInput').focus();
         });
     </script>
 </body>
