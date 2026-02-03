@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>چت آرانا </title>
+    <title>چت آرانا - موبایل</title>
     
     <style>
         /* تنظیمات پایه برای موبایل */
@@ -35,7 +35,6 @@
         @media (max-width: 768px) {
             body {
                 padding: 0 !important;
-                overflow: hidden;
             }
             
             .container { 
@@ -43,18 +42,11 @@
                 height: 100vh !important;
                 border-radius: 0 !important;
                 margin: 0 !important;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
             }
             
             .chat-header {
                 padding: 12px 15px !important;
                 font-size: 14px !important;
-                height: 60px !important;
-                flex-shrink: 0;
             }
             
             .sidebar {
@@ -74,46 +66,33 @@
             
             .chat-area {
                 width: 100% !important;
-                height: 100vh !important;
-                display: flex !important;
-                flex-direction: column !important;
-                position: relative;
+                height: calc(100vh - 70px) !important;
             }
             
             .messages-container {
                 padding: 15px !important;
-                flex: 1 !important;
-                overflow-y: auto !important;
+                height: calc(100% - 160px) !important; /* افزایش ارتفاع */
                 max-height: none !important;
-                padding-bottom: 100px !important;
-                margin-bottom: 0 !important;
-                -webkit-overflow-scrolling: touch !important;
-                overscroll-behavior: contain !important;
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 10px !important;
-                min-height: 0 !important;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
             }
             
             .input-area {
                 position: fixed !important;
-                bottom: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
+                bottom: 0;
+                left: 0;
+                right: 0;
                 background: #1e1e1e !important;
                 padding: 10px 15px !important;
                 border-top: 1px solid #2a2a2a;
                 z-index: 1000;
-                height: auto !important;
                 min-height: 80px;
-                max-height: 150px;
-                box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
             }
             
             .message-input {
                 max-height: 80px !important;
                 font-size: 16px !important;
-                line-height: 1.4 !important;
             }
             
             .action-buttons {
@@ -184,11 +163,8 @@
             .message-container {
                 max-width: 85% !important;
                 padding: 10px 14px !important;
-                margin-bottom: 5px !important;
+                margin-bottom: 10px !important;
                 animation: fadeIn 0.3s ease;
-                word-break: break-word;
-                position: relative;
-                min-width: 120px;
             }
             
             /* دکمه‌های لایک/دیسلایک برای موبایل */
@@ -203,30 +179,7 @@
             
             /* پنل ریپلای برای موبایل */
             .reply-panel {
-                position: fixed !important;
-                bottom: 80px !important;
-                left: 0 !important;
-                right: 0 !important;
-                z-index: 999 !important;
-                margin: 0 !important;
-                border-radius: 0 !important;
-                padding: 10px 15px !important;
-            }
-            
-            /* وضعیت شبکه در موبایل */
-            .network-status {
-                position: fixed !important;
-                bottom: 80px !important;
-                left: 10px !important;
-                right: 10px !important;
-                z-index: 998 !important;
-                margin: 0 !important;
-            }
-            
-            /* ایموجی پیکر */
-            #emojiPicker {
-                bottom: 150px !important;
-                max-height: 250px !important;
+                padding: 8px 12px !important;
             }
         }
         
@@ -818,6 +771,7 @@
         /* بهبود نمایش پیام‌ها در موبایل */
         .message-container {
             animation: fadeIn 0.3s ease;
+            margin-bottom: 10px;
         }
         
         /* دکمه‌های عملیاتی در موبایل */
@@ -871,11 +825,18 @@
             display: none;
         }
         
-        /* استایل برای وضعیت sync */
-        .sync-status {
-            font-size: 10px;
-            color: #00ff88;
-            margin-right: 10px;
+        /* هشدار وضعیت اضطراری */
+        .emergency-alert {
+            background: linear-gradient(135deg, #ffaa00, #ff8800);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            margin: 5px 0;
+            animation: pulse 2s infinite;
+            border: 1px solid #ff8800;
         }
     </style>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
@@ -887,6 +848,7 @@
         <div class="login-card">
             <div style="font-size: 48px; margin-bottom: 20px; color: #8a2be2;">💬</div>
             <h1 style="color: #e0e0e0; margin-bottom: 10px;">چت آرانا - نسخه موبایل</h1>
+            <p style="color: #b0b0b0; margin-bottom: 30px; font-size: 14px;">چت امن با سیستم لایک و حذف خودکار پیام‌ها</p>
             
             <input type="text" 
                    class="login-input" 
@@ -898,6 +860,9 @@
             <!-- پنل تنظیمات حذف خودکار -->
             <div class="expiration-panel">
                 <h4 style="color: #e0e0e0; margin-bottom: 10px; font-size: 14px;">⏰ تنظیمات حذف خودکار پیام‌ها:</h4>
+                <p style="color: #b0b0b0; font-size: 12px; line-height: 1.6; margin-bottom: 10px;">
+                    پیام‌ها پس از مدت زمان انتخابی به صورت خودکار حذف خواهند شد.
+                </p>
                 
                 <div class="expiration-options" id="expirationOptions">
                     <div class="expiration-option" onclick="selectExpiration(5)">
@@ -1003,9 +968,6 @@
                         <button onclick="refreshNetwork()" class="mobile-action-btn primary">
                             <i class="fas fa-sync-alt"></i> بروزرسانی
                         </button>
-                        <button onclick="clearUserMessagesPrompt()" class="mobile-action-btn danger">
-                            <i class="fas fa-user-slash"></i> حذف کاربر
-                        </button>
                     </div>
                     
                     <div class="mobile-actions">
@@ -1025,6 +987,7 @@
                     <div>
                         <div style="font-size: 16px; color: #e0e0e0; font-weight: bold;" id="chatTitle">💬 چت عمومی</div>
                         <div style="font-size: 11px; color: #b0b0b0;" id="chatInfo">پیام‌های عمومی</div>
+                        <div id="adminStatusDisplay" style="font-size: 12px; margin-top: 5px;"></div>
                     </div>
                     <div id="chatActions">
                         <button onclick="clearChat()" style="padding: 4px 8px; background: #2a2a2a; color: #e0e0e0; border: 1px solid #3a3a3a; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold;">
@@ -1054,7 +1017,6 @@
                 <!-- وضعیت شبکه در موبایل -->
                 <div class="network-status" id="networkStatus">
                     <span id="networkStatusText">اتصال برقرار است</span>
-                    <span class="sync-status" id="syncStatus"></span>
                     <span id="networkAdminInfo" style="font-size: 11px; color: #8a2be2;"></span>
                 </div>
                 
@@ -1083,35 +1045,13 @@
     </div>
 
     <!-- Emoji Picker for Mobile -->
-    <div id="emojiPicker" style="display: none; position: fixed; bottom: 150px; right: 10px; left: 10px; background: #2a2a2a; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); padding: 15px; z-index: 1002; border: 1px solid #3a3a3a; max-height: 250px; overflow-y: auto;">
+    <div id="emojiPicker" style="display: none; position: fixed; bottom: 120px; right: 10px; left: 10px; background: #2a2a2a; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); padding: 15px; z-index: 1002; border: 1px solid #3a3a3a; max-height: 200px; overflow-y: auto;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
             <div style="font-weight: bold; color: #e0e0e0;">ایموجی‌ها</div>
             <button onclick="toggleEmojiPicker()" style="background: none; border: none; cursor: pointer; font-size: 18px; color: #e0e0e0;">×</button>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
             <!-- Emojis will be inserted here -->
-        </div>
-    </div>
-
-    <!-- Modal برای انتخاب کاربر برای حذف -->
-    <div id="deleteUserModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: #2a2a2a; padding: 20px; border-radius: 16px; max-width: 400px; width: 100%; border: 1px solid #3a3a3a; box-shadow: 0 8px 32px rgba(0,0,0,0.7); max-height: 80vh; overflow-y: auto;">
-            <h3 style="color: #e0e0e0; margin-bottom: 15px; text-align: center; font-size: 18px;">🗑️ حذف پیام‌های کاربر</h3>
-            
-            <div style="margin-bottom: 20px;">
-                <div style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto;" id="userListForDeletion">
-                    <!-- لیست کاربران اینجا نمایش داده می‌شود -->
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button onclick="closeDeleteUserModal()" style="padding: 10px 20px; background: #3a3a3a; color: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
-                    لغو
-                </button>
-                <button onclick="confirmDeleteUserMessages()" style="padding: 10px 20px; background: linear-gradient(135deg, #ff4444, #cc0000); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; flex: 1;">
-                    حذف
-                </button>
-            </div>
         </div>
     </div>
 
@@ -1132,7 +1072,6 @@
         let pendingMessages = new Map();
         let incomingImages = new Map(); // برای دریافت تصاویر
         let userColors = new Map(); // رنگ‌های کاربران
-        let selectedUserForDeletion = null; // کاربر انتخاب شده برای حذف
         
         // تاریخچه پیام‌ها (حداکثر 1000 پیام)
         let messageHistory = [];
@@ -1145,63 +1084,22 @@
         // متغیرهای سیستم ریپلای
         let replyingTo = null; // {messageId, author, content}
         
-        // متغیرهای سیستم بروزرسانی خودکار
-        let autoRefreshInterval = null;
-        let lastSyncTime = Date.now();
-        let lastMessageId = null;
-        
-        const GLOBAL_ROOM = 'GLOBAL_CHAT_MOBILE_V1';
-        const ADMIN_NAME = 'global_admin';
-        const ADMIN_PEER_ID = `${GLOBAL_ROOM}_${ADMIN_NAME}`;
+        const GLOBAL_ROOM = 'GLOBAL_CHAT_MOBILE_V2';
+        const ADMIN_NAMES = Array.from({length: 100}, (_, i) => `admin${i+1}`);
+        let currentAdminIndex = 0;
+        let isEmergencyMode = false;
         
         let heartbeatInterval = null;
         let electionTimeout = null;
         let reconnectInterval = null;
         let adminCheckInterval = null;
+        let autoSyncInterval = null;
         
         // لیست رنگ‌های فسفوری برای کاربران در تم تاریک
         const USER_COLORS = [
-            '#8a2be2', // بنفش فسفوری
-            '#00ff88', // سبز فسفوری
-            '#00ffff', // فیروزه‌ای فسفوری
-            '#ffaa00', // نارنجی فسفوری
-            '#ff00ff', // صورتی فسفوری
-            '#00ccff', // آبی فسفوری
-            '#ffff00', // زرد فسفوری
-            '#ff4444', // قرمز فسفوری
-            '#aa00ff', // ارغوانی فسفوری
-            '#00ffaa', // سبز آبی فسفوری
-            '#ff8800', // نارنجی پررنگ
-            '#ff0088'  // صورتی پررنگ
+            '#8a2be2', '#00ff88', '#00ffff', '#ffaa00', '#ff00ff',
+            '#00ccff', '#ffff00', '#ff4444', '#aa00ff', '#00ffaa'
         ];
-        
-        // ==================== پاک کردن کش و استوریج در ابتدا بدون پیام ====================
-        (function clearCacheAndStorage() {
-            try {
-                localStorage.removeItem('chat_message_history');
-                localStorage.removeItem('chat_username');
-                localStorage.removeItem('chat_expiration');
-                sessionStorage.clear();
-                
-                // پاک کردن IndexedDB اگر وجود دارد
-                if ('indexedDB' in window) {
-                    indexedDB.databases().then(function(databases) {
-                        databases.forEach(function(database) {
-                            indexedDB.deleteDatabase(database.name);
-                        });
-                    });
-                }
-                
-                // پاک کردن کوکی‌ها
-                document.cookie.split(";").forEach(function(c) {
-                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-                });
-                
-                console.log('کش و استوریج با موفقیت پاک شد');
-            } catch (e) {
-                console.log('پاکسازی کش انجام شد');
-            }
-        })();
         
         // ==================== تشخیص موبایل و تنظیمات ====================
         function checkMobile() {
@@ -1217,7 +1115,8 @@
         function adjustForMobile() {
             const messagesContainer = document.getElementById('messagesContainer');
             if (messagesContainer && isMobile) {
-                messagesContainer.style.maxHeight = "calc(100vh - 250px)";
+                messagesContainer.style.height = "calc(100vh - 180px)";
+                messagesContainer.style.paddingBottom = "80px";
             }
         }
         
@@ -1330,8 +1229,6 @@
             const saved = localStorage.getItem('chat_expiration');
             if (saved !== null) {
                 messageExpirationMinutes = parseInt(saved);
-            } else {
-                messageExpirationMinutes = 5; // مقدار پیش‌فرض
             }
             
             selectExpiration(messageExpirationMinutes);
@@ -1411,7 +1308,6 @@
             }
             
             updateStorageInfo();
-            lastMessageId = message.messageId;
         }
         
         function removeUserMessagesFromHistory(userPeerId) {
@@ -1441,11 +1337,6 @@
                 if (saved) {
                     messageHistory = JSON.parse(saved);
                     console.log(`تاریخچه ${messageHistory.length} پیام بارگذاری شد`);
-                    
-                    // تنظیم آخرین messageId
-                    if (messageHistory.length > 0) {
-                        lastMessageId = messageHistory[messageHistory.length - 1].messageId;
-                    }
                 }
             } catch (e) {
                 console.error('خطا در بارگذاری تاریخچه:', e);
@@ -1484,8 +1375,7 @@
             if (conn && conn.open && messageHistory.length > 0) {
                 console.log(`ارسال ${messageHistory.length} پیام تاریخچه به کاربر ${peerId}`);
                 
-                // ارسال پیام‌های متنی و تصویری
-                const chunkSize = 20; // کاهش اندازه برای موبایل
+                const chunkSize = 20;
                 for (let i = 0; i < messageHistory.length; i += chunkSize) {
                     const chunk = messageHistory.slice(i, i + chunkSize);
                     
@@ -1619,44 +1509,32 @@
             await startAdminElection();
         }
         
-        // ==================== سیستم انتخاب مدیریت ====================
+        // ==================== سیستم انتخاب مدیریت جدید ====================
         async function startAdminElection() {
-            showNotification('👑 شروع فرآیند انتخاب مدیریت...', 'info');
+            showNotification('👑 جستجوی مدیریت فعال...', 'info');
             adminElectionInProgress = true;
             
-            const adminExists = await checkAdminExists();
-            
-            if (adminExists) {
-                showNotification('✅ مدیریت فعال پیدا شد', 'success');
-                amIAdmin = false;
-                await joinAsMember();
-            } else {
-                showNotification('⚡ در حال رقابت برای مدیریت...', 'warning');
-                await competeForAdmin();
-            }
-        }
-        
-        async function checkAdminExists() {
-            showNotification('🔍 بررسی وجود مدیریت فعال...', 'info');
-            
-            if (await testConnectionToAdmin()) {
-                return true;
+            // جستجوی مدیریت‌های موجود به ترتیب admin1 تا admin100
+            for (let i = 0; i < ADMIN_NAMES.length; i++) {
+                const adminName = ADMIN_NAMES[i];
+                const adminExists = await testConnectionToAdmin(adminName);
+                
+                if (adminExists) {
+                    currentAdminIndex = i;
+                    currentAdminName = adminName;
+                    showNotification(`✅ مدیریت ${adminName} پیدا شد`, 'success');
+                    amIAdmin = false;
+                    await joinAsMember();
+                    return;
+                }
             }
             
-            await new Promise(resolve => setTimeout(resolve, getRandomDelay(1000, 3000)));
-            
-            if (await testConnectionToAdmin()) {
-                return true;
-            }
-            
-            return false;
+            // اگر هیچ مدیری پیدا نشد، خودمان مدیر شویم
+            showNotification('⚡ در حال رقابت برای مدیریت...', 'warning');
+            await competeForAdmin();
         }
         
-        function getRandomDelay(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        
-        async function testConnectionToAdmin() {
+        async function testConnectionToAdmin(adminName) {
             return new Promise((resolve) => {
                 const testPeer = new Peer(`test_${Date.now()}`, {
                     host: '0.peerjs.com',
@@ -1667,7 +1545,8 @@
                 });
                 
                 testPeer.on('open', () => {
-                    const conn = testPeer.connect(ADMIN_PEER_ID, {
+                    const adminPeerId = `${GLOBAL_ROOM}_${adminName}`;
+                    const conn = testPeer.connect(adminPeerId, {
                         reliable: true,
                         metadata: { type: 'admin_test' }
                     });
@@ -1676,7 +1555,7 @@
                         conn.close();
                         testPeer.destroy();
                         resolve(false);
-                    }, 3000);
+                    }, 2000);
                     
                     conn.on('open', () => {
                         clearTimeout(timeout);
@@ -1700,13 +1579,18 @@
             });
         }
         
+        function getRandomDelay(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
         async function competeForAdmin() {
-            const delay = getRandomDelay(2000, 5000);
+            const delay = getRandomDelay(1000, 3000);
             showNotification(`⏳ تأخیر تصادفی: ${delay/1000} ثانیه...`, 'info');
             
             await new Promise(resolve => setTimeout(resolve, delay));
             
-            const adminExists = await checkAdminExists();
+            // دوباره چک کن شاید مدیر جدیدی آمده
+            const adminExists = await testConnectionToAdmin(ADMIN_NAMES[0]);
             
             if (adminExists) {
                 showNotification('✅ مدیریت جدیدی پیدا شد - تبدیل به عضو', 'success');
@@ -1715,12 +1599,31 @@
                 return;
             }
             
-            showNotification('👑 ادعای مدیریت شبکه...', 'warning');
-            await claimAdmin();
+            // پیدا کردن اولین نام مدیریت آزاد
+            let availableAdminName = null;
+            for (let i = 0; i < ADMIN_NAMES.length; i++) {
+                const adminName = ADMIN_NAMES[i];
+                const exists = await testConnectionToAdmin(adminName);
+                if (!exists) {
+                    availableAdminName = adminName;
+                    currentAdminIndex = i;
+                    break;
+                }
+            }
+            
+            if (availableAdminName) {
+                showNotification(`👑 ادعای مدیریت ${availableAdminName}...`, 'warning');
+                await claimAdmin(availableAdminName);
+            } else {
+                showNotification('❌ هیچ نام مدیریتی آزاد نیست', 'error');
+                setTimeout(() => competeForAdmin(), 5000);
+            }
         }
         
-        async function claimAdmin() {
-            myPeerId = ADMIN_PEER_ID;
+        async function claimAdmin(adminName) {
+            myPeerId = `${GLOBAL_ROOM}_${adminName}`;
+            currentAdminId = myPeerId;
+            currentAdminName = adminName;
             
             try {
                 peer = new Peer(myPeerId, {
@@ -1740,8 +1643,6 @@
                 peer.on('open', (id) => {
                     console.log('✅ مدیریت ایجاد شد:', id);
                     amIAdmin = true;
-                    currentAdminId = myPeerId;
-                    currentAdminName = myVisibleName;
                     adminElectionInProgress = false;
                     
                     setupAsAdmin();
@@ -1810,22 +1711,61 @@
             if (adminCheckInterval) clearInterval(adminCheckInterval);
             
             adminCheckInterval = setInterval(async () => {
-                if (!amIAdmin && currentAdminId) {
+                if (amIAdmin) {
+                    // اگر ما مدیر هستیم و admin1 نیستیم، هر 30 ثانیه چک کنیم admin1 برگشته یا نه
+                    if (currentAdminName !== 'admin1') {
+                        const admin1Exists = await testConnectionToAdmin('admin1');
+                        if (admin1Exists) {
+                            showNotification('👑 admin1 برگشته است، در حال انتقال مدیریت...', 'info');
+                            handleAdmin1Returned();
+                        }
+                    }
+                } else if (currentAdminId) {
+                    // اگر عضو هستیم، چک کنیم مدیرمان آنلاین است یا نه
                     const adminConnected = connections.has(currentAdminId) && 
                                          connections.get(currentAdminId).open;
                     
                     if (!adminConnected) {
-                        console.log('مدیریت قطع شده است، بررسی مجدد...');
-                        const adminStillExists = await testConnectionToAdmin();
-                        
-                        if (!adminStillExists) {
-                            showNotification('👑 مدیریت قطع شده، در حال انتخاب مدیریت جدید...', 'warning');
-                            clearInterval(adminCheckInterval);
-                            startAdminElection();
-                        }
+                        console.log('مدیریت قطع شده است، جستجوی مدیر جدید...');
+                        showNotification('👑 مدیر قطع شده، جستجوی مدیر جدید...', 'warning');
+                        clearInterval(adminCheckInterval);
+                        startAdminElection();
                     }
                 }
-            }, 10000); // هر 10 ثانیه بررسی کن
+            }, 30000); // هر 30 ثانیه
+        }
+        
+        function handleAdmin1Returned() {
+            if (!amIAdmin) return;
+            
+            // اطلاع به همه کاربران که admin1 برگشته
+            broadcastToAll({
+                type: 'admin1_returned',
+                timestamp: Date.now()
+            });
+            
+            // بستن اتصالات ما
+            connections.forEach(conn => {
+                if (conn.open) {
+                    conn.send({
+                        type: 'redirect_to_admin1',
+                        admin1PeerId: `${GLOBAL_ROOM}_admin1`,
+                        timestamp: Date.now()
+                    });
+                }
+                conn.close();
+            });
+            
+            connections.clear();
+            
+            // تبدیل خودمان به عضو و اتصال به admin1
+            amIAdmin = false;
+            currentAdminName = 'admin1';
+            currentAdminIndex = 0;
+            connectToAdmin();
+            
+            showNotification('✅ مدیریت به admin1 منتقل شد', 'success');
+            updateUI();
         }
         
         // ==================== راه‌اندازی نقش‌ها ====================
@@ -1850,23 +1790,39 @@
             startReconnectMonitor();
             startExpirationSystem();
             startAdminMonitoring();
-            startAutoRefresh(); // شروع بروزرسانی خودکار
+            startAutoSync();
             
-            showNotification(`شما مدیریت شبکه شدید!`, 'success');
+            showNotification(`شما مدیریت شبکه شدید! (${currentAdminName})`, 'success');
             updateUI();
             
-            // ارسال پیام سیستم برای اطلاع همه
-            const systemMessage = {
-                type: 'system_message',
-                content: `👑 ${myVisibleName} به عنوان مدیریت جدید انتخاب شد`,
-                timestamp: Date.now(),
-                messageId: generateMessageId(),
-                isSystem: true
-            };
-            
-            addToHistory(systemMessage);
-            broadcastToAll(systemMessage);
-            displayMessage(systemMessage, false, 'public');
+            // نمایش وضعیت اضطراری اگر admin1 نیستیم
+            if (currentAdminName !== 'admin1') {
+                isEmergencyMode = true;
+                const systemMessage = {
+                    type: 'system_message',
+                    content: `⚠️ شبکه در حالت اضطراری - مدیریت موقت: ${myVisibleName} (${currentAdminName})`,
+                    timestamp: Date.now(),
+                    messageId: generateMessageId(),
+                    isSystem: true
+                };
+                
+                addToHistory(systemMessage);
+                broadcastToAll(systemMessage);
+                displayMessage(systemMessage, false, 'public');
+            } else {
+                isEmergencyMode = false;
+                const systemMessage = {
+                    type: 'system_message',
+                    content: `👑 ${myVisibleName} به عنوان مدیریت اصلی انتخاب شد`,
+                    timestamp: Date.now(),
+                    messageId: generateMessageId(),
+                    isSystem: true
+                };
+                
+                addToHistory(systemMessage);
+                broadcastToAll(systemMessage);
+                displayMessage(systemMessage, false, 'public');
+            }
         }
         
         function setupAsMember() {
@@ -1888,7 +1844,7 @@
             connectToAdmin();
             startReconnectMonitor();
             startAdminMonitoring();
-            startAutoRefresh(); // شروع بروزرسانی خودکار
+            startAutoSync();
             
             showNotification(`به شبکه جهانی متصل شدید`, 'success');
             updateUI();
@@ -1900,97 +1856,39 @@
             initEmojiPicker();
             updateStorageInfo();
             updateNetworkStatus();
+            updateAdminStatusDisplay();
             checkMobile();
-            
-            // اسکرول به پایین بعد از لود شدن صفحه
-            setTimeout(() => {
-                scrollToBottom();
-            }, 500);
         }
         
-        // ==================== سیستم بروزرسانی خودکار ====================
-        function startAutoRefresh() {
-            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+        // ==================== سیستم سینک خودکار ====================
+        function startAutoSync() {
+            if (autoSyncInterval) clearInterval(autoSyncInterval);
             
-            autoRefreshInterval = setInterval(() => {
-                syncMessages();
-            }, 60000); // تغییر به 60 ثانیه
-            
-            console.log('سیستم بروزرسانی خودکار هر 60 ثانیه فعال شد');
-        }
-        
-        function stopAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
-        }
-        
-        function syncMessages() {
-            if (amIAdmin) {
-                // مدیریت: ارسال پیام sync به همه
-                broadcastToAll({
-                    type: 'sync_ping',
-                    adminId: myPeerId,
-                    timestamp: Date.now(),
-                    messageCount: messageHistory.length
-                });
-                
-                // بررسی و ارسال پیام‌های جدید به کاربران
-                checkAndSendNewMessages();
-            } else if (currentAdminId && connections.has(currentAdminId)) {
-                // عضو: ارسال درخواست sync به مدیریت
-                const adminConn = connections.get(currentAdminId);
-                if (adminConn && adminConn.open) {
-                    adminConn.send({
-                        type: 'sync_request',
-                        peerId: myPeerId,
-                        lastMessageId: lastMessageId,
-                        timestamp: Date.now(),
-                        messageCount: messageHistory.length
-                    });
-                }
-            }
-            
-            lastSyncTime = Date.now();
-            updateSyncStatus();
-        }
-        
-        function checkAndSendNewMessages() {
-            if (!amIAdmin) return;
-            
-            // برای هر کاربر، پیام‌های جدیدی که ندیده را ارسال کن
-            connections.forEach((conn, peerId) => {
-                if (conn.open && peerId !== myPeerId && messageHistory.length > 0) {
-                    // در این نسخه ساده، 10 پیام آخر را برای sync می‌فرستیم
-                    const recentMessages = messageHistory.slice(-10);
-                    
-                    conn.send({
-                        type: 'sync_messages',
-                        messages: recentMessages,
+            autoSyncInterval = setInterval(() => {
+                if (!amIAdmin) {
+                    // اعضا: درخواست سینک از مدیر
+                    const adminConn = connections.get(currentAdminId);
+                    if (adminConn && adminConn.open) {
+                        adminConn.send({
+                            type: 'sync_request',
+                            timestamp: Date.now()
+                        });
+                        console.log('درخواست سینک خودکار ارسال شد');
+                    }
+                } else {
+                    // مدیر: بروزرسانی لیست کاربران و ارسال به همه
+                    broadcastToAll({
+                        type: 'auto_sync',
+                        users: Array.from(users.values()).filter(u => u.isOnline),
                         timestamp: Date.now()
                     });
                 }
-            });
-        }
-        
-        function updateSyncStatus() {
-            const now = Date.now();
-            const timeSinceSync = Math.floor((now - lastSyncTime) / 1000);
-            
-            const syncElement = document.getElementById('syncStatus');
-            if (syncElement) {
-                if (timeSinceSync < 30) {
-                    syncElement.textContent = `🟢 ${timeSinceSync}ثانیه`;
-                    syncElement.style.color = '#00ff88';
-                } else if (timeSinceSync < 60) {
-                    syncElement.textContent = `🟡 ${timeSinceSync}ثانیه`;
-                    syncElement.style.color = '#ffaa00';
-                } else {
-                    syncElement.textContent = `🔴 ${Math.floor(timeSinceSync/60)}دقیقه`;
-                    syncElement.style.color = '#ff4444';
-                }
-            }
+                
+                // بروزرسانی UI
+                updateUsersList();
+                updateStorageInfo();
+                
+            }, 60000); // هر 60 ثانیه
         }
         
         // ==================== مدیریت اتصالات ====================
@@ -2001,51 +1899,39 @@
                 const peerId = conn.peer;
                 const metadata = conn.metadata || {};
                 
-                if (metadata.type === 'admin_connection') {
-                    handleAdminConnection(conn, peerId, metadata);
-                } else {
-                    connections.set(peerId, conn);
-                    setupConnectionListeners(conn, peerId);
-                    
-                    if (amIAdmin) {
-                        conn.on('open', () => {
-                            conn.send({
-                                type: 'request_registration',
-                                timestamp: Date.now()
-                            });
-                        });
-                    }
-                }
-            });
-        }
-        
-        function handleAdminConnection(conn, peerId, metadata) {
-            connections.set(peerId, conn);
-            setupConnectionListeners(conn, peerId);
-            
-            // ارسال اطلاعات مدیریت به کاربر جدید
-            conn.on('open', () => {
-                conn.send({
-                    type: 'admin_info',
-                    adminId: myPeerId,
-                    adminName: myVisibleName,
-                    timestamp: Date.now()
-                });
+                connections.set(peerId, conn);
+                setupConnectionListeners(conn, peerId);
                 
-                // اگر کاربر جدید است، تاریخچه را بفرست
-                if (metadata.isNewUser) {
-                    sendMessageHistoryToUser(peerId);
+                if (amIAdmin) {
+                    conn.on('open', () => {
+                        // ارسال اطلاعات مدیریت به کاربر جدید
+                        conn.send({
+                            type: 'admin_info',
+                            adminId: myPeerId,
+                            adminName: myVisibleName,
+                            adminRole: currentAdminName,
+                            isEmergency: currentAdminName !== 'admin1',
+                            timestamp: Date.now()
+                        });
+                        
+                        // درخواست ثبت‌نام
+                        conn.send({
+                            type: 'request_registration',
+                            timestamp: Date.now()
+                        });
+                    });
                 }
             });
         }
         
         function connectToAdmin() {
-            showNotification(`در حال اتصال به مدیریت...`, 'info');
+            showNotification(`در حال اتصال به مدیریت ${currentAdminName}...`, 'info');
             
-            const conn = peer.connect(currentAdminId || ADMIN_PEER_ID, {
+            const adminPeerId = `${GLOBAL_ROOM}_${currentAdminName}`;
+            const conn = peer.connect(adminPeerId, {
                 reliable: true,
                 metadata: {
-                    type: 'admin_connection',
+                    type: 'member_connection',
                     visibleName: myVisibleName,
                     peerId: myPeerId,
                     isNewUser: true,
@@ -2055,8 +1941,9 @@
             
             conn.on('open', () => {
                 console.log('✅ به مدیریت متصل شدیم');
-                connections.set(currentAdminId || ADMIN_PEER_ID, conn);
-                setupConnectionListeners(conn, currentAdminId || ADMIN_PEER_ID);
+                currentAdminId = adminPeerId;
+                connections.set(currentAdminId, conn);
+                setupConnectionListeners(conn, currentAdminId);
                 
                 conn.send({
                     type: 'register',
@@ -2066,8 +1953,9 @@
                     timestamp: Date.now()
                 });
                 
-                showNotification('به مدیریت متصل شدید', 'success');
+                showNotification(`به مدیریت ${currentAdminName} متصل شدید`, 'success');
                 updateConnectionStatus(true);
+                updateAdminStatusDisplay();
             });
             
             conn.on('error', (err) => {
@@ -2094,13 +1982,6 @@
                 if (peerId === currentAdminId && !amIAdmin) {
                     showNotification('اتصال با مدیریت قطع شد', 'warning');
                     updateConnectionStatus(false);
-                    
-                    // اگر مدیریت قطع شد، بلافاصله مدیر جدیدی انتخاب کن
-                    setTimeout(() => {
-                        if (!amIAdmin) {
-                            startAdminElection();
-                        }
-                    }, 1000);
                 }
                 
                 updateUsersList();
@@ -2114,13 +1995,6 @@
                 if (peerId === currentAdminId && !amIAdmin) {
                     showNotification('خطا در اتصال با مدیریت', 'error');
                     updateConnectionStatus(false);
-                    
-                    // اگر مدیریت قطع شد، بلافاصله مدیر جدیدی انتخاب کن
-                    setTimeout(() => {
-                        if (!amIAdmin) {
-                            startAdminElection();
-                        }
-                    }, 1000);
                 }
                 
                 updateUsersList();
@@ -2158,9 +2032,6 @@
                 case 'message_reaction':
                     handleMessageReaction(data, fromPeerId);
                     break;
-                case 'delete_user_messages':
-                    handleDeleteUserMessages(data, fromPeerId);
-                    break;
                 case 'expired_messages':
                     handleExpiredMessages(data, fromPeerId);
                     break;
@@ -2170,20 +2041,17 @@
                 case 'admin_info':
                     handleAdminInfo(data, fromPeerId);
                     break;
-                case 'new_admin':
-                    handleNewAdmin(data, fromPeerId);
+                case 'redirect_to_admin1':
+                    handleRedirectToAdmin1(data, fromPeerId);
                     break;
-                case 'admin_left':
-                    handleAdminLeft(data, fromPeerId);
+                case 'admin1_returned':
+                    handleAdmin1ReturnedMsg(data, fromPeerId);
                     break;
                 case 'sync_request':
                     handleSyncRequest(data, fromPeerId);
                     break;
-                case 'sync_ping':
-                    handleSyncPing(data, fromPeerId);
-                    break;
-                case 'sync_messages':
-                    handleSyncMessages(data, fromPeerId);
+                case 'auto_sync':
+                    handleAutoSync(data, fromPeerId);
                     break;
             }
         }
@@ -2196,6 +2064,7 @@
                 conn.send({
                     type: 'please_register',
                     adminId: myPeerId,
+                    adminName: myVisibleName,
                     timestamp: Date.now()
                 });
             }
@@ -2218,15 +2087,18 @@
             
             const conn = connections.get(fromPeerId);
             if (conn && conn.open) {
+                // ارسال لیست کاربران
                 conn.send({
                     type: 'user_list',
                     users: Array.from(users.values()).filter(u => u.isOnline),
                     timestamp: Date.now()
                 });
                 
+                // ارسال تاریخچه پیام‌ها
                 sendMessageHistoryToUser(data.peerId);
             }
             
+            // اطلاع به بقیه کاربران
             broadcastToAll({
                 type: 'user_joined',
                 user: userInfo,
@@ -2238,10 +2110,7 @@
         }
         
         function handlePublicMessage(data, fromPeerId) {
-            // جلوگیری از نمایش پیام‌های تکراری برای مدیریت
-            if (amIAdmin && data.senderId === myPeerId) {
-                return;
-            }
+            if (amIAdmin && data.senderId === myPeerId) return;
             
             if (!data.likes) data.likes = [];
             if (!data.dislikes) data.dislikes = [];
@@ -2296,22 +2165,58 @@
             updateMessageStatus(messageId, status);
         }
         
+        function handleImageChunk(data, fromPeerId) {
+            if (!incomingImages.has(data.messageId)) {
+                incomingImages.set(data.messageId, {
+                    chunks: [],
+                    total: data.totalChunks,
+                    mimeType: data.mimeType,
+                    senderName: data.senderName,
+                    senderId: data.senderId
+                });
+            }
+            
+            const img = incomingImages.get(data.messageId);
+            img.chunks[data.chunkIndex] = data.data;
+            
+            const receivedChunks = img.chunks.filter(Boolean).length;
+            
+            if (receivedChunks === img.total) {
+                const base64 = img.chunks.join('');
+                const imageData = {
+                    type: 'image',
+                    content: base64,
+                    senderId: img.senderId,
+                    senderName: img.senderName,
+                    timestamp: Date.now(),
+                    messageId: data.messageId,
+                    status: 'delivered',
+                    likes: [],
+                    dislikes: []
+                };
+                
+                if (amIAdmin) {
+                    addToHistory(imageData);
+                }
+                
+                displayMessage(imageData, imageData.senderId === myPeerId, 'public');
+                incomingImages.delete(data.messageId);
+                
+                showNotification('تصویر دریافت شد', 'success');
+            }
+        }
+        
         function handleMessageHistoryChunk(data, fromPeerId) {
             console.log(`دریافت chunk تاریخچه ${data.chunkIndex + 1}/${data.totalChunks}`);
             
             data.chunk.forEach(message => {
                 if (!messageHistory.some(m => m.messageId === message.messageId)) {
                     displayMessage(message, message.senderId === myPeerId, 'public');
-                    if (!amIAdmin) {
-                        messageHistory.push(message);
-                        lastMessageId = message.messageId;
-                    }
                 }
             });
             
             if (data.chunkIndex === data.totalChunks - 1) {
                 showNotification(`تاریخچه ${data.totalChunks * data.chunk.length} پیام بارگذاری شد`, 'success');
-                updateStorageInfo();
             }
         }
         
@@ -2323,19 +2228,6 @@
             }
             
             updateReactionUI(data.messageId, data.likes, data.dislikes);
-            
-            if (amIAdmin) {
-                broadcastToAll(data, [fromPeerId]);
-            }
-        }
-        
-        function handleDeleteUserMessages(data, fromPeerId) {
-            const removedCount = removeUserMessagesFromHistory(data.userPeerId);
-            removeUserMessagesFromDisplay(data.userPeerId);
-            
-            if (data.userName) {
-                showNotification(`پیام‌های ${data.userName} حذف شد (${removedCount} پیام)`, 'delete');
-            }
             
             if (amIAdmin) {
                 broadcastToAll(data, [fromPeerId]);
@@ -2359,127 +2251,64 @@
         
         function handleAdminInfo(data, fromPeerId) {
             currentAdminId = data.adminId;
-            currentAdminName = data.adminName;
+            currentAdminName = data.adminRole || data.adminName;
+            isEmergencyMode = data.isEmergency || false;
+            
             updateNetworkStatus();
+            updateAdminStatusDisplay();
             showNotification(`مدیریت: ${data.adminName}`, 'info');
         }
         
-        function handleNewAdmin(data, fromPeerId) {
-            currentAdminId = data.adminId;
-            currentAdminName = data.adminName;
+        function handleRedirectToAdmin1(data, fromPeerId) {
+            showNotification('👑 در حال اتصال به مدیریت اصلی (admin1)...', 'info');
             
-            const systemMessage = {
-                type: 'system_message',
-                content: `👑 ${data.adminName} به عنوان مدیریت جدید انتخاب شد`,
-                timestamp: Date.now(),
-                messageId: generateMessageId(),
-                isSystem: true
-            };
-            
-            displayMessage(systemMessage, false, 'public');
-            showNotification(`مدیریت جدید: ${data.adminName}`, 'admin');
-            updateNetworkStatus();
-            
-            if (!amIAdmin && fromPeerId !== myPeerId) {
-                setTimeout(() => {
-                    if (connections.has(currentAdminId)) {
-                        connections.get(currentAdminId).close();
-                    }
-                    connectToAdmin();
-                }, 1000);
+            // بستن اتصال فعلی
+            if (connections.has(fromPeerId)) {
+                connections.get(fromPeerId).close();
+                connections.delete(fromPeerId);
             }
+            
+            // اتصال به admin1
+            currentAdminName = 'admin1';
+            currentAdminIndex = 0;
+            connectToAdmin();
         }
         
-        function handleAdminLeft(data, fromPeerId) {
+        function handleAdmin1ReturnedMsg(data, fromPeerId) {
+            showNotification('👑 مدیریت اصلی (admin1) برگشته است', 'info');
+            
             const systemMessage = {
                 type: 'system_message',
-                content: `👑 مدیریت خارج شد. در حال انتخاب مدیریت جدید...`,
+                content: '👑 مدیریت اصلی (admin1) به شبکه برگشته است',
                 timestamp: Date.now(),
                 messageId: generateMessageId(),
                 isSystem: true
             };
             
             displayMessage(systemMessage, false, 'public');
-            showNotification('مدیریت خارج شد', 'warning');
-            
-            if (!amIAdmin) {
-                setTimeout(() => {
-                    startAdminElection();
-                }, 1000);
-            }
         }
         
         function handleSyncRequest(data, fromPeerId) {
             if (!amIAdmin) return;
             
-            const user = users.get(fromPeerId);
-            if (user) {
-                console.log(`درخواست sync از کاربر: ${user.visibleName}`);
-                
-                let messagesToSend = [];
-                if (data.lastMessageId) {
-                    const lastMessageIndex = messageHistory.findIndex(msg => msg.messageId === data.lastMessageId);
-                    if (lastMessageIndex !== -1) {
-                        messagesToSend = messageHistory.slice(lastMessageIndex + 1);
-                    } else {
-                        messagesToSend = [...messageHistory];
-                    }
-                } else {
-                    messagesToSend = [...messageHistory];
-                }
-                
-                if (messagesToSend.length > 0) {
-                    const conn = connections.get(fromPeerId);
-                    if (conn && conn.open) {
-                        const chunkSize = 20;
-                        for (let i = 0; i < messagesToSend.length; i += chunkSize) {
-                            const chunk = messagesToSend.slice(i, i + chunkSize);
-                            setTimeout(() => {
-                                conn.send({
-                                    type: 'message_history_chunk',
-                                    chunk: chunk,
-                                    chunkIndex: Math.floor(i / chunkSize),
-                                    totalChunks: Math.ceil(messagesToSend.length / chunkSize),
-                                    timestamp: Date.now(),
-                                    isSync: true
-                                });
-                            }, i * 50);
-                        }
-                        
-                        showNotification(`ارسال ${messagesToSend.length} پیام برای sync به ${user.visibleName}`, 'info');
-                    }
-                }
-            }
-        }
-        
-        function handleSyncPing(data, fromPeerId) {
-            if (!amIAdmin && fromPeerId === currentAdminId) {
-                const timeDiff = Date.now() - data.timestamp;
-                if (timeDiff < 60000) {
-                    updateSyncStatus();
-                }
-            }
-        }
-        
-        function handleSyncMessages(data, fromPeerId) {
-            if (!amIAdmin && fromPeerId === currentAdminId) {
-                let newMessagesCount = 0;
-                data.messages.forEach(message => {
-                    if (!messageHistory.some(m => m.messageId === message.messageId)) {
-                        displayMessage(message, message.senderId === myPeerId, 'public');
-                        if (!amIAdmin) {
-                            messageHistory.push(message);
-                            lastMessageId = message.messageId;
-                            newMessagesCount++;
-                        }
-                    }
+            const conn = connections.get(fromPeerId);
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'user_list',
+                    users: Array.from(users.values()).filter(u => u.isOnline),
+                    timestamp: Date.now()
                 });
-                
-                if (newMessagesCount > 0) {
-                    updateStorageInfo();
-                    showNotification(`بروزرسانی ${newMessagesCount} پیام از مدیریت`, 'success');
-                }
             }
+        }
+        
+        function handleAutoSync(data, fromPeerId) {
+            data.users.forEach(user => {
+                if (user.peerId !== myPeerId && !users.has(user.peerId)) {
+                    users.set(user.peerId, user);
+                }
+            });
+            
+            updateUsersList();
         }
         
         // ==================== مدیریت شبکه ====================
@@ -2502,6 +2331,7 @@
                         type: 'heartbeat',
                         adminId: myPeerId,
                         adminName: myVisibleName,
+                        adminRole: currentAdminName,
                         timestamp: Date.now()
                     });
                     
@@ -2526,10 +2356,6 @@
                 if (peerId !== myPeerId && now - user.lastSeen > 30000) {
                     user.isOnline = false;
                     updateUsersList();
-                    
-                    if (peerId === currentAdminId) {
-                        handleAdminLeft({}, peerId);
-                    }
                 }
             });
         }
@@ -2674,63 +2500,48 @@
             }
         }
         
-        function handleImageChunk(data, fromPeerId) {
-            if (!incomingImages.has(data.messageId)) {
-                incomingImages.set(data.messageId, {
-                    chunks: [],
-                    total: data.totalChunks,
-                    mimeType: data.mimeType,
-                    senderName: data.senderName,
-                    senderId: data.senderId
-                });
-            }
-            
-            const img = incomingImages.get(data.messageId);
-            img.chunks[data.chunkIndex] = data.data;
-            
-            const receivedChunks = img.chunks.filter(Boolean).length;
-            
-            if (receivedChunks === img.total) {
-                const base64 = img.chunks.join('');
-                const imageData = {
-                    type: 'image',
-                    content: base64,
-                    senderId: img.senderId,
-                    senderName: img.senderName,
-                    timestamp: Date.now(),
-                    messageId: data.messageId,
-                    status: 'delivered',
-                    likes: [],
-                    dislikes: []
-                };
-                
-                if (amIAdmin) {
-                    addToHistory(imageData);
-                }
-                
-                displayMessage(imageData, imageData.senderId === myPeerId, 'public');
-                incomingImages.delete(data.messageId);
-                
-                showNotification('تصویر دریافت شد', 'success');
-            }
-        }
-        
         // ==================== UI Functions ====================
         function updateUI() {
             document.getElementById('connectionStatus').textContent = 
-                amIAdmin ? '👑 مدیریت شبکه' : '👤 عضو شبکه';
+                amIAdmin ? `👑 مدیریت (${currentAdminName})` : '👤 عضو شبکه';
             
             document.getElementById('statusIndicator').className = 
                 amIAdmin ? 'user-status status-online' : 'user-status status-online';
             
             const onlineCount = Array.from(users.values()).filter(u => u.isOnline).length;
             document.getElementById('onlineCount').textContent = onlineCount;
-            document.getElementById('userCount').textContent = onlineCount;
             document.getElementById('mobileUserCount').textContent = onlineCount;
             
             updateUsersList();
             updateNetworkStatus();
-            updateSyncStatus();
+            updateAdminStatusDisplay();
+        }
+        
+        function updateAdminStatusDisplay() {
+            const adminStatusDisplay = document.getElementById('adminStatusDisplay');
+            if (!adminStatusDisplay) return;
+            
+            if (amIAdmin) {
+                if (currentAdminName === 'admin1') {
+                    adminStatusDisplay.innerHTML = `<span style="color: #00ff88;">👑 مدیریت اصلی (admin1)</span>`;
+                } else {
+                    adminStatusDisplay.innerHTML = `
+                        <div class="emergency-alert">
+                            ⚠️ شبکه در حالت اضطراری - مدیریت موقت: ${currentAdminName}
+                        </div>
+                    `;
+                }
+            } else {
+                if (currentAdminName === 'admin1') {
+                    adminStatusDisplay.innerHTML = `<span style="color: #00ff88;">مدیریت: ${currentAdminName}</span>`;
+                } else {
+                    adminStatusDisplay.innerHTML = `
+                        <div class="emergency-alert">
+                            ⚠️ شبکه در حالت اضطراری - مدیریت موقت: ${currentAdminName}
+                        </div>
+                    `;
+                }
+            }
         }
         
         function updateNetworkStatus() {
@@ -2741,12 +2552,22 @@
             if (networkStatus && networkStatusText && networkAdminInfo) {
                 if (amIAdmin) {
                     networkStatusText.textContent = 'شما مدیریت هستید';
-                    networkAdminInfo.textContent = '';
-                    networkStatus.style.background = 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(106, 13, 173, 0.2))';
+                    if (currentAdminName !== 'admin1') {
+                        networkAdminInfo.textContent = `⚠️ حالت اضطراری (${currentAdminName})`;
+                        networkStatus.style.background = 'linear-gradient(135deg, rgba(255, 170, 0, 0.3), rgba(255, 136, 0, 0.3))';
+                    } else {
+                        networkAdminInfo.textContent = 'مدیریت اصلی';
+                        networkStatus.style.background = 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(106, 13, 173, 0.2))';
+                    }
                 } else if (currentAdminId && connections.has(currentAdminId)) {
                     networkStatusText.textContent = 'اتصال برقرار است';
-                    networkAdminInfo.textContent = `مدیریت: ${currentAdminName || '...'}`;
-                    networkStatus.style.background = 'linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 204, 102, 0.2))';
+                    if (currentAdminName !== 'admin1') {
+                        networkAdminInfo.textContent = `مدیریت: ${currentAdminName} (حالت اضطراری)`;
+                        networkStatus.style.background = 'linear-gradient(135deg, rgba(255, 170, 0, 0.3), rgba(255, 136, 0, 0.3))';
+                    } else {
+                        networkAdminInfo.textContent = `مدیریت: ${currentAdminName}`;
+                        networkStatus.style.background = 'linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 204, 102, 0.2))';
+                    }
                 } else {
                     networkStatusText.textContent = 'در حال اتصال...';
                     networkAdminInfo.textContent = '';
@@ -2769,7 +2590,7 @@
             if (connected) {
                 indicator.className = 'user-status status-online';
                 if (mobileIndicator) mobileIndicator.className = 'user-status status-online';
-                statusText.textContent = amIAdmin ? '👑 مدیریت شبکه' : '✅ متصل';
+                statusText.textContent = amIAdmin ? `👑 مدیریت (${currentAdminName})` : '✅ متصل';
             } else {
                 indicator.className = 'user-status status-offline';
                 if (mobileIndicator) mobileIndicator.className = 'user-status status-offline';
@@ -2777,6 +2598,7 @@
             }
             
             updateNetworkStatus();
+            updateAdminStatusDisplay();
         }
         
         function updateUsersList() {
@@ -2787,6 +2609,7 @@
             
             let hasUsers = false;
             
+            // نمایش سایر کاربران
             users.forEach((user, peerId) => {
                 if (!user.isMe) {
                     hasUsers = true;
@@ -2806,7 +2629,7 @@
                             <div style="font-size: 14px; font-weight: 500; color: #e0e0e0; margin-bottom: 2px; display: flex; align-items: center;">
                                 <div class="user-status ${userStatus}" style="margin-left: 5px;"></div>
                                 ${user.visibleName}
-                                ${user.isAdmin ? '<span class="admin-badge">مدیریت</span>' : ''}
+                                ${user.isAdmin ? `<span class="admin-badge">${currentAdminName}</span>` : ''}
                             </div>
                             <div style="font-size: 11px; color: #b0b0b0;">
                                 ${user.isAdmin ? 'مدیر شبکه' : 'کاربر'}
@@ -2818,6 +2641,7 @@
                 }
             });
             
+            // نمایش خود کاربر
             const me = users.get(myPeerId);
             if (me) {
                 const userEl = document.createElement('div');
@@ -2837,7 +2661,7 @@
                             <div class="user-status status-online" style="margin-left: 5px;"></div>
                             ${me.visibleName}
                             <span class="me-badge">شما</span>
-                            ${me.isAdmin ? '<span class="admin-badge">مدیریت</span>' : ''}
+                            ${me.isAdmin ? `<span class="admin-badge">${currentAdminName}</span>` : ''}
                         </div>
                         <div style="font-size: 11px; color: #b0b0b0;">
                             ${me.isAdmin ? 'مدیر شبکه' : 'کاربر'}
@@ -2867,12 +2691,16 @@
                 emptyState.style.display = 'none';
             }
             
+            // اطمینان از اسکرول به پایین قبل از اضافه کردن پیام جدید
+            const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 100;
+            
             const messageEl = document.createElement('div');
             messageEl.id = `msg_${data.messageId}`;
             messageEl.className = 'message-container';
             messageEl.dataset.senderId = data.senderId;
             messageEl.dataset.timestamp = data.timestamp;
             
+            // برای پیام‌های سیستم
             if (data.isSystem) {
                 messageEl.style.cssText = `
                     max-width: 90%;
@@ -2896,7 +2724,9 @@
                 `;
                 
                 container.appendChild(messageEl);
-                scrollToBottom();
+                if (shouldScroll) {
+                    scrollToBottom();
+                }
                 return;
             }
             
@@ -2909,18 +2739,10 @@
             const borderColor = userColor;
             const textColor = isOutgoing ? userColor : '#e0e0e0';
             
-            // استایل دینامیک بر اساس موبایل یا دسکتاپ
-            const maxWidth = isMobile ? '85%' : '65%';
-            const padding = isMobile ? '10px 14px' : '12px 16px';
-            const alignSelf = isOutgoing ? 'flex-end' : 'flex-start';
-            const borderRadius = isOutgoing ? 
-                '18px 18px 5px 18px' : 
-                '18px 18px 18px 5px';
-            
             messageEl.style.cssText = `
-                max-width: ${maxWidth};
-                padding: ${padding};
-                border-radius: ${borderRadius};
+                max-width: ${isMobile ? '85%' : '65%'};
+                padding: ${isMobile ? '10px 14px' : '12px 16px'};
+                border-radius: 18px;
                 position: relative;
                 animation: fadeIn 0.3s ease;
                 word-break: break-word;
@@ -2929,8 +2751,11 @@
                 color: ${textColor};
                 border: 2px solid ${borderColor};
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                align-self: ${alignSelf};
-                margin: ${isOutgoing ? '5px 0 5px auto' : '5px auto 5px 0'};
+                ${isOutgoing ? 
+                    'align-self: flex-end; border-bottom-left-radius: 5px;' : 
+                    'align-self: flex-start; border-bottom-right-radius: 5px;'
+                }
+                margin-bottom: 10px;
             `;
             
             if (data.type !== 'image') {
@@ -3002,6 +2827,7 @@
             
             container.appendChild(messageEl);
             
+            // فقط 100 پیام آخر را در UI نگه دار
             const allMessages = container.querySelectorAll('.message-container');
             if (allMessages.length > 100) {
                 for (let i = 0; i < allMessages.length - 100; i++) {
@@ -3009,41 +2835,19 @@
                 }
             }
             
-            scrollToBottom();
+            // اسکرول به پایین اگر نزدیک پایین بودیم
+            if (shouldScroll) {
+                scrollToBottom();
+            }
         }
         
         function scrollToBottom() {
             setTimeout(() => {
                 const container = document.getElementById('messagesContainer');
                 if (container) {
-                    // استفاده از requestAnimationFrame برای انیمیشن نرم
-                    requestAnimationFrame(() => {
-                        container.scrollTo({
-                            top: container.scrollHeight,
-                            behavior: 'smooth'
-                        });
-                    });
+                    container.scrollTop = container.scrollHeight;
                 }
-            }, 50);
-        }
-        
-        function removeUserMessagesFromDisplay(userPeerId) {
-            const messageElements = document.querySelectorAll('.message-container');
-            let removedCount = 0;
-            
-            messageElements.forEach(el => {
-                if (el.dataset.senderId === userPeerId) {
-                    el.style.opacity = '0.3';
-                    el.style.textDecoration = 'line-through';
-                    el.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        el.remove();
-                        removedCount++;
-                    }, 500);
-                }
-            });
-            
-            return removedCount;
+            }, 100);
         }
         
         function updateMessageStatus(messageId, status) {
@@ -3086,88 +2890,6 @@
             
             fullscreenDiv.appendChild(imgClone);
             document.body.appendChild(fullscreenDiv);
-        }
-        
-        // ==================== مدیریت حذف پیام‌های کاربر ====================
-        function clearUserMessagesPrompt() {
-            if (!amIAdmin) {
-                showNotification('فقط مدیریت می‌تواند پیام‌های کاربران را حذف کند', 'error');
-                return;
-            }
-            
-            const userListContainer = document.getElementById('userListForDeletion');
-            userListContainer.innerHTML = '';
-            
-            users.forEach((user, peerId) => {
-                if (!user.isMe && !user.isAdmin) {
-                    const userEl = document.createElement('div');
-                    userEl.className = 'expiration-option';
-                    userEl.onclick = () => selectUserForDeletion(peerId, user.visibleName);
-                    userEl.dataset.peerId = peerId;
-                    
-                    userEl.innerHTML = `
-                        <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #8a2be2; display: flex; align-items: center; justify-content: center;">
-                            <div style="width: 8px; height: 8px; border-radius: 50%; background: #8a2be2; display: none;"></div>
-                        </div>
-                        <span>${user.visibleName}</span>
-                    `;
-                    
-                    userListContainer.appendChild(userEl);
-                }
-            });
-            
-            document.getElementById('deleteUserModal').style.display = 'flex';
-            selectedUserForDeletion = null;
-            
-            if (isMobile) {
-                toggleSidebar();
-            }
-        }
-        
-        function selectUserForDeletion(peerId, userName) {
-            const previousSelected = document.querySelector('#userListForDeletion .expiration-option.selected');
-            if (previousSelected) {
-                previousSelected.classList.remove('selected');
-                const radio = previousSelected.querySelector('div div');
-                if (radio) radio.style.display = 'none';
-            }
-            
-            const selectedEl = document.querySelector(`#userListForDeletion [data-peer-id="${peerId}"]`);
-            if (selectedEl) {
-                selectedEl.classList.add('selected');
-                const radio = selectedEl.querySelector('div div');
-                if (radio) radio.style.display = 'block';
-                selectedUserForDeletion = { peerId, userName };
-            }
-        }
-        
-        function closeDeleteUserModal() {
-            document.getElementById('deleteUserModal').style.display = 'none';
-            selectedUserForDeletion = null;
-        }
-        
-        function confirmDeleteUserMessages() {
-            if (!selectedUserForDeletion) {
-                showNotification('لطفاً کاربری را انتخاب کنید', 'error');
-                return;
-            }
-            
-            const { peerId, userName } = selectedUserForDeletion;
-            
-            const removedCount = removeUserMessagesFromHistory(peerId);
-            removeUserMessagesFromDisplay(peerId);
-            
-            broadcastToAll({
-                type: 'delete_user_messages',
-                userPeerId: peerId,
-                userName: userName,
-                removedCount: removedCount,
-                timestamp: Date.now()
-            });
-            
-            closeDeleteUserModal();
-            
-            showNotification(`پیام‌های ${userName} حذف شد (${removedCount} پیام)`, 'delete');
         }
         
         // ==================== پاکسازی کش ====================
@@ -3240,7 +2962,7 @@
             }
             
             updateUsersList();
-            syncMessages();
+            updateStorageInfo();
             
             setTimeout(() => {
                 showNotification('✅ شبکه بروزرسانی شد', 'success');
@@ -3270,7 +2992,7 @@
                 if (electionTimeout) clearTimeout(electionTimeout);
                 if (expirationInterval) clearInterval(expirationInterval);
                 if (adminCheckInterval) clearInterval(adminCheckInterval);
-                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+                if (autoSyncInterval) clearInterval(autoSyncInterval);
                 
                 document.getElementById('loginPage').style.display = 'flex';
                 document.getElementById('chatContainer').style.display = 'none';
@@ -3289,23 +3011,14 @@
             loadExpirationSetting();
             checkMobile();
             
-            // بستن ایموجی پیکر با کلیک بیرون
             document.addEventListener('click', function(event) {
                 const emojiPicker = document.getElementById('emojiPicker');
                 if (emojiPicker.style.display === 'block' && 
-                    !emojiPicker.contains(event.target) && 
-                    event.target.id !== 'emojiPicker') {
+                    !emojiPicker.contains(event.target)) {
                     emojiPicker.style.display = 'none';
-                }
-                
-                const modal = document.getElementById('deleteUserModal');
-                if (modal.style.display === 'flex' && 
-                    !modal.contains(event.target)) {
-                    closeDeleteUserModal();
                 }
             });
             
-            // جلوگیری از اسکرول پس‌زمینه در موبایل هنگام باز بودن ایموجی پیکر
             document.addEventListener('touchmove', function(event) {
                 const emojiPicker = document.getElementById('emojiPicker');
                 if (emojiPicker.style.display === 'block' && 
@@ -3314,7 +3027,8 @@
                 }
             }, { passive: false });
             
-            // تنظیم فوکوس روی اینپوت هنگام تایپ
+            window.addEventListener('resize', adjustForMobile);
+            
             const messageInput = document.getElementById('messageInput');
             if (messageInput) {
                 messageInput.addEventListener('focus', function() {
@@ -3326,24 +3040,8 @@
                 });
             }
             
-            // اضافه کردن observer برای پیام‌های جدید
-            const observer = new MutationObserver(() => {
-                scrollToBottom();
-            });
-            
-            const messagesContainer = document.getElementById('messagesContainer');
-            if (messagesContainer) {
-                observer.observe(messagesContainer, { childList: true, subtree: true });
-            }
-            
-            // وقتی کیبورد باز یا بسته می‌شود
-            window.addEventListener('resize', function() {
-                if (isMobile) {
-                    setTimeout(() => {
-                        scrollToBottom();
-                    }, 100);
-                }
-            });
+            // تنظیم فوکوس روی ورودی نام هنگام بارگذاری
+            document.getElementById('usernameInput').focus();
         });
     </script>
 </body>
